@@ -1,4 +1,4 @@
-package com.example.vpnlearn
+package com.example.vpnlearn.ui.main
 
 import android.app.admin.DevicePolicyManager
 import android.content.*
@@ -20,9 +20,13 @@ import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuItemCompat
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.vpnlearn.R
 import com.example.vpnlearn.adapter.ApplicationAdapter
+import com.example.vpnlearn.di.components.DaggerActivityComponent
+import com.example.vpnlearn.di.modules.ActivityModule
 import com.example.vpnlearn.model.ApplicationDm.Companion.getRules
 import com.example.vpnlearn.policy.DeviceAdmin.getComponentName
 import com.example.vpnlearn.service.State
@@ -30,11 +34,17 @@ import com.example.vpnlearn.service.VpnClient
 import com.example.vpnlearn.service.VpnClient.Companion.reload
 import com.example.vpnlearn.service.VpnClient.Companion.start
 import com.example.vpnlearn.service.VpnClient.Companion.stop
+import com.example.vpnlearn.utility.MyApplication
 import com.example.vpnlearn.utility.Util.isWifiActive
 import com.example.vpnlearn.utility.Util.logExtras
 import java.util.concurrent.Executors
+import javax.inject.Inject
 
 class MainActivity : AppCompatActivity(), OnSharedPreferenceChangeListener {
+
+    @Inject
+    lateinit var viewModel: MainViewModel
+
     private var running = false
     private var adapter: ApplicationAdapter? = null
     private var searchItem: MenuItem? = null
@@ -43,6 +53,7 @@ class MainActivity : AppCompatActivity(), OnSharedPreferenceChangeListener {
     private val mExemptedPackages: EditText? = null
     private var mWho: ComponentName? = null
     override fun onCreate(savedInstanceState: Bundle?) {
+        getDependencies()
         val prefs = PreferenceManager.getDefaultSharedPreferences(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -97,6 +108,13 @@ class MainActivity : AppCompatActivity(), OnSharedPreferenceChangeListener {
         intentFilter.addAction(Intent.ACTION_PACKAGE_ADDED)
         intentFilter.addAction(Intent.ACTION_PACKAGE_REMOVED)
         registerReceiver(packageChangedReceiver, intentFilter)
+
+
+        ///////////////////////////////////////////////
+        viewModel.packages.observe(this, Observer {
+            Log.i(TAG, "the size of list is: ${it.size}")
+        })
+        ///////////////////////////////////////////////
     }
 
     public override fun onDestroy() {
@@ -107,6 +125,7 @@ class MainActivity : AppCompatActivity(), OnSharedPreferenceChangeListener {
         unregisterReceiver(connectivityChangedReceiver)
         unregisterReceiver(packageChangedReceiver)
         super.onDestroy()
+        viewModel.onDestroy()
     }
 
     private val connectivityChangedReceiver: BroadcastReceiver = object : BroadcastReceiver() {
@@ -288,5 +307,22 @@ class MainActivity : AppCompatActivity(), OnSharedPreferenceChangeListener {
         private const val TAG = "NetBlocker.Main"
         private const val REQUEST_VPN = 1
         private val VPN_INTENT = Intent(VpnService.SERVICE_INTERFACE)
+    }
+
+
+    private fun getDependencies() {
+        DaggerActivityComponent
+            .builder()
+            .applicationComponent((application as MyApplication).applicationComponent)
+            .activityModule(ActivityModule(this))
+            .build()
+            .inject(this)
+
+
+    }
+
+    override fun onStart() {
+        super.onStart()
+        viewModel.getAllPackages()
     }
 }

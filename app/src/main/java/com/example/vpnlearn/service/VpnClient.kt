@@ -13,7 +13,7 @@ import android.preference.PreferenceManager
 import android.util.Log
 import android.widget.Toast
 import androidx.core.app.TaskStackBuilder
-import com.example.vpnlearn.MainActivity
+import com.example.vpnlearn.ui.main.MainActivity
 import com.example.vpnlearn.R
 import com.example.vpnlearn.model.ApplicationDm
 import com.example.vpnlearn.utility.Constant

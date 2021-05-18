@@ -5,10 +5,24 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Build
 import com.example.vpnlearn.R
+import com.example.vpnlearn.data.local.DatabaseService
+import com.example.vpnlearn.di.components.ApplicationComponent
+import com.example.vpnlearn.di.components.DaggerApplicationComponent
+import com.example.vpnlearn.di.modules.ApplicationModule
+import javax.inject.Inject
 
 class MyApplication : Application() {
+
+    @Inject
+    lateinit var databaseService: DatabaseService
+
+    @Inject
+    lateinit var applicationComponent: ApplicationComponent
+
+
     override fun onCreate() {
         super.onCreate()
+        getDependencies()
         createNotificationChannel()
     }
 
@@ -24,5 +38,13 @@ class MyApplication : Application() {
             )
             notificationManager.createNotificationChannel(channel)
         }
+    }
+
+    private fun getDependencies() {
+        applicationComponent = DaggerApplicationComponent
+            .builder()
+            .applicationModule(ApplicationModule(this))
+            .build()
+        applicationComponent.inject(this)
     }
 }
