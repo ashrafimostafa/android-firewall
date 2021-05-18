@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.net.VpnService
 import android.os.Build
+import android.os.IBinder
 import android.os.ParcelFileDescriptor
 import android.preference.PreferenceManager
 import android.util.Log
@@ -41,22 +42,28 @@ class VpnClient : VpnService() {
         when (cmd) {
             Command.start -> {
                 updateForegroundNotification(R.string.starting)
+                state = State.CONNECTING
                 if (enabled && vpn == null) vpn = vpnStart()
                 updateForegroundNotification(R.string.started)
+                state = State.CONNECTED
             }
             Command.reload -> {
                 // Seamless handover
                 updateForegroundNotification(R.string.reloading)
+                state = State.CONNECTING
                 val prev = vpn
                 if (enabled) vpn = vpnStart()
                 updateForegroundNotification(R.string.started)
+                state = State.CONNECTED
                 prev?.let { vpnStop(it) }
             }
             Command.stop -> {
                 updateForegroundNotification(R.string.stopping)
+                state = State.STOPPING
                 if (vpn != null) {
                     vpnStop(vpn!!)
                     updateForegroundNotification(R.string.stopped)
+                    state = State.DISCONNECTED
                     vpn = null
                 }
                 stopSelf()
@@ -196,6 +203,7 @@ class VpnClient : VpnService() {
     }
 
     fun updateForegroundNotification(message: Int) {
+        Log.i(TAG, "state changed int: ${getString(message)} ")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val intent = Intent(this, MainActivity::class.java)
             val stackBuilder = TaskStackBuilder.create(this)
@@ -217,6 +225,8 @@ class VpnClient : VpnService() {
     companion object {
         private const val TAG = "NetBlocker.Service"
         private const val EXTRA_COMMAND = "Command"
+        var state: State = State.NOUN
+
         @JvmStatic
         fun start(context: Context) {
             val intent = Intent(context, VpnClient::class.java)
@@ -257,5 +267,9 @@ class VpnClient : VpnService() {
                 context.startService(intent)
             }
         }
+    }
+
+    override fun onBind(intent: Intent?): IBinder? {
+        return null
     }
 }

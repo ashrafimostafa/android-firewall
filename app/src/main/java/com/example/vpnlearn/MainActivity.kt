@@ -22,12 +22,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuItemCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.vpnlearn.adapter.ApplicationAdapter
 import com.example.vpnlearn.model.ApplicationDm.Companion.getRules
 import com.example.vpnlearn.policy.DeviceAdmin.getComponentName
+import com.example.vpnlearn.service.State
+import com.example.vpnlearn.service.VpnClient
 import com.example.vpnlearn.service.VpnClient.Companion.reload
 import com.example.vpnlearn.service.VpnClient.Companion.start
 import com.example.vpnlearn.service.VpnClient.Companion.stop
-import com.example.vpnlearn.adapter.ApplicationAdapter
 import com.example.vpnlearn.utility.Util.isWifiActive
 import com.example.vpnlearn.utility.Util.logExtras
 import java.util.concurrent.Executors
@@ -55,7 +57,9 @@ class MainActivity : AppCompatActivity(), OnSharedPreferenceChangeListener {
 
         // On/off switch
         val swEnabled = view.findViewById<Switch>(R.id.swEnabled)
-        swEnabled.isChecked = prefs.getBoolean("enabled", false)
+
+        swEnabled.isChecked = VpnClient.state == State.CONNECTED //woow
+//        swEnabled.isChecked = prefs.getBoolean("enabled", false)
         swEnabled.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {
                 val prepare = VpnService.prepare(this@MainActivity)
@@ -139,24 +143,6 @@ class MainActivity : AppCompatActivity(), OnSharedPreferenceChangeListener {
                 }
             }
         }
-
-        // Get/set application list
-//        new AsyncTask<Object, Object, List<ApplicationDm>>() {
-//            @Override
-//            protected List<ApplicationDm> doInBackground(Object... arg) {
-//                return ApplicationDm.getRules(MainActivity.this);
-//            }
-//
-//            @Override
-//            protected void onPostExecute(List<ApplicationDm> result) {
-//                if (running) {
-//                    if (searchItem != null)
-//                        MenuItemCompat.collapseActionView(searchItem);
-//                    adapter = new ApplicationAdapter(result, MainActivity.this);
-//                    rvApplication.setAdapter(adapter);
-//                }
-//            }
-//        }.execute();
     }
 
     override fun onSharedPreferenceChanged(prefs: SharedPreferences, name: String) {
