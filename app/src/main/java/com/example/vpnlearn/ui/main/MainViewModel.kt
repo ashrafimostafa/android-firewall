@@ -6,16 +6,18 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.example.vpnlearn.data.local.DatabaseService
 import com.example.vpnlearn.data.local.entity.PackageDM
-import com.example.vpnlearn.model.ApplicationDm
+import com.example.vpnlearn.di.qualifire.ApplicationContext
+
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
+@ApplicationContext
 class MainViewModel @Inject constructor(
-    var compositeDisposable: CompositeDisposable,
-    var databaseService: DatabaseService,
-    var context: Context
+    private var compositeDisposable: CompositeDisposable,
+    private var databaseService: DatabaseService,
+    @ApplicationContext private var context: Context
 ) {
 
     companion object {

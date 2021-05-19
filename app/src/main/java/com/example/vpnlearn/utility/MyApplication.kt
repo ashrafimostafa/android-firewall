@@ -3,6 +3,7 @@ package com.example.vpnlearn.utility
 import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.content.Context
 import android.os.Build
 import com.example.vpnlearn.R
 import com.example.vpnlearn.data.local.DatabaseService
@@ -16,7 +17,6 @@ class MyApplication : Application() {
     @Inject
     lateinit var databaseService: DatabaseService
 
-    @Inject
     lateinit var applicationComponent: ApplicationComponent
 
 

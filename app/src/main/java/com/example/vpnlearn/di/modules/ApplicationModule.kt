@@ -11,7 +11,11 @@ import io.reactivex.disposables.CompositeDisposable
 import javax.inject.Singleton
 
 @Module
-class ApplicationModule(val application: MyApplication) {
+class ApplicationModule(private val application: MyApplication) {
+
+    @ApplicationContext
+    @Provides
+    fun provideContext(): Context = application
 
     @Singleton
     @Provides
@@ -23,8 +27,4 @@ class ApplicationModule(val application: MyApplication) {
 
     @Provides
     fun provideCompositeDisposable() = CompositeDisposable()
-
-    @ApplicationContext
-    @Provides
-    fun provideContext(): Context = application
 }
