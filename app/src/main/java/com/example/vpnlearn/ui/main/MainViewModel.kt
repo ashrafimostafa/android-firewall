@@ -26,25 +26,7 @@ class MainViewModel @Inject constructor(
 
     init {
         //todo fetch list of package and save them on database
-//        compositeDisposable.add(
-//            databaseService.packageDao()
-//                .count()
-//                .flatMap {
-//                    if (it == 0) {
-//                        queryPackageList()
-//
-//
-//                    } else {
-//                        Single.just(0)
-//                    }
-//                }.subscribeOn(Schedulers.io())
-//                .subscribe({
-//                    Log.d(TAG, "application exist in table $it")
-//                }, {
-//                    Log.d(TAG, it.message)
-//                })
-//
-//        )
+        queryPackageList()
     }
 
     fun getAllPackages() {
@@ -87,7 +69,6 @@ class MainViewModel @Inject constructor(
                 .count()
                 .flatMap {
                     if (it == 0) {
-
                         databaseService.packageDao()
                             .insertMany(
                                 packageList
@@ -103,6 +84,5 @@ class MainViewModel @Inject constructor(
                 })
 
         )
-
     }
 }
