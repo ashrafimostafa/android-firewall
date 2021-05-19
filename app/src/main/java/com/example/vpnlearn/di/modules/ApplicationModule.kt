@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.example.vpnlearn.data.local.DatabaseService
 import com.example.vpnlearn.di.qualifire.ApplicationContext
-import com.example.vpnlearn.utility.MyApplication
+import com.example.vpnlearn.MyApplication
 import dagger.Module
 import dagger.Provides
 import io.reactivex.disposables.CompositeDisposable

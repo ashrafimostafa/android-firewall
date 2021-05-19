@@ -34,7 +34,7 @@ import com.example.vpnlearn.service.VpnClient
 import com.example.vpnlearn.service.VpnClient.Companion.reload
 import com.example.vpnlearn.service.VpnClient.Companion.start
 import com.example.vpnlearn.service.VpnClient.Companion.stop
-import com.example.vpnlearn.utility.MyApplication
+import com.example.vpnlearn.MyApplication
 import com.example.vpnlearn.utility.Util.isWifiActive
 import com.example.vpnlearn.utility.Util.logExtras
 import java.util.concurrent.Executors

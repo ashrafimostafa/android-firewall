@@ -4,9 +4,8 @@ import android.content.Context
 import com.example.vpnlearn.data.local.DatabaseService
 import com.example.vpnlearn.di.modules.ApplicationModule
 import com.example.vpnlearn.di.qualifire.ApplicationContext
-import com.example.vpnlearn.utility.MyApplication
+import com.example.vpnlearn.MyApplication
 import dagger.Component
-import dagger.Provides
 import io.reactivex.disposables.CompositeDisposable
 import javax.inject.Singleton
 

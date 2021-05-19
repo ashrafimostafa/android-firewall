@@ -1,15 +1,14 @@
-package com.example.vpnlearn.utility
+package com.example.vpnlearn
 
 import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.content.Context
 import android.os.Build
-import com.example.vpnlearn.R
 import com.example.vpnlearn.data.local.DatabaseService
 import com.example.vpnlearn.di.components.ApplicationComponent
 import com.example.vpnlearn.di.components.DaggerApplicationComponent
 import com.example.vpnlearn.di.modules.ApplicationModule
+import com.example.vpnlearn.utility.Constant
 import javax.inject.Inject
 
 class MyApplication : Application() {
