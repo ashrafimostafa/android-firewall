@@ -34,6 +34,7 @@ class MainViewModel(
 
     init {
         //todo fetch list of package and save them on database
+        messageTxt.postValue("salam")
         queryPackageList()
     }
 
@@ -55,6 +56,29 @@ class MainViewModel(
     }
 
     private fun queryPackageList() {
+        compositeDisposable.add(
+            databaseService.packageDao()
+                .count()
+                .flatMap {
+                    if (it == 0) {
+                        databaseService.packageDao()
+                            .insertMany(
+                                fetchAppList()
+                            )
+                    } else {
+                        Single.just(0)
+                    }
+                }.subscribeOn(Schedulers.io())
+                .subscribe({
+                    Log.d(TAG, "application exist in table $it")
+                }, {
+                    Log.d(TAG, it.message)
+                })
+
+        )
+    }
+
+    private fun fetchAppList(): MutableList<PackageDM> {
         val pm = context.packageManager
         val packageList: MutableList<PackageDM> = arrayListOf()
 
@@ -71,28 +95,7 @@ class MainViewModel(
             )
 
         }
-
-        compositeDisposable.add(
-            databaseService.packageDao()
-                .count()
-                .flatMap {
-                    if (it == 0) {
-                        databaseService.packageDao()
-                            .insertMany(
-                                packageList
-                            )
-                    } else {
-                        Single.just(0)
-                    }
-                }.subscribeOn(Schedulers.io())
-                .subscribe({
-                    Log.d(TAG, "application exist in table $it")
-                }, {
-                    Log.d(TAG, it.message)
-                })
-
-        )
+        return packageList
     }
-
 
 }
