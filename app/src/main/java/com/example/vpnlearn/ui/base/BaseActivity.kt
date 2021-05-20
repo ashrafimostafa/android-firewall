@@ -17,9 +17,9 @@ abstract class BaseActivity<VM : BaseViewModel> : AppCompatActivity() {
     @Inject
     lateinit var viewModel: VM
 
-    override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
+    override fun onCreate(savedInstanceState: Bundle?) {
         injectDependencies(buildActivityComponent())
-        super.onCreate(savedInstanceState, persistentState)
+        super.onCreate(savedInstanceState)
         setContentView(provideLayoutId())
         setUpObservers()
         viewModel.onCreate()

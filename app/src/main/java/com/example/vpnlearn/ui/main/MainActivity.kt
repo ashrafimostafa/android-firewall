@@ -42,8 +42,8 @@ import javax.inject.Inject
 
 class MainActivity : AppCompatActivity(), OnSharedPreferenceChangeListener {
 
-    @Inject
-    lateinit var viewModel: MainViewModel
+//    @Inject
+//    lateinit var viewModel: MainViewModel
 
     private var running = false
     private var adapter: ApplicationAdapter? = null
@@ -53,7 +53,7 @@ class MainActivity : AppCompatActivity(), OnSharedPreferenceChangeListener {
     private val mExemptedPackages: EditText? = null
     private var mWho: ComponentName? = null
     override fun onCreate(savedInstanceState: Bundle?) {
-        getDependencies()
+//        getDependencies()
         val prefs = PreferenceManager.getDefaultSharedPreferences(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -111,9 +111,9 @@ class MainActivity : AppCompatActivity(), OnSharedPreferenceChangeListener {
 
 
         ///////////////////////////////////////////////
-        viewModel.packages.observe(this, Observer {
-            Log.i(TAG, "the size of list is: ${it.size}")
-        })
+//        viewModel.packages.observe(this, Observer {
+//            Log.i(TAG, "the size of list is: ${it.size}")
+//        })
         ///////////////////////////////////////////////
     }
 
@@ -125,7 +125,7 @@ class MainActivity : AppCompatActivity(), OnSharedPreferenceChangeListener {
         unregisterReceiver(connectivityChangedReceiver)
         unregisterReceiver(packageChangedReceiver)
         super.onDestroy()
-        viewModel.onDestroy()
+//        viewModel.onDestroy()
     }
 
     private val connectivityChangedReceiver: BroadcastReceiver = object : BroadcastReceiver() {
@@ -310,19 +310,19 @@ class MainActivity : AppCompatActivity(), OnSharedPreferenceChangeListener {
     }
 
 
-    private fun getDependencies() {
-        DaggerActivityComponent
-            .builder()
-            .applicationComponent((application as MyApplication).applicationComponent)
-            .activityModule(ActivityModule(this))
-            .build()
-            .inject(this)
-
-
-    }
+//    private fun getDependencies() {
+//        DaggerActivityComponent
+//            .builder()
+//            .applicationComponent((application as MyApplication).applicationComponent)
+//            .activityModule(ActivityModule(this))
+//            .build()
+//            .inject(this)
+//
+//
+//    }
 
     override fun onStart() {
         super.onStart()
-        viewModel.getAllPackages()
+//        viewModel.getAllPackages()
     }
 }

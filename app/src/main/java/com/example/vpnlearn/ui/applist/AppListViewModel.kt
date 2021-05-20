@@ -1,4 +1,4 @@
-package com.example.vpnlearn.ui.main
+package com.example.vpnlearn.ui.applist
 
 import android.content.Context
 import android.content.pm.ApplicationInfo
@@ -6,52 +6,28 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.example.vpnlearn.data.local.DatabaseService
 import com.example.vpnlearn.data.local.entity.PackageDM
-import com.example.vpnlearn.di.qualifire.ApplicationContext
 import com.example.vpnlearn.ui.base.BaseViewModel
-
+import com.example.vpnlearn.ui.main.MainViewModel
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
-import javax.inject.Inject
 
-
-class MainViewModel(
+class AppListViewModel(
     compositeDisposable: CompositeDisposable,
     private var databaseService: DatabaseService,
     private var context: Context
 ) : BaseViewModel(compositeDisposable) {
 
     companion object {
-        var TAG = "NetBlocker.MainViewModel"
+        var TAG = "NetBlocker.AppListViewModel"
     }
 
 
+    var data = MutableLiveData<String>()
     override fun onCreate() {
+        messageTxt.postValue("tooooooooooast")
         queryPackageList()
-    }
-
-    val packages = MutableLiveData<List<PackageDM>>()
-
-    init {
-        //todo fetch list of package and save them on database
-        queryPackageList()
-    }
-
-    fun getAllPackages() {
-        compositeDisposable.add(
-            databaseService.packageDao()
-                .getAllApplication()
-                .subscribeOn(Schedulers.io())
-                .subscribe({
-                    packages.postValue(it)
-                }, {
-                    Log.d(TAG, it.message)
-                })
-        )
-    }
-
-    fun onDestroy() {
-        compositeDisposable.dispose()
+        data.postValue("Salam man applist viewmodel hastam")
     }
 
     private fun queryPackageList() {
@@ -93,6 +69,4 @@ class MainViewModel(
 
         )
     }
-
-
 }

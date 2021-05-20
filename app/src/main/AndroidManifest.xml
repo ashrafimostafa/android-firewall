@@ -14,13 +14,16 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.VpnLearn">
-
-        <activity android:name=".ui.main.MainActivity">
+        <activity android:name=".ui.applist.AppListActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+
+        <activity android:name=".ui.main.MainActivity">
+
         </activity>
 
         <service
@@ -37,7 +40,6 @@
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
             </intent-filter>
         </receiver>
-
         <receiver
             android:name=".policy.DeviceAdmin"
             android:description="@string/app_name"
@@ -58,8 +60,8 @@
                 <action android:name="android.app.action.DEVICE_OWNER_CHANGED" />
             </intent-filter>
         </receiver>
-
-        <receiver android:name=".receiver.StartUpReceiver"
+        <receiver
+            android:name=".receiver.StartUpReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter android:priority="999">
@@ -67,8 +69,6 @@
                 <action android:name="android.intent.action.QUICKBOOT_POWERON" />
             </intent-filter>
         </receiver>
-
-
     </application>
 
 </manifest>
