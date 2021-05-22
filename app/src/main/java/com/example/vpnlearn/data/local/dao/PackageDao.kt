@@ -24,7 +24,7 @@ interface PackageDao {
     fun insertMany(packageDMS: MutableList<PackageDM>): Single<List<Long>>
 
 
-    @Query("SELECT * FROM package")
+    @Query("SELECT * FROM package LIMIT 10")
     fun getAllApplication(): Single<List<PackageDM>>
 
     @Query("SELECT * FROM package WHERE ID = :id LIMIT 1")
@@ -32,4 +32,12 @@ interface PackageDao {
 
     @Query("SELECT COUNT(*) FROM package")
     fun count(): Single<Int>
+
+    @Query("UPDATE package SET is_wifi_disabled = :isChecked WHERE id = :id")
+    fun updateWifi(isChecked: Boolean, id: Long) : Single<Int>
+
+    @Query("UPDATE package SET is_other_disabled = :isChecked WHERE id = :id")
+    fun updateOther(isChecked: Boolean, id: Long) : Single<Int>
+
+
 }

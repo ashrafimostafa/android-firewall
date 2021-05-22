@@ -50,25 +50,28 @@ class ProvideAppList @Inject constructor(
         for (pkg in packageList) {
             appList.add(
                 Application(
+                    id = pkg.id,
                     appName = pkg.appName,
                     packageName = pkg.packageName,
-                    icon = pkg.icon,
+                    icon = context.packageManager.getApplicationIcon(pkg.packageName),
                     isSystemApp = pkg.isSystemApp,
                     isOtherDisabled = pkg.isOtherDisabled,
                     isWifiDisabled = pkg.isWifiDisabled
+
                 )
             )
         }
     }
 
-    fun convertDbTpModel(packageList: List<PackageDM>):MutableList<Application>  {
+    fun convertDbTpModel(packageList: List<PackageDM>): MutableList<Application> {
         val appList: MutableList<Application> = arrayListOf()
         for (pkg in packageList) {
             appList.add(
                 Application(
+                    id = pkg.id,
                     appName = pkg.appName,
                     packageName = pkg.packageName,
-                    icon = pkg.icon,
+                    icon = context.packageManager.getApplicationIcon(pkg.packageName),
                     isSystemApp = pkg.isSystemApp,
                     isOtherDisabled = pkg.isOtherDisabled,
                     isWifiDisabled = pkg.isWifiDisabled

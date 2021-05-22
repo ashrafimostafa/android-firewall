@@ -1,5 +1,6 @@
 package com.example.vpnlearn.ui.applist
 
+import android.opengl.Visibility
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -46,6 +47,7 @@ class AppListFragment : BaseFragment<AppListViewModel>() {
             adapter = applicationAdapter
             layoutManager = linearLayoutManager
         }
+        app_list_progress.visibility = View.GONE
     }
 
     override fun setUpObservers() {
