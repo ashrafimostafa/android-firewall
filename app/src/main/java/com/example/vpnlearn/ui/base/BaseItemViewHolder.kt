@@ -31,9 +31,7 @@ abstract class BaseItemViewHolder<T : Any, VM : BaseItemViewModel<T>>(
         onCreate()
     }
 
-    override fun getLifecycle(): Lifecycle {
-        TODO("Not yet implemented")
-    }
+    override fun getLifecycle(): Lifecycle = lifecycleRegistry
 
     @Inject
     lateinit var viewModel: VM

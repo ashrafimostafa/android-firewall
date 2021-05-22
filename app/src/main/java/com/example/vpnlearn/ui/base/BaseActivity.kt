@@ -22,6 +22,7 @@ abstract class BaseActivity<VM : BaseViewModel> : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(provideLayoutId())
         setUpObservers()
+        setUpViews(savedInstanceState)
         viewModel.onCreate()
     }
 

@@ -5,8 +5,7 @@ import com.example.vpnlearn.data.local.DatabaseService
 import io.reactivex.disposables.CompositeDisposable
 
 abstract class BaseItemViewModel<T : Any>(
-    compositeDisposable: CompositeDisposable,
-    databaseService: DatabaseService
+    compositeDisposable: CompositeDisposable
 ) : BaseViewModel(compositeDisposable) {
 
     val date = MutableLiveData<T>()

@@ -18,7 +18,4 @@ interface ActivityComponent {
 
     fun inject(activity: AppListActivity)
 
-    @ActivityContext
-    fun getContext(): Context
-
 }

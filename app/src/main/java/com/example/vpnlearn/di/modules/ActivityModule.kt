@@ -31,13 +31,4 @@ class ActivityModule(private val activity: BaseActivity<*>) {
             MainViewModel(compositeDisposable, databaseService, context)
         }).get(MainViewModel::class.java)
 
-    @Provides
-    fun provideAppListViewModel(
-        compositeDisposable: CompositeDisposable,
-        databaseService: DatabaseService,
-        @ApplicationContext context: Context
-    ): AppListViewModel = ViewModelProvider(
-        activity, ViewModelProviderFactory(AppListViewModel::class) {
-            AppListViewModel(compositeDisposable, databaseService, context)
-        }).get(AppListViewModel::class.java)
 }

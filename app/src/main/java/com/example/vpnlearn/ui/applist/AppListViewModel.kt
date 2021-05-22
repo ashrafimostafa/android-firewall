@@ -1,26 +1,27 @@
 package com.example.vpnlearn.ui.applist
 
-import android.content.Context
-import android.content.pm.ApplicationInfo
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.example.vpnlearn.data.local.DatabaseService
 import com.example.vpnlearn.data.local.entity.PackageDM
 import com.example.vpnlearn.di.qualifire.ApplicationContext
+import com.example.vpnlearn.ui.applist.app.Application
 import com.example.vpnlearn.ui.base.BaseViewModel
-import com.example.vpnlearn.ui.main.MainViewModel
+import com.example.vpnlearn.utility.ProvideAppList
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import javax.inject.Inject
 
-@ApplicationContext
-class AppListViewModel(
+class AppListViewModel @Inject constructor(
     compositeDisposable: CompositeDisposable,
     private var databaseService: DatabaseService,
-    private var context: Context
+    private var provideAppList: ProvideAppList
 ) : BaseViewModel(compositeDisposable) {
 
-    val packages = MutableLiveData<List<PackageDM>>()
+
+    val packageLiveData = MutableLiveData<List<Application>>()
+
 
     companion object {
         var TAG = "NetBlocker.AppListViewModel"
@@ -42,13 +43,14 @@ class AppListViewModel(
                     if (it == 0) {
                         databaseService.packageDao()
                             .insertMany(
-                                fetchAppList()
+                                provideAppList.fetchAppList()
                             )
                     } else {
-                        Single.just(0)
+                        databaseService.packageDao().getAllApplication()
                     }
                 }.subscribeOn(Schedulers.io())
                 .subscribe({
+                    packageLiveData.postValue(provideAppList.convertDbTpModel(it as List<PackageDM>))
                     Log.d(TAG, "application exist in table $it")
                 }, {
                     Log.d(TAG, it.message)
@@ -57,23 +59,5 @@ class AppListViewModel(
         )
     }
 
-    private fun fetchAppList(): MutableList<PackageDM> {
-        val pm = context.packageManager
-        val packageList: MutableList<PackageDM> = arrayListOf()
 
-        for (info in context.packageManager.getInstalledPackages(0)) {
-            packageList.add(
-                PackageDM(
-                    appName = info.applicationInfo.loadLabel(pm).toString(),
-                    packageName = info.packageName,
-                    icon = "icon",
-                    isSystemApp = info.applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM != 0,
-                    isOtherDisabled = true,
-                    isWifiDisabled = true
-                )
-            )
-
-        }
-        return packageList
-    }
 }

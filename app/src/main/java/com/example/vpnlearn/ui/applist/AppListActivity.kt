@@ -1,13 +1,10 @@
 package com.example.vpnlearn.ui.applist
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
 import com.example.vpnlearn.R
 import com.example.vpnlearn.di.components.ActivityComponent
 import com.example.vpnlearn.ui.base.BaseActivity
-import com.example.vpnlearn.utility.Util
 
 class AppListActivity : BaseActivity<AppListViewModel>() {
 
@@ -21,18 +18,28 @@ class AppListActivity : BaseActivity<AppListViewModel>() {
         activityComponent.inject(this)
 
     override fun setUpViews(saveInstanceId: Bundle?) {
-        TODO("Not yet implemented")
+        addAppListFragment()
     }
 
 
     override fun setUpObservers() {
         Log.i(TAG, "hewreee")
         super.setUpObservers()
-        viewModel.data.observe(this,
-            {
-                Log.i(TAG, it)
-            }
-        )
+//        viewModel.data.observe(this,
+//            {
+//                Log.i(TAG, it)
+//            }
+//        )
+    }
+
+    private fun addAppListFragment() {
+        if (supportFragmentManager.findFragmentByTag(TAG) == null) {
+            supportFragmentManager
+                .beginTransaction()
+                .add(R.id.all_list_main_frame, AppListFragment.newInstance(), TAG)
+                .commit()
+            Log.i(TAG, "fragment inserted")
+        }
     }
 
 
