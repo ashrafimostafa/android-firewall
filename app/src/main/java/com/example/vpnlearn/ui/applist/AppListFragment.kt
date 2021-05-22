@@ -47,13 +47,14 @@ class AppListFragment : BaseFragment<AppListViewModel>() {
             adapter = applicationAdapter
             layoutManager = linearLayoutManager
         }
-        app_list_progress.visibility = View.GONE
+
     }
 
     override fun setUpObservers() {
         super.setUpObservers()
         viewModel.packageLiveData.observe(this, Observer {
             applicationAdapter.appendDate(it)
+            app_list_progress.visibility = View.GONE
         })
     }
 }

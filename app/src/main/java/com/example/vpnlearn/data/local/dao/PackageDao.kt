@@ -24,7 +24,7 @@ interface PackageDao {
     fun insertMany(packageDMS: MutableList<PackageDM>): Single<List<Long>>
 
 
-    @Query("SELECT * FROM package LIMIT 10")
+    @Query("SELECT * FROM package LIMIT 50")
     fun getAllApplication(): Single<List<PackageDM>>
 
     @Query("SELECT * FROM package WHERE ID = :id LIMIT 1")
