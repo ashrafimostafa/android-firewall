@@ -48,7 +48,10 @@ class AppListViewModel @Inject constructor(
                     } else {
                         databaseService.packageDao().getAllApplication()
                     }
-                }.subscribeOn(Schedulers.io())
+                }.flatMap {
+                    databaseService.packageDao().getAllApplication()
+                }
+                .subscribeOn(Schedulers.io())
                 .subscribe({
                     packageLiveData.postValue(provideAppList.convertDbTpModel(it as List<PackageDM>))
                     Log.d(TAG, "application exist in table $it")

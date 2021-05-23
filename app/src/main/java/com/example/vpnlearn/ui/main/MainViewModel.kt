@@ -27,75 +27,19 @@ class MainViewModel(
 
 
     override fun onCreate() {
-//        queryPackageList()
+
     }
 
     val packages = MutableLiveData<List<PackageDM>>()
 
     init {
-        //todo fetch list of package and save them on database
         messageTxt.postValue("salam")
-//        queryPackageList()
     }
 
-    fun getAllPackages() {
-        compositeDisposable.add(
-            databaseService.packageDao()
-                .getAllApplication()
-                .subscribeOn(Schedulers.io())
-                .subscribe({
-                    packages.postValue(it)
-                }, {
-                    Log.d(TAG, it.message)
-                })
-        )
-    }
 
     fun onDestroy() {
         compositeDisposable.dispose()
     }
 
-    private fun queryPackageList() {
-        compositeDisposable.add(
-            databaseService.packageDao()
-                .count()
-                .flatMap {
-                    if (it == 0) {
-                        databaseService.packageDao()
-                            .insertMany(
-                                fetchAppList()
-                            )
-                    } else {
-                        Single.just(0)
-                    }
-                }.subscribeOn(Schedulers.io())
-                .subscribe({
-                    Log.d(TAG, "application exist in table $it")
-                }, {
-                    Log.d(TAG, it.message)
-                })
-
-        )
-    }
-
-    private fun fetchAppList(): MutableList<PackageDM> {
-        val pm = context.packageManager
-        val packageList: MutableList<PackageDM> = arrayListOf()
-
-        for (info in context.packageManager.getInstalledPackages(0)) {
-            packageList.add(
-                PackageDM(
-                    appName = info.applicationInfo.loadLabel(pm).toString(),
-                    packageName = info.packageName,
-                    icon = "icon",
-                    isSystemApp = info.applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM != 0,
-                    isOtherDisabled = true,
-                    isWifiDisabled = true
-                )
-            )
-
-        }
-        return packageList
-    }
 
 }
