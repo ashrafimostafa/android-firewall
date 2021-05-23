@@ -34,10 +34,21 @@ interface PackageDao {
     fun count(): Single<Int>
 
     @Query("UPDATE package SET is_wifi_disabled = :isChecked WHERE id = :id")
-    fun updateWifi(isChecked: Boolean, id: Long) : Single<Int>
+    fun updateWifi(isChecked: Boolean, id: Long): Single<Int>
 
     @Query("UPDATE package SET is_other_disabled = :isChecked WHERE id = :id")
-    fun updateOther(isChecked: Boolean, id: Long) : Single<Int>
+    fun updateOther(isChecked: Boolean, id: Long): Single<Int>
 
+    @Query("UPDATE package SET is_wifi_disabled = 0")
+    fun disableAllWifi(): Single<Int>
+
+    @Query("UPDATE package SET is_other_disabled = 0")
+    fun disableAllOther(): Single<Int>
+
+    @Query("UPDATE package SET is_wifi_disabled = 1")
+    fun enableAllWifi(): Single<Int>
+
+    @Query("UPDATE package SET is_other_disabled = 1")
+    fun enableAllOther(): Single<Int>
 
 }

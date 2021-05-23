@@ -1,5 +1,6 @@
 package com.example.vpnlearn.ui.applist
 
+import android.content.Intent
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.example.vpnlearn.data.local.DatabaseService
@@ -28,11 +29,9 @@ class AppListViewModel @Inject constructor(
     }
 
 
-    var data = MutableLiveData<String>()
     override fun onCreate() {
-        messageTxt.postValue("salam")
+        messageTxt.postValue("Salam")
         queryPackageList()
-        data.postValue("Salam man applist viewmodel hastam")
     }
 
     private fun queryPackageList() {
@@ -59,6 +58,70 @@ class AppListViewModel @Inject constructor(
                     Log.d(TAG, it.message)
                 })
 
+        )
+    }
+
+    fun refreshList() {
+        queryPackageList()
+    }
+
+    fun disableWifi() {
+        compositeDisposable.add(
+            databaseService
+                .packageDao()
+                .disableAllWifi()
+                .flatMap { databaseService.packageDao().getAllApplication() }
+                .subscribeOn(Schedulers.io())
+                .subscribe({
+                    packageLiveData.postValue(provideAppList.convertDbTpModel(it as List<PackageDM>))
+                }, {
+                    Log.d(TAG, it.message)
+                })
+        )
+    }
+
+    fun disableOther() {
+        compositeDisposable.add(
+            databaseService
+                .packageDao()
+                .disableAllOther()
+                .flatMap { databaseService.packageDao().getAllApplication() }
+                .subscribeOn(Schedulers.io())
+                .subscribe({
+                    packageLiveData.postValue(provideAppList.convertDbTpModel(it as List<PackageDM>))
+                }, {
+                    Log.d(TAG, it.message)
+                })
+        )
+    }
+
+    fun enableWifi() {
+        compositeDisposable.add(
+            databaseService
+                .packageDao()
+                .enableAllWifi()
+                .flatMap { databaseService.packageDao().getAllApplication() }
+                .subscribeOn(Schedulers.io())
+                .subscribe({
+                    packageLiveData.postValue(provideAppList.convertDbTpModel(it as List<PackageDM>))
+                }, {
+                    Log.d(TAG, it.message)
+                })
+        )
+    }
+
+    fun enableOther() {
+        compositeDisposable.add(
+            databaseService
+                .packageDao()
+                .enableAllOther()
+                .flatMap { databaseService.packageDao().getAllApplication() }
+                .subscribeOn(Schedulers.io())
+                .subscribe({
+                    packageLiveData.postValue(provideAppList.convertDbTpModel(it as List<PackageDM>))
+                }, {
+                    Log.d(TAG, it.message)
+                })
         )
     }
 

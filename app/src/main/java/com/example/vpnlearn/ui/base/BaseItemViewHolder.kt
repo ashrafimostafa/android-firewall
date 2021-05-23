@@ -31,13 +31,14 @@ abstract class BaseItemViewHolder<T : Any, VM : BaseItemViewModel<T>>(
         onCreate()
     }
 
-    override fun getLifecycle(): Lifecycle = lifecycleRegistry
-
     @Inject
     lateinit var viewModel: VM
 
     @Inject
     lateinit var lifecycleRegistry: LifecycleRegistry
+
+    override fun getLifecycle(): Lifecycle = lifecycleRegistry
+
 
     open fun bind(data: T) {
         viewModel.updatedData(data)
@@ -52,17 +53,17 @@ abstract class BaseItemViewHolder<T : Any, VM : BaseItemViewModel<T>>(
         setUpViews(itemView)
     }
 
-     fun onStart() {
+    fun onStart() {
         lifecycleRegistry.markState(Lifecycle.State.STARTED)
         lifecycleRegistry.markState(Lifecycle.State.RESUMED)
     }
 
-     fun onStop() {
+    fun onStop() {
         lifecycleRegistry.markState(Lifecycle.State.STARTED)
         lifecycleRegistry.markState(Lifecycle.State.CREATED)
     }
 
-     fun onDestroy() {
+    fun onDestroy() {
         lifecycleRegistry.markState(Lifecycle.State.DESTROYED)
     }
 

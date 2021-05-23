@@ -1,24 +1,33 @@
 package com.example.vpnlearn.ui.applist
 
-import android.opengl.Visibility
+import android.content.Intent
+import android.net.VpnService
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.preference.PreferenceManager
+import android.provider.Settings
+import android.view.*
+import android.widget.Switch
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.MenuItemCompat
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.vpnlearn.R
 import com.example.vpnlearn.di.components.FragmentComponent
+import com.example.vpnlearn.service.VpnClient
 import com.example.vpnlearn.ui.applist.app.ApplicationAdapter
 import com.example.vpnlearn.ui.base.BaseFragment
+import com.example.vpnlearn.ui.main.MainActivity
 import kotlinx.android.synthetic.main.fragment_app_list.*
 import javax.inject.Inject
+
 
 class AppListFragment : BaseFragment<AppListViewModel>() {
 
     companion object {
         val TAG = "NetBlocker.AppListFragment"
+        private const val REQUEST_VPN = 1
+        private val VPN_INTENT = Intent(VpnService.SERVICE_INTERFACE)
 
         fun newInstance(): AppListFragment {
             val args = Bundle()
@@ -28,12 +37,16 @@ class AppListFragment : BaseFragment<AppListViewModel>() {
         }
     }
 
+    private lateinit var toggleService: MenuItem
+
     @Inject
     lateinit var linearLayoutManager: LinearLayoutManager
 
     @Inject
     lateinit var applicationAdapter: ApplicationAdapter
 
+    @Inject
+    lateinit var vpnClient: VpnClient
 
     override fun provideLayoutId() = R.layout.fragment_app_list
 
@@ -48,7 +61,87 @@ class AppListFragment : BaseFragment<AppListViewModel>() {
             layoutManager = linearLayoutManager
         }
 
+        setHasOptionsMenu(true)
+
     }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.main_menu, menu)
+
+        toggleService = menu.findItem(R.id.menu_vpn_enable)
+        val actionView = MenuItemCompat.getActionView(toggleService) as Switch
+
+
+        actionView.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                val prepare = VpnService.prepare(context)
+                if (prepare == null) {
+                    //user already grant vpn permission
+                    onActivityResult(REQUEST_VPN, AppCompatActivity.RESULT_OK, null)
+                } else {
+                    try {
+                        //system show vpn connection allow dialog
+                        startActivityForResult(prepare, REQUEST_VPN)
+                    } catch (ex: Throwable) {
+                        onActivityResult(
+                            REQUEST_VPN,
+                            AppCompatActivity.RESULT_CANCELED, null
+                        )
+                        Toast.makeText(context, ex.toString(), Toast.LENGTH_LONG).show()
+                    }
+                }
+            } else {
+                vpnClient.stop()
+            }
+        }
+
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.menu_network_setting -> {
+                openSettingMenu()
+                true
+            }
+            R.id.menu_refresh_app_list -> {
+                viewModel.refreshList()
+                app_list_progress.visibility = View.VISIBLE
+                true
+            }
+            R.id.menu_block_wifi -> {
+                viewModel.disableWifi()
+                app_list_progress.visibility = View.VISIBLE
+//                VpnClient.reload("wifi", this) todo complete here
+                true
+            }
+            R.id.menu_block_other -> {
+                viewModel.disableOther()
+                app_list_progress.visibility = View.VISIBLE
+//                fillApplicationList()
+//                VpnClient.reload("other", this) todo complete here
+                true
+            }
+            R.id.menu_reset_wifi -> {
+                viewModel.enableWifi()
+                app_list_progress.visibility = View.VISIBLE
+//              VpnClient.reload("wifi", this) todo complete here
+                true
+            }
+            R.id.menu_reset_other -> {
+                viewModel.enableOther()
+                app_list_progress.visibility = View.VISIBLE
+//              VpnClient.reload("other", this) todo complete here
+                true
+            }
+            R.id.menu_vpn_enable -> {
+
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+
+    }
+
 
     override fun setUpObservers() {
         super.setUpObservers()
@@ -56,5 +149,23 @@ class AppListFragment : BaseFragment<AppListViewModel>() {
             applicationAdapter.appendDate(it)
             app_list_progress.visibility = View.GONE
         })
+    }
+
+    private fun openSettingMenu() {
+        startActivity(
+            Intent(Settings.ACTION_WIRELESS_SETTINGS)
+        )
+    }
+
+    private fun reset(network: String) {
+        vpnClient.reload(network)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == REQUEST_VPN) {
+
+            // Start service
+            if (resultCode == AppCompatActivity.RESULT_OK) vpnClient.start()
+        } else super.onActivityResult(requestCode, resultCode, data)
     }
 }

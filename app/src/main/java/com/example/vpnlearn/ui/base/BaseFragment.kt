@@ -1,5 +1,6 @@
 package com.example.vpnlearn.ui.base
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -68,6 +69,4 @@ abstract class BaseFragment<VM : BaseViewModel> : Fragment() {
             .applicationComponent((context!!.applicationContext as MyApplication).applicationComponent)
             .fragmentModule(FragmentModule(this))
             .build()
-
-
 }

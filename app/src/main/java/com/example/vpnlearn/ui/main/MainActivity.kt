@@ -20,25 +20,20 @@ import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuItemCompat
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.vpnlearn.R
 import com.example.vpnlearn.adapter.ApplicationAdapter
-import com.example.vpnlearn.di.components.DaggerActivityComponent
-import com.example.vpnlearn.di.modules.ActivityModule
 import com.example.vpnlearn.model.ApplicationDm.Companion.getRules
 import com.example.vpnlearn.policy.DeviceAdmin.getComponentName
 import com.example.vpnlearn.service.State
-import com.example.vpnlearn.service.VpnClient
-import com.example.vpnlearn.service.VpnClient.Companion.reload
-import com.example.vpnlearn.service.VpnClient.Companion.start
-import com.example.vpnlearn.service.VpnClient.Companion.stop
-import com.example.vpnlearn.MyApplication
+import com.example.vpnlearn.service.VpnClient1
+import com.example.vpnlearn.service.VpnClient1.Companion.reload
+import com.example.vpnlearn.service.VpnClient1.Companion.start
+import com.example.vpnlearn.service.VpnClient1.Companion.stop
 import com.example.vpnlearn.utility.Util.isWifiActive
 import com.example.vpnlearn.utility.Util.logExtras
 import java.util.concurrent.Executors
-import javax.inject.Inject
 
 class MainActivity : AppCompatActivity(), OnSharedPreferenceChangeListener {
 
@@ -62,14 +57,14 @@ class MainActivity : AppCompatActivity(), OnSharedPreferenceChangeListener {
 
 
         // Action bar
-        val view = layoutInflater.inflate(R.layout.main_actionbar, null)
+        val view = layoutInflater.inflate(R.layout.main_switch, null)
         supportActionBar!!.setDisplayShowCustomEnabled(true)
         supportActionBar!!.customView = view
 
         // On/off switch
-        val swEnabled = view.findViewById<Switch>(R.id.swEnabled)
+        val swEnabled = view.findViewById<Switch>(R.id.vpn_enable_sw)
 
-        swEnabled.isChecked = VpnClient.state == State.CONNECTED //woow
+        swEnabled.isChecked = VpnClient1.state == State.CONNECTED //woow
 //        swEnabled.isChecked = prefs.getBoolean("enabled", false)
         swEnabled.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {
@@ -171,14 +166,14 @@ class MainActivity : AppCompatActivity(), OnSharedPreferenceChangeListener {
             val enabled = prefs.getBoolean(name, false)
 
             // Check switch state
-            val swEnabled = supportActionBar!!.customView.findViewById<Switch>(R.id.swEnabled)
+            val swEnabled = supportActionBar!!.customView.findViewById<Switch>(R.id.vpn_enable_sw)
             if (swEnabled.isChecked != enabled) swEnabled.isChecked = enabled
         }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val inflater = menuInflater
-        inflater.inflate(R.menu.main, menu)
+        inflater.inflate(R.menu.main_menu, menu)
 
         // Search
         searchItem = menu.findItem(R.id.menu_search)
@@ -203,11 +198,11 @@ class MainActivity : AppCompatActivity(), OnSharedPreferenceChangeListener {
 
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {
         val prefs = PreferenceManager.getDefaultSharedPreferences(this)
-        val network = menu.findItem(R.id.menu_network)
+        val network = menu.findItem(R.id.menu_network_setting)
         network.setIcon(if (isWifiActive(this)) R.drawable.wifi else R.drawable.other)
-        val wifi = menu.findItem(R.id.menu_whitelist_wifi)
+        val wifi = menu.findItem(R.id.menu_block_wifi)
         wifi.isChecked = prefs.getBoolean("whitelist_wifi", true)
-        val other = menu.findItem(R.id.menu_whitelist_other)
+        val other = menu.findItem(R.id.menu_block_other)
         other.isChecked = prefs.getBoolean("whitelist_other", true)
         return super.onPrepareOptionsMenu(menu)
     }
@@ -215,7 +210,7 @@ class MainActivity : AppCompatActivity(), OnSharedPreferenceChangeListener {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val prefs = PreferenceManager.getDefaultSharedPreferences(this)
         return when (item.itemId) {
-            R.id.menu_network -> {
+            R.id.menu_network_setting -> {
                 val settings =
                     Intent(if (isWifiActive(this)) Settings.ACTION_WIFI_SETTINGS else Settings.ACTION_WIRELESS_SETTINGS)
                 if (settings.resolveActivity(packageManager) != null) startActivity(settings) else Log.w(
@@ -224,18 +219,18 @@ class MainActivity : AppCompatActivity(), OnSharedPreferenceChangeListener {
                 )
                 true
             }
-            R.id.menu_refresh -> {
+            R.id.menu_refresh_app_list -> {
                 fillApplicationList()
                 true
             }
-            R.id.menu_whitelist_wifi -> {
+            R.id.menu_block_wifi -> {
                 prefs.edit().putBoolean("whitelist_wifi", !prefs.getBoolean("whitelist_wifi", true))
                     .apply()
                 fillApplicationList()
                 reload("wifi", this)
                 true
             }
-            R.id.menu_whitelist_other -> {
+            R.id.menu_block_other -> {
                 prefs.edit()
                     .putBoolean("whitelist_other", !prefs.getBoolean("whitelist_other", true))
                     .apply()
@@ -245,7 +240,7 @@ class MainActivity : AppCompatActivity(), OnSharedPreferenceChangeListener {
             }
             R.id.menu_reset_wifi -> {
                 AlertDialog.Builder(this)
-                    .setMessage(R.string.msg_sure)
+                    .setMessage(R.string.sure_message)
                     .setPositiveButton(android.R.string.yes) { dialog, which -> reset("wifi") }
                     .setNegativeButton(android.R.string.no, null)
                     .show()
@@ -253,7 +248,7 @@ class MainActivity : AppCompatActivity(), OnSharedPreferenceChangeListener {
             }
             R.id.menu_reset_other -> {
                 AlertDialog.Builder(this)
-                    .setMessage(R.string.msg_sure)
+                    .setMessage(R.string.sure_message)
                     .setPositiveButton(android.R.string.yes) { dialog, which -> reset("other") }
                     .setNegativeButton(android.R.string.no, null)
                     .show()

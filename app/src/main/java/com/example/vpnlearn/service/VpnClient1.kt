@@ -13,19 +13,14 @@ import android.widget.Toast
 import androidx.core.app.TaskStackBuilder
 import com.example.vpnlearn.ui.main.MainActivity
 import com.example.vpnlearn.R
-import com.example.vpnlearn.di.qualifire.ApplicationContext
 import com.example.vpnlearn.ui.applist.AppListActivity
 import com.example.vpnlearn.utility.Constant
 import com.example.vpnlearn.utility.Util.isWifiActive
 import com.example.vpnlearn.utility.Util.logExtras
 import com.example.vpnlearn.utility.Util.toast
 import java.io.IOException
-import javax.inject.Inject
-import javax.inject.Singleton
 
-class VpnClient @Inject constructor(
-    @ApplicationContext val context: Context
-) : VpnService() {
+class VpnClient1 : VpnService() {
     private var vpn: ParcelFileDescriptor? = null
 
     private val mConfigureIntent: PendingIntent? = null
@@ -149,14 +144,14 @@ class VpnClient @Inject constructor(
                     ConnectivityManager.EXTRA_NETWORK_TYPE,
                     ConnectivityManager.TYPE_DUMMY
                 ) == ConnectivityManager.TYPE_WIFI
-            ) reload(null)
+            ) reload(null, this@VpnClient1)
         }
     }
     private val packageAddedReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             Log.i(TAG, "Received $intent")
             logExtras(TAG, intent)
-            reload(null)
+            reload(null, this@VpnClient1)
         }
     }
 
@@ -221,26 +216,11 @@ class VpnClient @Inject constructor(
         private const val TAG = "NetBlocker.Service"
         private const val EXTRA_COMMAND = "Command"
         var state: State = State.NOUN
-    }
 
-
-    fun start() {
-        val intent = Intent(context, VpnClient::class.java)
-        intent.putExtra(EXTRA_COMMAND, Command.start)
-        //        context.startService(intent);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            context.startForegroundService(intent)
-        } else {
-            context.startService(intent)
-        }
-    }
-
-    fun reload(network: String?) {
-        if (network == null ||
-            (if ("wifi" == network) isWifiActive(context) else !isWifiActive(context))
-        ) {
-            val intent = Intent(context, VpnClient::class.java)
-            intent.putExtra(EXTRA_COMMAND, Command.reload)
+        @JvmStatic
+        fun start(context: Context) {
+            val intent = Intent(context, VpnClient1::class.java)
+            intent.putExtra(EXTRA_COMMAND, Command.start)
             //        context.startService(intent);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 context.startForegroundService(intent)
@@ -248,16 +228,34 @@ class VpnClient @Inject constructor(
                 context.startService(intent)
             }
         }
-    }
 
-    fun stop() {
-        val intent = Intent(context, VpnClient::class.java)
-        intent.putExtra(EXTRA_COMMAND, Command.stop)
-        //        context.startService(intent);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            context.startForegroundService(intent)
-        } else {
-            context.startService(intent)
+        @JvmStatic
+        fun reload(network: String?, context: Context) {
+            if (network == null || (if ("wifi" == network) isWifiActive(context) else !isWifiActive(
+                    context
+                ))
+            ) {
+                val intent = Intent(context, VpnClient1::class.java)
+                intent.putExtra(EXTRA_COMMAND, Command.reload)
+                //        context.startService(intent);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    context.startForegroundService(intent)
+                } else {
+                    context.startService(intent)
+                }
+            }
+        }
+
+        @JvmStatic
+        fun stop(context: Context) {
+            val intent = Intent(context, VpnClient1::class.java)
+            intent.putExtra(EXTRA_COMMAND, Command.stop)
+            //        context.startService(intent);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                context.startForegroundService(intent)
+            } else {
+                context.startService(intent)
+            }
         }
     }
 

@@ -23,13 +23,7 @@ class AppListActivity : BaseActivity<AppListViewModel>() {
 
 
     override fun setUpObservers() {
-        Log.i(TAG, "hewreee")
         super.setUpObservers()
-//        viewModel.data.observe(this,
-//            {
-//                Log.i(TAG, it)
-//            }
-//        )
     }
 
     private fun addAppListFragment() {
@@ -38,7 +32,6 @@ class AppListActivity : BaseActivity<AppListViewModel>() {
                 .beginTransaction()
                 .add(R.id.all_list_main_frame, AppListFragment.newInstance(), TAG)
                 .commit()
-            Log.i(TAG, "fragment inserted")
         }
     }
 

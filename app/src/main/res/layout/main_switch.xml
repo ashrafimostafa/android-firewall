@@ -3,10 +3,9 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal">
 
-    <Switch
-        android:id="@+id/swEnabled"
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/vpn_enable_sw"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="12dp" />
+        android:layout_height="wrap_content" />
 
 </LinearLayout>
