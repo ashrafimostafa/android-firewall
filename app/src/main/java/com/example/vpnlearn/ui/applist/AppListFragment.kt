@@ -1,5 +1,6 @@
 package com.example.vpnlearn.ui.applist
 
+import android.content.Context
 import android.content.Intent
 import android.net.VpnService
 import android.os.Bundle
@@ -46,7 +47,7 @@ class AppListFragment : BaseFragment<AppListViewModel>() {
     lateinit var applicationAdapter: ApplicationAdapter
 
     @Inject
-    lateinit var vpnClient: VpnClient
+    lateinit var ctx: Context
 
     override fun provideLayoutId() = R.layout.fragment_app_list
 
@@ -91,7 +92,7 @@ class AppListFragment : BaseFragment<AppListViewModel>() {
                     }
                 }
             } else {
-                vpnClient.stop()
+                VpnClient().stop(ctx)
             }
         }
 
@@ -158,14 +159,14 @@ class AppListFragment : BaseFragment<AppListViewModel>() {
     }
 
     private fun reset(network: String) {
-        vpnClient.reload(network)
+        VpnClient().reload(network,ctx)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == REQUEST_VPN) {
 
             // Start service
-            if (resultCode == AppCompatActivity.RESULT_OK) vpnClient.start()
+            if (resultCode == AppCompatActivity.RESULT_OK) VpnClient().start(ctx)
         } else super.onActivityResult(requestCode, resultCode, data)
     }
 }

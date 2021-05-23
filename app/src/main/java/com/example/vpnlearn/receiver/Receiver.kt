@@ -5,7 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.VpnService
 import android.util.Log
-import com.example.vpnlearn.service.VpnClient
+import com.example.vpnlearn.service.VpnClient1
 import com.example.vpnlearn.utility.Util.logExtras
 
 class Receiver : BroadcastReceiver() {
@@ -14,7 +14,7 @@ class Receiver : BroadcastReceiver() {
         logExtras(TAG, intent)
 
         // Start service
-        if (VpnService.prepare(context) == null) VpnClient.start(context)
+        if (VpnService.prepare(context) == null) VpnClient1.start(context)
     }
 
     companion object {

@@ -9,6 +9,7 @@ import com.example.vpnlearn.data.local.DatabaseService
 import com.example.vpnlearn.di.qualifire.ActivityContext
 import com.example.vpnlearn.di.qualifire.ApplicationContext
 import com.example.vpnlearn.di.scope.FragmentScope
+import com.example.vpnlearn.service.VpnClient
 import com.example.vpnlearn.ui.applist.AppListViewModel
 import com.example.vpnlearn.ui.applist.app.ApplicationAdapter
 import com.example.vpnlearn.ui.base.BaseFragment
@@ -42,4 +43,7 @@ class FragmentModule(private val fragment: BaseFragment<*>) {
     @Provides
     @FragmentScope
     fun provideApplicationAdapter() = ApplicationAdapter(fragment.lifecycle, ArrayList())
+
+    @Provides
+    fun provideVpnClient() = VpnClient()
 }

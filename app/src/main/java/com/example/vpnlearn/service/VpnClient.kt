@@ -13,6 +13,7 @@ import android.widget.Toast
 import androidx.core.app.TaskStackBuilder
 import com.example.vpnlearn.ui.main.MainActivity
 import com.example.vpnlearn.R
+import com.example.vpnlearn.di.qualifire.ActivityContext
 import com.example.vpnlearn.di.qualifire.ApplicationContext
 import com.example.vpnlearn.ui.applist.AppListActivity
 import com.example.vpnlearn.utility.Constant
@@ -23,15 +24,20 @@ import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
 
-class VpnClient @Inject constructor(
-    @ApplicationContext val context: Context
-) : VpnService() {
+@Singleton
+class VpnClient : VpnService() {
+
+//    @ActivityContext
+//    @Inject
+//    lateinit var context: Context
+
+
     private var vpn: ParcelFileDescriptor? = null
 
+
     private val mConfigureIntent: PendingIntent? = null
+
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-
-
         // Get command
         val cmd = if (intent == null) Command.start else (intent.getSerializableExtra(
             EXTRA_COMMAND
@@ -149,14 +155,14 @@ class VpnClient @Inject constructor(
                     ConnectivityManager.EXTRA_NETWORK_TYPE,
                     ConnectivityManager.TYPE_DUMMY
                 ) == ConnectivityManager.TYPE_WIFI
-            ) reload(null)
+            ) reload(null,context)
         }
     }
     private val packageAddedReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             Log.i(TAG, "Received $intent")
             logExtras(TAG, intent)
-            reload(null)
+            reload(null,context)
         }
     }
 
@@ -197,7 +203,7 @@ class VpnClient @Inject constructor(
         super.onRevoke()
     }
 
-    fun updateForegroundNotification(message: Int) {
+    private fun updateForegroundNotification(message: Int) {
         Log.i(TAG, "state changed int: ${getString(message)} ")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val intent = Intent(this, MainActivity::class.java)
@@ -217,49 +223,56 @@ class VpnClient @Inject constructor(
         }
     }
 
+
+    fun start(context: Context) {
+//        Log.i(TAG, "start called $context")
+        val intent = Intent(context, VpnClient::class.java)
+        intent.putExtra(EXTRA_COMMAND, Command.start)
+        //        context.startService(intent);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Log.i(TAG, "starting called")
+            context?.startForegroundService(intent)
+        } else {
+            context?.startService(intent)
+        }
+    }
+
+
+    fun reload(network: String?,context: Context) {
+        Log.i(TAG, "reload called")
+        if (network == null || (if ("wifi" == network) isWifiActive(context) else !isWifiActive(
+                context
+            ))
+        ) {
+            val intent = Intent(context, VpnClient::class.java)
+            intent.putExtra(EXTRA_COMMAND, Command.reload)
+            //        context.startService(intent);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                context?.startForegroundService(intent)
+            } else {
+                context?.startService(intent)
+            }
+        }
+    }
+
+    fun stop(context: Context) {
+        Log.i(TAG, "stop called")
+        val intent = Intent(context, VpnClient::class.java)
+        intent.putExtra(EXTRA_COMMAND, Command.stop)
+        //        context.startService(intent);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            context?.startForegroundService(intent)
+        } else {
+            context?.startService(intent)
+        }
+    }
+
     companion object {
         private const val TAG = "NetBlocker.Service"
         private const val EXTRA_COMMAND = "Command"
         var state: State = State.NOUN
     }
 
-
-    fun start() {
-        val intent = Intent(context, VpnClient::class.java)
-        intent.putExtra(EXTRA_COMMAND, Command.start)
-        //        context.startService(intent);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            context.startForegroundService(intent)
-        } else {
-            context.startService(intent)
-        }
-    }
-
-    fun reload(network: String?) {
-        if (network == null ||
-            (if ("wifi" == network) isWifiActive(context) else !isWifiActive(context))
-        ) {
-            val intent = Intent(context, VpnClient::class.java)
-            intent.putExtra(EXTRA_COMMAND, Command.reload)
-            //        context.startService(intent);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                context.startForegroundService(intent)
-            } else {
-                context.startService(intent)
-            }
-        }
-    }
-
-    fun stop() {
-        val intent = Intent(context, VpnClient::class.java)
-        intent.putExtra(EXTRA_COMMAND, Command.stop)
-        //        context.startService(intent);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            context.startForegroundService(intent)
-        } else {
-            context.startService(intent)
-        }
-    }
 
     override fun onBind(intent: Intent?): IBinder? {
         return null

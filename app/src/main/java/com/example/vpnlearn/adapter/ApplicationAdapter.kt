@@ -11,7 +11,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.vpnlearn.model.ApplicationDm
 import com.example.vpnlearn.R
-import com.example.vpnlearn.service.VpnClient.Companion.reload
+import com.example.vpnlearn.service.VpnClient1.Companion.reload
 import java.util.*
 
 class ApplicationAdapter(listApplicationDm: List<ApplicationDm>, private val context: Context) :

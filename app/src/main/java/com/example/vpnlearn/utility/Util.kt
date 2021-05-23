@@ -21,8 +21,8 @@ object Util {
     }
 
     @JvmStatic
-    fun isWifiActive(context: Context): Boolean {
-        val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    fun isWifiActive(context: Context?): Boolean {
+        val cm = context?.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val ni = cm.activeNetworkInfo
         return ni != null && ni.type == ConnectivityManager.TYPE_WIFI
     }
