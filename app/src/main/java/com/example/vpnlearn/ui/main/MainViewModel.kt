@@ -27,7 +27,7 @@ class MainViewModel(
 
 
     override fun onCreate() {
-        queryPackageList()
+//        queryPackageList()
     }
 
     val packages = MutableLiveData<List<PackageDM>>()
@@ -35,7 +35,7 @@ class MainViewModel(
     init {
         //todo fetch list of package and save them on database
         messageTxt.postValue("salam")
-        queryPackageList()
+//        queryPackageList()
     }
 
     fun getAllPackages() {

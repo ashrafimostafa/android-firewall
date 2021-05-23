@@ -33,6 +33,9 @@ class ApplicationViewHolder(parent: ViewGroup) :
             if (it.isSystemApp) {
                 itemView.app_name.setTextColor(Color.parseColor("#FFBB86FC"))
                 itemView.app_package.setTextColor(Color.parseColor("#FFBB86FC"))
+            }else{
+                itemView.app_name.setTextColor(Color.parseColor("#000000"))
+                itemView.app_package.setTextColor(Color.parseColor("#000000"))
             }
 
             itemView.app_icon.setImageDrawable(it.icon)
