@@ -5,6 +5,7 @@ import androidx.room.Room
 import com.example.vpnlearn.data.local.DatabaseService
 import com.example.vpnlearn.di.qualifire.ApplicationContext
 import com.example.vpnlearn.MyApplication
+import com.example.vpnlearn.service.VpnClient
 import com.example.vpnlearn.utility.ProvideAppList
 import dagger.Module
 import dagger.Provides
@@ -25,6 +26,10 @@ class ApplicationModule(private val application: MyApplication) {
         DatabaseService::class.java,
         "net_blocker_db"
     ).build()
+
+    @Singleton
+    @Provides
+    fun provideVpnClient() = VpnClient()
 
     @Singleton
     @Provides

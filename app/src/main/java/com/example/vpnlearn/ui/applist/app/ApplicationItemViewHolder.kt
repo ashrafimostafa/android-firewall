@@ -33,21 +33,30 @@ class ApplicationViewHolder(parent: ViewGroup) :
             if (it.isSystemApp) {
                 itemView.app_name.setTextColor(Color.parseColor("#FFBB86FC"))
                 itemView.app_package.setTextColor(Color.parseColor("#FFBB86FC"))
-            }else{
+            } else {
                 itemView.app_name.setTextColor(Color.parseColor("#000000"))
                 itemView.app_package.setTextColor(Color.parseColor("#000000"))
             }
 
             itemView.app_icon.setImageDrawable(it.icon)
 
-            itemView.app_wifi.setOnCheckedChangeListener { view, isChecked ->
 
-                viewModel.onWifiCheckedClicked(isChecked, it.id)
+
+            itemView.app_wifi.setOnClickListener { _ ->
+                it.isWifiDisabled = !it.isWifiDisabled
             }
 
-            itemView.app_other.setOnCheckedChangeListener { view, isChecked ->
-                viewModel.onOtherCheckedClicked(isChecked, it.id)
+            itemView.app_other.setOnClickListener { _ ->
+                it.isOtherDisabled = !it.isOtherDisabled
             }
+
+//            itemView.app_wifi.setOnCheckedChangeListener { view, isChecked ->
+//                viewModel.onWifiCheckedClicked(isChecked, it.id)
+//            }
+//
+//            itemView.app_other.setOnCheckedChangeListener { view, isChecked ->
+//                viewModel.onOtherCheckedClicked(isChecked, it.id)
+//            }
 
         })
     }

@@ -99,6 +99,7 @@ abstract class BaseAdapter<T : Any, VH : BaseItemViewHolder<T, out BaseItemViewM
     }
 
     fun appendDate(dataList: List<T>) {
+
         val oldCount = itemCount
         this.dataList.addAll(dataList)
         val currentCount = itemCount

@@ -21,6 +21,8 @@ interface ApplicationComponent {
 
     fun getDataBaseService(): DatabaseService
 
+    fun getVpnClient(): VpnClient
+
     fun getCompositeDisposable(): CompositeDisposable
 
     fun getProvideAppList(): ProvideAppList

@@ -1,7 +1,9 @@
 package com.example.vpnlearn.ui.applist.app
 
+import android.content.Context
 import com.example.vpnlearn.data.local.DatabaseService
 import com.example.vpnlearn.data.local.entity.PackageDM
+import com.example.vpnlearn.service.VpnClient
 import com.example.vpnlearn.ui.base.BaseItemViewModel
 import io.reactivex.Scheduler
 import io.reactivex.disposables.CompositeDisposable
@@ -10,7 +12,7 @@ import javax.inject.Inject
 
 class ApplicationViewModel @Inject constructor(
     compositeDisposable: CompositeDisposable,
-    private val databaseService: DatabaseService
+    private val databaseService: DatabaseService,
 ) :
     BaseItemViewModel<Application>(compositeDisposable) {
 

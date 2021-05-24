@@ -27,7 +27,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class VpnClient () : VpnService() {
+class VpnClient() : VpnService() {
     private var vpn: ParcelFileDescriptor? = null
     private val mConfigureIntent: PendingIntent? = null
 
@@ -104,6 +104,7 @@ class VpnClient () : VpnService() {
 
                         for (pkg in it) {
                             builder.addDisallowedApplication(pkg.packageName)
+                            Log.i(TAG, "wifi disallow app: $pkg")
                         }
                     }, {
                         Log.e(TAG, "adding disallow wifi cause error: $it")
@@ -117,6 +118,7 @@ class VpnClient () : VpnService() {
                     .subscribe({
                         for (pkg in it) {
                             builder.addDisallowedApplication(pkg.packageName)
+                            Log.i(TAG, "other disallow app: $pkg")
                         }
                     }, {
                         Log.e(TAG, "adding disallow other cause error: $it")
@@ -185,14 +187,14 @@ class VpnClient () : VpnService() {
                     ConnectivityManager.EXTRA_NETWORK_TYPE,
                     ConnectivityManager.TYPE_DUMMY
                 ) == ConnectivityManager.TYPE_WIFI
-            ) reload(null, context)
+            ) reload(context)
         }
     }
     val packageAddedReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             Log.i(TAG, "Received $intent")
             logExtras(TAG, intent)
-            reload(null, context)
+            reload(context)
         }
     }
 
@@ -269,12 +271,12 @@ class VpnClient () : VpnService() {
     }
 
 
-    fun reload(network: String?, context: Context) {
+    fun reload(context: Context) {
         Log.i(TAG, "reload called")
-        if (network == null || (if ("wifi" == network) isWifiActive(context) else !isWifiActive(
-                context
-            ))
-        ) {
+//        if (network == null || (if ("wifi" == network) isWifiActive(context) else !isWifiActive(
+//                context
+//            ))
+//        ) {
             val intent = Intent(context, VpnClient::class.java)
             intent.putExtra(EXTRA_COMMAND, Command.reload)
             //        context.startService(intent);
@@ -283,7 +285,7 @@ class VpnClient () : VpnService() {
             } else {
                 context?.startService(intent)
             }
-        }
+//        }
     }
 
     fun stop(context: Context) {

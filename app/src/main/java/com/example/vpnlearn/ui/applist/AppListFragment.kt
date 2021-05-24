@@ -160,6 +160,8 @@ class AppListFragment : BaseFragment<AppListViewModel>() {
         viewModel.packageLiveData.observe(this, Observer {
             applicationAdapter.appendDate(it)
             app_list_progress.visibility = View.GONE
+            if (VpnClient.state == State.CONNECTED)
+                reset()
         })
     }
 
@@ -169,8 +171,8 @@ class AppListFragment : BaseFragment<AppListViewModel>() {
         )
     }
 
-    private fun reset(network: String) {
-        VpnClient().reload(network, ctx)
+    private fun reset() {
+        VpnClient().reload(ctx)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
