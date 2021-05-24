@@ -11,30 +11,19 @@ import android.os.ParcelFileDescriptor
 import android.util.Log
 import android.widget.Toast
 import androidx.core.app.TaskStackBuilder
-import com.example.vpnlearn.ui.main.MainActivity
 import com.example.vpnlearn.R
-import com.example.vpnlearn.di.qualifire.ActivityContext
-import com.example.vpnlearn.di.qualifire.ApplicationContext
 import com.example.vpnlearn.ui.applist.AppListActivity
 import com.example.vpnlearn.utility.Constant
 import com.example.vpnlearn.utility.Util.isWifiActive
 import com.example.vpnlearn.utility.Util.logExtras
-import com.example.vpnlearn.utility.Util.toast
+import com.example.vpnlearn.utility.Util.showToast
 import java.io.IOException
-import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class VpnClient : VpnService() {
 
-//    @ActivityContext
-//    @Inject
-//    lateinit var context: Context
-
-
     private var vpn: ParcelFileDescriptor? = null
-
-
     private val mConfigureIntent: PendingIntent? = null
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
@@ -127,7 +116,7 @@ class VpnClient : VpnService() {
 
 
             // Feedback
-            toast(ex.toString(), Toast.LENGTH_LONG, this)
+            showToast(ex.toString(), this)
             null
         }
     }
@@ -155,14 +144,14 @@ class VpnClient : VpnService() {
                     ConnectivityManager.EXTRA_NETWORK_TYPE,
                     ConnectivityManager.TYPE_DUMMY
                 ) == ConnectivityManager.TYPE_WIFI
-            ) reload(null,context)
+            ) reload(null, context)
         }
     }
     private val packageAddedReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             Log.i(TAG, "Received $intent")
             logExtras(TAG, intent)
-            reload(null,context)
+            reload(null, context)
         }
     }
 
@@ -206,7 +195,7 @@ class VpnClient : VpnService() {
     private fun updateForegroundNotification(message: Int) {
         Log.i(TAG, "state changed int: ${getString(message)} ")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val intent = Intent(this, MainActivity::class.java)
+            val intent = Intent(this, AppListActivity::class.java)
             val stackBuilder = TaskStackBuilder.create(this)
             stackBuilder.addNextIntentWithParentStack(intent)
             val pendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT)
@@ -238,7 +227,7 @@ class VpnClient : VpnService() {
     }
 
 
-    fun reload(network: String?,context: Context) {
+    fun reload(network: String?, context: Context) {
         Log.i(TAG, "reload called")
         if (network == null || (if ("wifi" == network) isWifiActive(context) else !isWifiActive(
                 context

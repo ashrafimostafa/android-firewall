@@ -28,8 +28,8 @@ object Util {
     }
 
     @JvmStatic
-    fun toast(text: String?, length: Int, context: Context?) {
-        Handler(Looper.getMainLooper()).post { Toast.makeText(context, text, length).show() }
+    fun showToast(message: String?, context: Context?) {
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
 
     @JvmStatic

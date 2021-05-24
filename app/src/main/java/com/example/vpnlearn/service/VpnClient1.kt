@@ -17,7 +17,7 @@ import com.example.vpnlearn.ui.applist.AppListActivity
 import com.example.vpnlearn.utility.Constant
 import com.example.vpnlearn.utility.Util.isWifiActive
 import com.example.vpnlearn.utility.Util.logExtras
-import com.example.vpnlearn.utility.Util.toast
+import com.example.vpnlearn.utility.Util.showToast
 import java.io.IOException
 
 class VpnClient1 : VpnService() {
@@ -116,7 +116,7 @@ class VpnClient1 : VpnService() {
 
 
             // Feedback
-            toast(ex.toString(), Toast.LENGTH_LONG, this)
+            showToast(ex.toString(), this)
             null
         }
     }

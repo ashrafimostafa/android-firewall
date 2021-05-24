@@ -13,7 +13,7 @@
         android:id="@+id/menu_vpn_enable"
         android:orderInCategory="1"
         android:title=""
-        app:actionViewClass="android.widget.Switch"
+        app:actionViewClass="androidx.appcompat.widget.SwitchCompat"
         app:showAsAction="ifRoom" />
 
     <item

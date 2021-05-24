@@ -10,12 +10,15 @@ import android.view.*
 import android.widget.Switch
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SwitchCompat
 import androidx.core.view.MenuItemCompat
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.vpnlearn.R
 import com.example.vpnlearn.di.components.FragmentComponent
+import com.example.vpnlearn.service.State
 import com.example.vpnlearn.service.VpnClient
+import com.example.vpnlearn.service.VpnClient1
 import com.example.vpnlearn.ui.applist.app.ApplicationAdapter
 import com.example.vpnlearn.ui.base.BaseFragment
 import com.example.vpnlearn.ui.main.MainActivity
@@ -39,6 +42,8 @@ class AppListFragment : BaseFragment<AppListViewModel>() {
     }
 
     private lateinit var toggleService: MenuItem
+
+    lateinit var actionView: SwitchCompat
 
     @Inject
     lateinit var linearLayoutManager: LinearLayoutManager
@@ -64,13 +69,14 @@ class AppListFragment : BaseFragment<AppListViewModel>() {
 
         setHasOptionsMenu(true)
 
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.main_menu, menu)
 
         toggleService = menu.findItem(R.id.menu_vpn_enable)
-        val actionView = MenuItemCompat.getActionView(toggleService) as Switch
+        actionView = MenuItemCompat.getActionView(toggleService) as SwitchCompat
 
 
         actionView.setOnCheckedChangeListener { _, isChecked ->
@@ -159,7 +165,7 @@ class AppListFragment : BaseFragment<AppListViewModel>() {
     }
 
     private fun reset(network: String) {
-        VpnClient().reload(network,ctx)
+        VpnClient().reload(network, ctx)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
