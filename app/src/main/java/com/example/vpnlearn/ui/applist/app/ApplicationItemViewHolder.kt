@@ -1,6 +1,7 @@
 package com.example.vpnlearn.ui.applist.app
 
 import android.graphics.Color
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CompoundButton
@@ -44,10 +45,14 @@ class ApplicationViewHolder(parent: ViewGroup) :
 
             itemView.app_wifi.setOnClickListener { _ ->
                 it.isWifiDisabled = !it.isWifiDisabled
+                viewModel.onWifiCheckedClicked(it.isWifiDisabled, it.id)
+                Log.i(TAG, "select other: $it")
             }
 
             itemView.app_other.setOnClickListener { _ ->
                 it.isOtherDisabled = !it.isOtherDisabled
+                viewModel.onOtherCheckedClicked(it.isOtherDisabled, it.id)
+                Log.i(TAG, "select other: $it")
             }
 
 //            itemView.app_wifi.setOnCheckedChangeListener { view, isChecked ->
@@ -59,6 +64,10 @@ class ApplicationViewHolder(parent: ViewGroup) :
 //            }
 
         })
+    }
+
+    companion object{
+        private val TAG = "NetBlocker.AppViewHolder"
     }
 
 }
