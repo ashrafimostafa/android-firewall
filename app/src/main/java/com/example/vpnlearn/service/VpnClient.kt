@@ -87,12 +87,11 @@ class VpnClient() : VpnService() {
         Log.i(TAG, "wifi=$wifi")
 
         // Build VPN service
-        val builder: Builder = Builder()
-        builder.setSession(getString(R.string.app_name))
-        builder.addAddress("10.1.10.1", 32)
-        builder.addAddress("fd00:1:fd00:1:fd00:1:fd00:1", 128)
-        builder.addRoute("0.0.0.0", 0)
-        builder.addRoute("0:0:0:0:0:0:0:0", 0)
+       val builder: VpnService.Builder = Builder()
+       builder.setSession(getString(R.string.app_name))
+       builder.addAddress("10.1.10.1", 32)
+       builder.addAddress("fd00:1:fd00:1:fd00:1:fd00:1", 128)
+       builder.addRoute("0.0.0.0", 0)
 
         //adding disallow list
         if (isWifiActive(this)) {
@@ -103,7 +102,7 @@ class VpnClient() : VpnService() {
                     .subscribe({
 
                         for (pkg in it) {
-                            builder.addDisallowedApplication(pkg.packageName)
+                            builder.addAllowedApplication(pkg.packageName)
                             Log.i(TAG, "wifi disallow app: $pkg")
                         }
                     }, {
@@ -117,7 +116,7 @@ class VpnClient() : VpnService() {
                     .subscribeOn(Schedulers.io())
                     .subscribe({
                         for (pkg in it) {
-                            builder.addDisallowedApplication(pkg.packageName)
+                            builder.addAllowedApplication(pkg.packageName)
                             Log.i(TAG, "other disallow app: $pkg")
                         }
                     }, {
@@ -187,19 +186,20 @@ class VpnClient() : VpnService() {
                     ConnectivityManager.EXTRA_NETWORK_TYPE,
                     ConnectivityManager.TYPE_DUMMY
                 ) == ConnectivityManager.TYPE_WIFI
-            ) reload(context)
+            ) Log.i(TAG,"test")
+//                reload(context)
         }
     }
     val packageAddedReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             Log.i(TAG, "Received $intent")
             logExtras(TAG, intent)
-            reload(context)
+//            reload(context)
         }
     }
 
     override fun onCreate() {
-        (applicationContext as MyApplication).applicationComponent.inject(this)
+        (applicationContext as MyApplication).applicationComponent.inject(this) //inject dependencies
         super.onCreate()
         Log.i(TAG, "Create")
 
@@ -264,9 +264,9 @@ class VpnClient() : VpnService() {
         //        context.startService(intent);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             Log.i(TAG, "starting called")
-            context?.startForegroundService(intent)
+            context.startForegroundService(intent)
         } else {
-            context?.startService(intent)
+            context.startService(intent)
         }
     }
 
@@ -277,14 +277,14 @@ class VpnClient() : VpnService() {
 //                context
 //            ))
 //        ) {
-            val intent = Intent(context, VpnClient::class.java)
-            intent.putExtra(EXTRA_COMMAND, Command.reload)
-            //        context.startService(intent);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                context?.startForegroundService(intent)
-            } else {
-                context?.startService(intent)
-            }
+        val intent = Intent(context, VpnClient::class.java)
+        intent.putExtra(EXTRA_COMMAND, Command.reload)
+        //        context.startService(intent);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            context.startForegroundService(intent)
+        } else {
+            context.startService(intent)
+        }
 //        }
     }
 
@@ -294,9 +294,9 @@ class VpnClient() : VpnService() {
         intent.putExtra(EXTRA_COMMAND, Command.stop)
         //        context.startService(intent);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            context?.startForegroundService(intent)
+            context.startForegroundService(intent)
         } else {
-            context?.startService(intent)
+            context.startService(intent)
         }
     }
 
@@ -311,3 +311,11 @@ class VpnClient() : VpnService() {
         return null
     }
 }
+
+
+//val builder: VpnService.Builder = Builder()
+//builder.setSession(getString(R.string.app_name))
+//builder.addAddress("10.1.10.1", 32)
+//builder.addAddress("fd00:1:fd00:1:fd00:1:fd00:1", 128)
+//builder.addRoute("0.0.0.0", 0)
+//builder.addRoute("0:0:0:0:0:0:0:0", 0)
