@@ -110,7 +110,8 @@ class VpnClient : VpnService() {
                         Log.e(TAG, "adding disallow wifi cause error: $it")
                     })
             )
-        } else {
+        }
+        else {
             compositeDisposable.add(
                 databaseService.packageDao()
                     .getDisableOtherPackages()
@@ -162,6 +163,8 @@ class VpnClient : VpnService() {
             showToast(ex.toString(), this)
             null
         }
+
+
     }
 
     private fun vpnStop(pfd: ParcelFileDescriptor) {

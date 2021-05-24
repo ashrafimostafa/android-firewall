@@ -102,6 +102,7 @@ class AppListFragment : BaseFragment<AppListViewModel>() {
                 VpnClient().stop(ctx)
             }
         }
+        actionView.isChecked = VpnClient.state == State.CONNECTED
 
     }
 

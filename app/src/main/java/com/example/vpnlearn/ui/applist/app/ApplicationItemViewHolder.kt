@@ -1,5 +1,6 @@
 package com.example.vpnlearn.ui.applist.app
 
+import android.content.Context
 import android.graphics.Color
 import android.util.Log
 import android.view.View
@@ -8,13 +9,21 @@ import android.widget.CompoundButton
 import androidx.lifecycle.Observer
 import com.example.vpnlearn.R
 import com.example.vpnlearn.di.components.ViewHolderComponent
+import com.example.vpnlearn.di.qualifire.ApplicationContext
+import com.example.vpnlearn.service.VpnClient
 import com.example.vpnlearn.ui.base.BaseItemViewHolder
 import kotlinx.android.synthetic.main.item_application.view.*
+import javax.inject.Inject
 
 class ApplicationViewHolder(parent: ViewGroup) :
     BaseItemViewHolder<Application, ApplicationViewModel>(
         R.layout.item_application, parent
     ) {
+
+
+    @ApplicationContext
+    @Inject
+    lateinit var context: Context
 
     override fun setUpViews(view: View) {
         //todo complete here
@@ -46,27 +55,21 @@ class ApplicationViewHolder(parent: ViewGroup) :
             itemView.app_wifi.setOnClickListener { _ ->
                 it.isWifiDisabled = !it.isWifiDisabled
                 viewModel.onWifiCheckedClicked(it.isWifiDisabled, it.id)
+                VpnClient().reload(context)
                 Log.i(TAG, "select other: $it")
             }
 
             itemView.app_other.setOnClickListener { _ ->
                 it.isOtherDisabled = !it.isOtherDisabled
                 viewModel.onOtherCheckedClicked(it.isOtherDisabled, it.id)
+                VpnClient().reload(context)
                 Log.i(TAG, "select other: $it")
             }
-
-//            itemView.app_wifi.setOnCheckedChangeListener { view, isChecked ->
-//                viewModel.onWifiCheckedClicked(isChecked, it.id)
-//            }
-//
-//            itemView.app_other.setOnCheckedChangeListener { view, isChecked ->
-//                viewModel.onOtherCheckedClicked(isChecked, it.id)
-//            }
 
         })
     }
 
-    companion object{
+    companion object {
         private val TAG = "NetBlocker.AppViewHolder"
     }
 
