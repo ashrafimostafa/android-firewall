@@ -11,20 +11,31 @@ import android.os.ParcelFileDescriptor
 import android.util.Log
 import android.widget.Toast
 import androidx.core.app.TaskStackBuilder
+import com.example.vpnlearn.MyApplication
 import com.example.vpnlearn.R
+import com.example.vpnlearn.data.local.DatabaseService
 import com.example.vpnlearn.ui.applist.AppListActivity
 import com.example.vpnlearn.utility.Constant
+import com.example.vpnlearn.utility.ProvideAppList
 import com.example.vpnlearn.utility.Util.isWifiActive
 import com.example.vpnlearn.utility.Util.logExtras
 import com.example.vpnlearn.utility.Util.showToast
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 import java.io.IOException
+import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class VpnClient : VpnService() {
-
+class VpnClient () : VpnService() {
     private var vpn: ParcelFileDescriptor? = null
     private val mConfigureIntent: PendingIntent? = null
+
+    @Inject
+    lateinit var databaseService: DatabaseService
+
+    @Inject
+    lateinit var compositeDisposable: CompositeDisposable
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         // Get command
@@ -68,7 +79,7 @@ class VpnClient : VpnService() {
         return START_STICKY
     }
 
-    private fun vpnStart(): ParcelFileDescriptor? {
+    fun vpnStart(): ParcelFileDescriptor? {
         Log.i(TAG, "Starting")
 
         // Check if Wi-Fi
@@ -82,6 +93,36 @@ class VpnClient : VpnService() {
         builder.addAddress("fd00:1:fd00:1:fd00:1:fd00:1", 128)
         builder.addRoute("0.0.0.0", 0)
         builder.addRoute("0:0:0:0:0:0:0:0", 0)
+
+        //adding disallow list
+        if (isWifiActive(this)) {
+            compositeDisposable.add(
+                databaseService.packageDao()
+                    .getDisableWifiPackages()
+                    .subscribeOn(Schedulers.io())
+                    .subscribe({
+
+                        for (pkg in it) {
+                            builder.addDisallowedApplication(pkg.packageName)
+                        }
+                    }, {
+                        Log.e(TAG, "adding disallow wifi cause error: $it")
+                    })
+            )
+        } else {
+            compositeDisposable.add(
+                databaseService.packageDao()
+                    .getDisableOtherPackages()
+                    .subscribeOn(Schedulers.io())
+                    .subscribe({
+                        for (pkg in it) {
+                            builder.addDisallowedApplication(pkg.packageName)
+                        }
+                    }, {
+                        Log.e(TAG, "adding disallow other cause error: $it")
+                    })
+            )
+        }
 
         // Add list of allowed applications //todo
 //        for (applicationDm in ApplicationDm.getRules(this)) if (!(if (wifi) applicationDm.wifiBlocked else applicationDm.otherBlocked)) {
@@ -135,7 +176,7 @@ class VpnClient : VpnService() {
         }
     }
 
-    private val connectivityChangedReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+    val connectivityChangedReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             Log.i(TAG, "Received $intent")
             logExtras(TAG, intent)
@@ -147,7 +188,7 @@ class VpnClient : VpnService() {
             ) reload(null, context)
         }
     }
-    private val packageAddedReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+    val packageAddedReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             Log.i(TAG, "Received $intent")
             logExtras(TAG, intent)
@@ -156,6 +197,7 @@ class VpnClient : VpnService() {
     }
 
     override fun onCreate() {
+        (applicationContext as MyApplication).applicationComponent.inject(this)
         super.onCreate()
         Log.i(TAG, "Create")
 
@@ -192,7 +234,7 @@ class VpnClient : VpnService() {
         super.onRevoke()
     }
 
-    private fun updateForegroundNotification(message: Int) {
+    fun updateForegroundNotification(message: Int) {
         Log.i(TAG, "state changed int: ${getString(message)} ")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val intent = Intent(this, AppListActivity::class.java)

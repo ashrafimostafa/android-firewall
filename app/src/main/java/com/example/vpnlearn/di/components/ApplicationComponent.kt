@@ -5,6 +5,7 @@ import com.example.vpnlearn.data.local.DatabaseService
 import com.example.vpnlearn.di.modules.ApplicationModule
 import com.example.vpnlearn.di.qualifire.ApplicationContext
 import com.example.vpnlearn.MyApplication
+import com.example.vpnlearn.service.VpnClient
 import com.example.vpnlearn.utility.ProvideAppList
 import dagger.Component
 import io.reactivex.disposables.CompositeDisposable
@@ -15,6 +16,8 @@ import javax.inject.Singleton
 interface ApplicationComponent {
 
     fun inject(myApplication: MyApplication)
+
+    fun inject(vpnClient: VpnClient)
 
     fun getDataBaseService(): DatabaseService
 

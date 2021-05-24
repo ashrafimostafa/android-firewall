@@ -15,18 +15,22 @@ import androidx.core.view.MenuItemCompat
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.vpnlearn.R
+import com.example.vpnlearn.data.local.DatabaseService
 import com.example.vpnlearn.di.components.FragmentComponent
+import com.example.vpnlearn.di.qualifire.ApplicationContext
 import com.example.vpnlearn.service.State
 import com.example.vpnlearn.service.VpnClient
 import com.example.vpnlearn.service.VpnClient1
 import com.example.vpnlearn.ui.applist.app.ApplicationAdapter
 import com.example.vpnlearn.ui.base.BaseFragment
 import com.example.vpnlearn.ui.main.MainActivity
+import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.fragment_app_list.*
 import javax.inject.Inject
 
 
 class AppListFragment : BaseFragment<AppListViewModel>() {
+
 
     companion object {
         val TAG = "NetBlocker.AppListFragment"
@@ -51,6 +55,7 @@ class AppListFragment : BaseFragment<AppListViewModel>() {
     @Inject
     lateinit var applicationAdapter: ApplicationAdapter
 
+    @ApplicationContext
     @Inject
     lateinit var ctx: Context
 

@@ -43,7 +43,4 @@ class FragmentModule(private val fragment: BaseFragment<*>) {
     @Provides
     @FragmentScope
     fun provideApplicationAdapter() = ApplicationAdapter(fragment.lifecycle, ArrayList())
-
-    @Provides
-    fun provideVpnClient() = VpnClient()
 }
