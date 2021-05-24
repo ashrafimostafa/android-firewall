@@ -1,6 +1,8 @@
 package com.example.vpnlearn.ui.applist.app
 
 import android.view.ViewGroup
+import android.widget.Filter
+import android.widget.Filterable
 import androidx.lifecycle.Lifecycle
 import com.example.vpnlearn.ui.base.BaseAdapter
 

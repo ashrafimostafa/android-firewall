@@ -2,21 +2,22 @@ package com.example.vpnlearn.service
 
 import android.app.Notification
 import android.app.PendingIntent
-import android.content.*
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.net.ConnectivityManager
 import android.net.VpnService
 import android.os.Build
 import android.os.IBinder
 import android.os.ParcelFileDescriptor
 import android.util.Log
-import android.widget.Toast
 import androidx.core.app.TaskStackBuilder
 import com.example.vpnlearn.MyApplication
 import com.example.vpnlearn.R
 import com.example.vpnlearn.data.local.DatabaseService
 import com.example.vpnlearn.ui.applist.AppListActivity
 import com.example.vpnlearn.utility.Constant
-import com.example.vpnlearn.utility.ProvideAppList
 import com.example.vpnlearn.utility.Util.isWifiActive
 import com.example.vpnlearn.utility.Util.logExtras
 import com.example.vpnlearn.utility.Util.showToast
@@ -26,8 +27,7 @@ import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
 
-@Singleton
-class VpnClient() : VpnService() {
+class VpnClient : VpnService() {
     private var vpn: ParcelFileDescriptor? = null
     private val mConfigureIntent: PendingIntent? = null
 
@@ -87,11 +87,12 @@ class VpnClient() : VpnService() {
         Log.i(TAG, "wifi=$wifi")
 
         // Build VPN service
-       val builder: VpnService.Builder = Builder()
+       val builder: Builder = Builder()
        builder.setSession(getString(R.string.app_name))
-       builder.addAddress("10.1.10.1", 32)
-       builder.addAddress("fd00:1:fd00:1:fd00:1:fd00:1", 128)
-       builder.addRoute("0.0.0.0", 0)
+        builder.addAddress("10.1.10.1", 32)
+        builder.addAddress("fd00:1:fd00:1:fd00:1:fd00:1", 128)
+        builder.addRoute("0.0.0.0", 0)
+        builder.addRoute("0:0:0:0:0:0:0:0", 0)
 
         //adding disallow list
         if (isWifiActive(this)) {
@@ -102,7 +103,7 @@ class VpnClient() : VpnService() {
                     .subscribe({
 
                         for (pkg in it) {
-                            builder.addAllowedApplication(pkg.packageName)
+                            builder.addDisallowedApplication(pkg.packageName)
                             Log.i(TAG, "wifi disallow app: $pkg")
                         }
                     }, {
@@ -116,7 +117,7 @@ class VpnClient() : VpnService() {
                     .subscribeOn(Schedulers.io())
                     .subscribe({
                         for (pkg in it) {
-                            builder.addAllowedApplication(pkg.packageName)
+                            builder.addDisallowedApplication(pkg.packageName)
                             Log.i(TAG, "other disallow app: $pkg")
                         }
                     }, {
@@ -187,16 +188,16 @@ class VpnClient() : VpnService() {
                     ConnectivityManager.TYPE_DUMMY
                 ) == ConnectivityManager.TYPE_WIFI
             ) Log.i(TAG,"test")
-//                reload(context)
+                reload(context)
         }
     }
-    val packageAddedReceiver: BroadcastReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            Log.i(TAG, "Received $intent")
-            logExtras(TAG, intent)
+//    val packageAddedReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+//        override fun onReceive(context: Context, intent: Intent) {
+//            Log.i(TAG, "Received $intent")
+//            logExtras(TAG, intent)
 //            reload(context)
-        }
-    }
+//        }
+//    }
 
     override fun onCreate() {
         (applicationContext as MyApplication).applicationComponent.inject(this) //inject dependencies
@@ -209,10 +210,10 @@ class VpnClient() : VpnService() {
         registerReceiver(connectivityChangedReceiver, ifConnectivity)
 
         // Listen for added applications
-        val ifPackage = IntentFilter()
-        ifPackage.addAction(Intent.ACTION_PACKAGE_ADDED)
-        ifPackage.addDataScheme("package")
-        registerReceiver(packageAddedReceiver, ifPackage)
+//        val ifPackage = IntentFilter()
+//        ifPackage.addAction(Intent.ACTION_PACKAGE_ADDED)
+//        ifPackage.addDataScheme("package")
+//        registerReceiver(packageAddedReceiver, ifPackage)
     }
 
     override fun onDestroy() {
@@ -222,7 +223,7 @@ class VpnClient() : VpnService() {
             vpn = null
         }
         unregisterReceiver(connectivityChangedReceiver)
-        unregisterReceiver(packageAddedReceiver)
+//        unregisterReceiver(packageAddedReceiver)
         super.onDestroy()
     }
 
@@ -313,7 +314,7 @@ class VpnClient() : VpnService() {
 }
 
 
-//val builder: VpnService.Builder = Builder()
+//val builder: Builder = Builder()
 //builder.setSession(getString(R.string.app_name))
 //builder.addAddress("10.1.10.1", 32)
 //builder.addAddress("fd00:1:fd00:1:fd00:1:fd00:1", 128)

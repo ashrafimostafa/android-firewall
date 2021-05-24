@@ -1,5 +1,7 @@
 package com.example.vpnlearn.ui.base
 
+import android.widget.Filter
+import android.widget.Filterable
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
@@ -97,6 +99,7 @@ abstract class BaseAdapter<T : Any, VH : BaseItemViewHolder<T, out BaseItemViewM
     override fun onBindViewHolder(holder: VH, position: Int) {
         holder.bind(data = dataList[position])
     }
+
 
     fun appendDate(dataList: List<T>) {
 

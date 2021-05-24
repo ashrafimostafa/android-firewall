@@ -116,31 +116,31 @@ class AppListFragment : BaseFragment<AppListViewModel>() {
                 app_list_progress.visibility = View.VISIBLE
                 true
             }
-            R.id.menu_block_wifi -> {
-                viewModel.disableWifi()
-                app_list_progress.visibility = View.VISIBLE
-//                VpnClient.reload("wifi", this) todo complete here
-                true
-            }
-            R.id.menu_block_other -> {
-                viewModel.disableOther()
-                app_list_progress.visibility = View.VISIBLE
-//                fillApplicationList()
-//                VpnClient.reload("other", this) todo complete here
-                true
-            }
-            R.id.menu_reset_wifi -> {
-                viewModel.enableWifi()
-                app_list_progress.visibility = View.VISIBLE
-//              VpnClient.reload("wifi", this) todo complete here
-                true
-            }
-            R.id.menu_reset_other -> {
-                viewModel.enableOther()
-                app_list_progress.visibility = View.VISIBLE
-//              VpnClient.reload("other", this) todo complete here
-                true
-            }
+//            R.id.menu_block_wifi -> {
+//                viewModel.disableWifi()
+//                app_list_progress.visibility = View.VISIBLE
+////                VpnClient.reload("wifi", this) todo complete here
+//                true
+//            }
+//            R.id.menu_block_other -> {
+//                viewModel.disableOther()
+//                app_list_progress.visibility = View.VISIBLE
+////                fillApplicationList()
+////                VpnClient.reload("other", this) todo complete here
+//                true
+//            }
+//            R.id.menu_reset_wifi -> {
+//                viewModel.enableWifi()
+//                app_list_progress.visibility = View.VISIBLE
+////              VpnClient.reload("wifi", this) todo complete here
+//                true
+//            }
+//            R.id.menu_reset_other -> {
+//                viewModel.enableOther()
+//                app_list_progress.visibility = View.VISIBLE
+////              VpnClient.reload("other", this) todo complete here
+//                true
+//            }
             R.id.menu_vpn_enable -> {
 
                 true

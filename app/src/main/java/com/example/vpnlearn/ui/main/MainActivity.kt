@@ -176,23 +176,23 @@ class MainActivity : AppCompatActivity(), OnSharedPreferenceChangeListener {
         inflater.inflate(R.menu.main_menu, menu)
 
         // Search
-        searchItem = menu.findItem(R.id.menu_search)
-        val searchView = MenuItemCompat.getActionView(searchItem) as SearchView
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String): Boolean {
-                if (adapter != null) adapter!!.filter.filter(query)
-                return true
-            }
-
-            override fun onQueryTextChange(newText: String): Boolean {
-                if (adapter != null) adapter!!.filter.filter(newText)
-                return true
-            }
-        })
-        searchView.setOnCloseListener {
-            if (adapter != null) adapter!!.filter.filter(null)
-            true
-        }
+//        searchItem = menu.findItem(R.id.menu_search)
+//        val searchView = MenuItemCompat.getActionView(searchItem) as SearchView
+//        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+//            override fun onQueryTextSubmit(query: String): Boolean {
+//                if (adapter != null) adapter!!.filter.filter(query)
+//                return true
+//            }
+//
+//            override fun onQueryTextChange(newText: String): Boolean {
+//                if (adapter != null) adapter!!.filter.filter(newText)
+//                return true
+//            }
+//        })
+//        searchView.setOnCloseListener {
+//            if (adapter != null) adapter!!.filter.filter(null)
+//            true
+//        }
         return true
     }
 
@@ -200,10 +200,10 @@ class MainActivity : AppCompatActivity(), OnSharedPreferenceChangeListener {
         val prefs = PreferenceManager.getDefaultSharedPreferences(this)
         val network = menu.findItem(R.id.menu_network_setting)
         network.setIcon(if (isWifiActive(this)) R.drawable.wifi else R.drawable.other)
-        val wifi = menu.findItem(R.id.menu_block_wifi)
-        wifi.isChecked = prefs.getBoolean("whitelist_wifi", true)
-        val other = menu.findItem(R.id.menu_block_other)
-        other.isChecked = prefs.getBoolean("whitelist_other", true)
+//        val wifi = menu.findItem(R.id.menu_block_wifi)
+//        wifi.isChecked = prefs.getBoolean("whitelist_wifi", true)
+//        val other = menu.findItem(R.id.menu_block_other)
+//        other.isChecked = prefs.getBoolean("whitelist_other", true)
         return super.onPrepareOptionsMenu(menu)
     }
 
@@ -223,37 +223,37 @@ class MainActivity : AppCompatActivity(), OnSharedPreferenceChangeListener {
                 fillApplicationList()
                 true
             }
-            R.id.menu_block_wifi -> {
-                prefs.edit().putBoolean("whitelist_wifi", !prefs.getBoolean("whitelist_wifi", true))
-                    .apply()
-                fillApplicationList()
-                reload("wifi", this)
-                true
-            }
-            R.id.menu_block_other -> {
-                prefs.edit()
-                    .putBoolean("whitelist_other", !prefs.getBoolean("whitelist_other", true))
-                    .apply()
-                fillApplicationList()
-                reload("other", this)
-                true
-            }
-            R.id.menu_reset_wifi -> {
-                AlertDialog.Builder(this)
-                    .setMessage(R.string.sure_message)
-                    .setPositiveButton(android.R.string.yes) { dialog, which -> reset("wifi") }
-                    .setNegativeButton(android.R.string.no, null)
-                    .show()
-                true
-            }
-            R.id.menu_reset_other -> {
-                AlertDialog.Builder(this)
-                    .setMessage(R.string.sure_message)
-                    .setPositiveButton(android.R.string.yes) { dialog, which -> reset("other") }
-                    .setNegativeButton(android.R.string.no, null)
-                    .show()
-                true
-            }
+//            R.id.menu_block_wifi -> {
+//                prefs.edit().putBoolean("whitelist_wifi", !prefs.getBoolean("whitelist_wifi", true))
+//                    .apply()
+//                fillApplicationList()
+//                reload("wifi", this)
+//                true
+//            }
+//            R.id.menu_block_other -> {
+//                prefs.edit()
+//                    .putBoolean("whitelist_other", !prefs.getBoolean("whitelist_other", true))
+//                    .apply()
+//                fillApplicationList()
+//                reload("other", this)
+//                true
+//            }
+//            R.id.menu_reset_wifi -> {
+//                AlertDialog.Builder(this)
+//                    .setMessage(R.string.sure_message)
+//                    .setPositiveButton(android.R.string.yes) { dialog, which -> reset("wifi") }
+//                    .setNegativeButton(android.R.string.no, null)
+//                    .show()
+//                true
+//            }
+//            R.id.menu_reset_other -> {
+//                AlertDialog.Builder(this)
+//                    .setMessage(R.string.sure_message)
+//                    .setPositiveButton(android.R.string.yes) { dialog, which -> reset("other") }
+//                    .setNegativeButton(android.R.string.no, null)
+//                    .show()
+//                true
+//            }
             else -> super.onOptionsItemSelected(item)
         }
     }
