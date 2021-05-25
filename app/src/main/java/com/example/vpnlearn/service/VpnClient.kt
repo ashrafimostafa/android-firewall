@@ -8,7 +8,6 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.net.ConnectivityManager
 import android.net.VpnService
-import android.net.wifi.WifiManager
 import android.os.Build
 import android.os.IBinder
 import android.os.ParcelFileDescriptor
@@ -26,7 +25,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import java.io.IOException
 import javax.inject.Inject
-import javax.inject.Singleton
+
 
 class VpnClient : VpnService() {
     private var vpn: ParcelFileDescriptor? = null
@@ -40,9 +39,9 @@ class VpnClient : VpnService() {
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         // Get command
-        val cmd = if (intent == null) Command.start else (intent.getSerializableExtra(
+        val cmd = intent.getSerializableExtra(
             EXTRA_COMMAND
-        ) as Command)
+        ) as Command
         Log.i(
             TAG,
             "Start intent=" + intent + " command=" + cmd + " vpn=" + (vpn != null)
@@ -56,7 +55,6 @@ class VpnClient : VpnService() {
                 state = State.CONNECTED
             }
             Command.reload -> {
-                // Seamless handover
                 updateForegroundNotification(R.string.reloading)
                 state = State.CONNECTING
                 val prev = vpn
@@ -88,8 +86,8 @@ class VpnClient : VpnService() {
         Log.i(TAG, "wifi=$wifi")
 
         // Build VPN service
-       val builder: Builder = Builder()
-       builder.setSession(getString(R.string.app_name))
+        val builder = Builder()
+        builder.setSession(getString(R.string.app_name))
         builder.addAddress("10.1.10.1", 32)
         builder.addAddress("fd00:1:fd00:1:fd00:1:fd00:1", 128)
         builder.addRoute("0.0.0.0", 0)
@@ -99,31 +97,30 @@ class VpnClient : VpnService() {
         if (isWifiActive(this)) {
             compositeDisposable.add(
                 databaseService.packageDao()
-                    .getDisableWifiPackages()
+                    .getAllowWifiPackages()
                     .subscribeOn(Schedulers.io())
                     .subscribe({
 
                         for (pkg in it) {
-                            builder.addDisallowedApplication(pkg.packageName)
-                            Log.i(TAG, "wifi disallow app: $pkg")
+                            builder.addAllowedApplication(pkg.packageName)
+                            Log.i(TAG, "wifi allow app: $pkg")
                         }
                     }, {
-                        Log.e(TAG, "adding disallow wifi cause error: $it")
+                        Log.e(TAG, "adding allow wifi cause error: $it")
                     })
             )
-        }
-        else {
+        } else {
             compositeDisposable.add(
                 databaseService.packageDao()
-                    .getDisableOtherPackages()
+                    .getAllowOtherPackages()
                     .subscribeOn(Schedulers.io())
                     .subscribe({
                         for (pkg in it) {
-                            builder.addDisallowedApplication(pkg.packageName)
-                            Log.i(TAG, "other disallow app: $pkg")
+                            builder.addAllowedApplication(pkg.packageName)
+                            Log.i(TAG, "other allow app: $pkg")
                         }
                     }, {
-                        Log.e(TAG, "adding disallow other cause error: $it")
+                        Log.e(TAG, "adding allow other cause error: $it")
                     })
             )
         }
@@ -148,6 +145,8 @@ class VpnClient : VpnService() {
         val pi = PendingIntent.getActivity(this, 0, configure, PendingIntent.FLAG_UPDATE_CURRENT)
         builder.setConfigureIntent(pi)
 
+        builder.setBlocking(true) //The system blocks any network traffic that doesn’t use the VPN
+
         // Start VPN service
         return try {
             builder.establish()
@@ -162,6 +161,7 @@ class VpnClient : VpnService() {
 
             // Feedback
             showToast(ex.toString(), this)
+            state = State.DISCONNECTED
             null
         }
 
@@ -182,7 +182,7 @@ class VpnClient : VpnService() {
         }
     }
 
-    val connectivityChangedReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+    private val connectivityChangedReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             Log.i(TAG, "Received $intent")
             logExtras(TAG, intent)
@@ -191,17 +191,16 @@ class VpnClient : VpnService() {
                     ConnectivityManager.EXTRA_NETWORK_TYPE,
                     ConnectivityManager.TYPE_DUMMY
                 ) == ConnectivityManager.TYPE_WIFI
-            ) Log.i(TAG,"test")
-                reload(context)
+            ) reload(context)
         }
     }
-//    val packageAddedReceiver: BroadcastReceiver = object : BroadcastReceiver() {
-//        override fun onReceive(context: Context, intent: Intent) {
-//            Log.i(TAG, "Received $intent")
-//            logExtras(TAG, intent)
-//            reload(context)
-//        }
-//    }
+    private val packageAddedReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            Log.i(TAG, "Received $intent")
+            logExtras(TAG, intent)
+            reload(context)
+        }
+    }
 
     override fun onCreate() {
         (applicationContext as MyApplication).applicationComponent.inject(this) //inject dependencies
@@ -214,10 +213,10 @@ class VpnClient : VpnService() {
         registerReceiver(connectivityChangedReceiver, ifConnectivity)
 
         // Listen for added applications
-//        val ifPackage = IntentFilter()
-//        ifPackage.addAction(Intent.ACTION_PACKAGE_ADDED)
-//        ifPackage.addDataScheme("package")
-//        registerReceiver(packageAddedReceiver, ifPackage)
+        val ifPackage = IntentFilter()
+        ifPackage.addAction(Intent.ACTION_PACKAGE_ADDED)
+        ifPackage.addDataScheme("package")
+        registerReceiver(packageAddedReceiver, ifPackage)
     }
 
     override fun onDestroy() {
@@ -227,7 +226,7 @@ class VpnClient : VpnService() {
             vpn = null
         }
         unregisterReceiver(connectivityChangedReceiver)
-//        unregisterReceiver(packageAddedReceiver)
+        unregisterReceiver(packageAddedReceiver)
         super.onDestroy()
     }
 

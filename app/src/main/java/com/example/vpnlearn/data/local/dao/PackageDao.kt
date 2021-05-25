@@ -51,10 +51,10 @@ interface PackageDao {
     @Query("UPDATE package SET is_other_disabled = 1")
     fun enableAllOther(): Single<Int>
 
-    @Query("SELECT * FROM package WHERE is_wifi_disabled = 0")
-    fun getDisableWifiPackages(): Single<List<PackageDM>>
+    @Query("SELECT * FROM package WHERE is_wifi_disabled = 1")
+    fun getAllowWifiPackages(): Single<List<PackageDM>>
 
-    @Query("SELECT * FROM package WHERE is_other_disabled = 0")
-    fun getDisableOtherPackages(): Single<List<PackageDM>>
+    @Query("SELECT * FROM package WHERE is_other_disabled = 1")
+    fun getAllowOtherPackages(): Single<List<PackageDM>>
 
 }

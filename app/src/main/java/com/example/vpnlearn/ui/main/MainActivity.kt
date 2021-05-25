@@ -19,6 +19,7 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SwitchCompat
 import androidx.core.view.MenuItemCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -62,7 +63,7 @@ class MainActivity : AppCompatActivity(), OnSharedPreferenceChangeListener {
         supportActionBar!!.customView = view
 
         // On/off switch
-        val swEnabled = view.findViewById<Switch>(R.id.vpn_enable_sw)
+        val swEnabled = view.findViewById<SwitchCompat>(R.id.vpn_enable_sw)
 
         swEnabled.isChecked = VpnClient1.state == State.CONNECTED //woow
 //        swEnabled.isChecked = prefs.getBoolean("enabled", false)
@@ -166,7 +167,7 @@ class MainActivity : AppCompatActivity(), OnSharedPreferenceChangeListener {
             val enabled = prefs.getBoolean(name, false)
 
             // Check switch state
-            val swEnabled = supportActionBar!!.customView.findViewById<Switch>(R.id.vpn_enable_sw)
+            val swEnabled = supportActionBar!!.customView.findViewById<SwitchCompat>(R.id.vpn_enable_sw)
             if (swEnabled.isChecked != enabled) swEnabled.isChecked = enabled
         }
     }
