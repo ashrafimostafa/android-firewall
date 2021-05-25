@@ -30,7 +30,7 @@ class AppListViewModel @Inject constructor(
 
 
     override fun onCreate() {
-        messageTxt.postValue("Salam")
+//        messageTxt.postValue("Salam")
         queryPackageList()
     }
 

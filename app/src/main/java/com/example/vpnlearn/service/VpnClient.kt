@@ -8,6 +8,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.net.ConnectivityManager
 import android.net.VpnService
+import android.net.wifi.WifiManager
 import android.os.Build
 import android.os.IBinder
 import android.os.ParcelFileDescriptor
@@ -168,7 +169,7 @@ class VpnClient : VpnService() {
     }
 
     private fun vpnStop(pfd: ParcelFileDescriptor) {
-        Log.i(TAG, "Stopping")
+        Log.i(TAG, "Stopping1")
         try {
             pfd.close()
         } catch (ex: IOException) {
@@ -240,7 +241,7 @@ class VpnClient : VpnService() {
         super.onRevoke()
     }
 
-    fun updateForegroundNotification(message: Int) {
+    private fun updateForegroundNotification(message: Int) {
         Log.i(TAG, "state changed int: ${getString(message)} ")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val intent = Intent(this, AppListActivity::class.java)
