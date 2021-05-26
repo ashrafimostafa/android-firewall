@@ -148,24 +148,7 @@ class VpnClient : VpnService() {
                     })
             )
         }
-
         Log.i(TAG, "return time: " + System.currentTimeMillis())
-        // Build configure intent
-//        val configure = Intent(this, AppListActivity::class.java)
-//        val pi = PendingIntent.getActivity(this, 0, configure, PendingIntent.FLAG_UPDATE_CURRENT)
-//        builder.setConfigureIntent(pi)
-//
-//
-////      Start VPN service
-//        return try {
-//            builder.establish()
-//        } catch (ex: Throwable) {
-//            showToast(ex.toString(), this)
-//            state = State.DISCONNECTED
-//            null
-//        }
-
-
     }
 
     private fun vpnStop(pfd: ParcelFileDescriptor) {
@@ -262,12 +245,10 @@ class VpnClient : VpnService() {
 
 
     fun start(context: Context) {
-//        Log.i(TAG, "start called $context")
+        Log.i(TAG, "start called")
         val intent = Intent(context, VpnClient::class.java)
         intent.putExtra(EXTRA_COMMAND, Command.start)
-        //        context.startService(intent);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Log.i(TAG, "starting called")
             context.startForegroundService(intent)
         } else {
             context.startService(intent)
@@ -277,26 +258,19 @@ class VpnClient : VpnService() {
 
     fun reload(context: Context) {
         Log.i(TAG, "reload called")
-//        if (network == null || (if ("wifi" == network) isWifiActive(context) else !isWifiActive(
-//                context
-//            ))
-//        ) {
         val intent = Intent(context, VpnClient::class.java)
         intent.putExtra(EXTRA_COMMAND, Command.reload)
-        //        context.startService(intent);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             context.startForegroundService(intent)
         } else {
             context.startService(intent)
         }
-//        }
     }
 
     fun stop(context: Context) {
         Log.i(TAG, "stop called")
         val intent = Intent(context, VpnClient::class.java)
         intent.putExtra(EXTRA_COMMAND, Command.stop)
-        //        context.startService(intent);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             context.startForegroundService(intent)
         } else {
@@ -315,7 +289,7 @@ class VpnClient : VpnService() {
         return null
     }
 
-    fun establishVpn(builder: Builder): ParcelFileDescriptor? {
+    private fun establishVpn(builder: Builder): ParcelFileDescriptor? {
         return try {
             builder.establish()
         } catch (ex: Throwable) {
@@ -323,15 +297,6 @@ class VpnClient : VpnService() {
             state = State.DISCONNECTED
             null
         }
-
     }
 
 }
-
-
-//val builder: Builder = Builder()
-//builder.setSession(getString(R.string.app_name))
-//builder.addAddress("10.1.10.1", 32)
-//builder.addAddress("fd00:1:fd00:1:fd00:1:fd00:1", 128)
-//builder.addRoute("0.0.0.0", 0)
-//builder.addRoute("0:0:0:0:0:0:0:0", 0)

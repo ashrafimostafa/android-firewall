@@ -33,12 +33,6 @@
             </intent-filter>
         </service>
 
-        <receiver android:name=".receiver.Receiver">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
-            </intent-filter>
-        </receiver>
         <receiver
             android:name=".policy.DeviceAdmin"
             android:description="@string/app_name"

@@ -84,7 +84,7 @@ class AppListFragment : BaseFragment<AppListViewModel>() {
             if (isChecked) {
                 val prepare = VpnService.prepare(context)
                 if (prepare == null) {
-                    //user already grant vpn permission
+                    //user already grant permission
                     onActivityResult(REQUEST_VPN, AppCompatActivity.RESULT_OK, null)
                 } else {
                     try {
