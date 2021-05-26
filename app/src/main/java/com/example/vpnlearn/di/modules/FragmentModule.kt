@@ -14,6 +14,7 @@ import com.example.vpnlearn.ui.applist.AppListViewModel
 import com.example.vpnlearn.ui.applist.app.ApplicationAdapter
 import com.example.vpnlearn.ui.base.BaseFragment
 import com.example.vpnlearn.ui.home.HomeViewModel
+import com.example.vpnlearn.ui.setting.SettingViewModel
 import com.example.vpnlearn.utility.ProvideAppList
 import com.example.vpnlearn.utility.ViewModelProviderFactory
 import dagger.Module
@@ -36,6 +37,15 @@ class FragmentModule(private val fragment: BaseFragment<*>) {
         fragment, ViewModelProviderFactory(AppListViewModel::class) {
             AppListViewModel(compositeDisposable, databaseService, provideAppList)
         }).get(AppListViewModel::class.java)
+
+    @Provides
+    fun provideSettingViewModel(
+        compositeDisposable: CompositeDisposable
+    ): SettingViewModel = ViewModelProvider(
+        fragment, ViewModelProviderFactory(SettingViewModel::class) {
+            SettingViewModel(compositeDisposable)
+        }).get(SettingViewModel::class.java)
+
 
     @Provides
     fun provideLinearlayoutManager() = LinearLayoutManager(fragment.context)

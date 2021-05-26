@@ -18,6 +18,8 @@
 
     <string name="sure_message">Are you sure you want to reset setting?</string>
 
+    <string name="enable_disable_uninstall">Enable/Disable app uninstall</string>
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

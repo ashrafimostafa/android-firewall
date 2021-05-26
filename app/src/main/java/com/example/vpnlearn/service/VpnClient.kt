@@ -11,6 +11,8 @@ import android.net.VpnService
 import android.os.Build
 import android.os.IBinder
 import android.os.ParcelFileDescriptor
+import android.os.PowerManager
+import android.os.PowerManager.WakeLock
 import android.util.Log
 import androidx.core.app.TaskStackBuilder
 import com.example.vpnlearn.MyApplication
@@ -41,8 +43,12 @@ class VpnClient : VpnService() {
     @Inject
     lateinit var compositeDisposable: CompositeDisposable
 
+    @Singleton
+    var wakeLock: PowerManager.WakeLock? = null
+
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         // Get command
+        getLock(this)?.acquire()
         val cmd = intent.getSerializableExtra(
             EXTRA_COMMAND
         ) as Command
@@ -148,6 +154,8 @@ class VpnClient : VpnService() {
                     })
             )
         }
+
+
         Log.i(TAG, "return time: " + System.currentTimeMillis())
     }
 
@@ -203,6 +211,7 @@ class VpnClient : VpnService() {
     }
 
     override fun onDestroy() {
+        releaseLock(this)
         Log.i(TAG, "Destroy")
         if (vpn != null) {
             vpnStop(vpn!!)
@@ -299,4 +308,24 @@ class VpnClient : VpnService() {
         }
     }
 
+    @Synchronized
+    private fun getLock(context: Context): WakeLock? {
+        if (wakeLock == null) {
+            val pm = context.getSystemService(POWER_SERVICE) as PowerManager
+            wakeLock = pm.newWakeLock(
+                PowerManager.PARTIAL_WAKE_LOCK,
+                context.getString(R.string.app_name) + " wakelock"
+            )
+            wakeLock?.setReferenceCounted(true)
+        }
+        return wakeLock
+    }
+
+    @Synchronized
+    private fun releaseLock(context: Context) {
+        if (wakeLock != null) {
+            while (wakeLock?.isHeld == true) wakeLock?.release()
+            wakeLock = null
+        }
+    }
 }
