@@ -10,6 +10,7 @@ import androidx.lifecycle.Observer
 import com.example.vpnlearn.R
 import com.example.vpnlearn.di.components.ViewHolderComponent
 import com.example.vpnlearn.di.qualifire.ApplicationContext
+import com.example.vpnlearn.service.State
 import com.example.vpnlearn.service.VpnClient
 import com.example.vpnlearn.ui.base.BaseItemViewHolder
 import kotlinx.android.synthetic.main.item_application.view.*
@@ -55,14 +56,16 @@ class ApplicationViewHolder(parent: ViewGroup) :
             itemView.app_wifi.setOnClickListener { _ ->
                 it.isWifiDisabled = !it.isWifiDisabled
                 viewModel.onWifiCheckedClicked(it.isWifiDisabled, it.id)
-                VpnClient().reload(context)
+                if (VpnClient.state == State.CONNECTED)
+                    VpnClient().reload(context)
                 Log.i(TAG, "select other: $it")
             }
 
             itemView.app_other.setOnClickListener { _ ->
                 it.isOtherDisabled = !it.isOtherDisabled
                 viewModel.onOtherCheckedClicked(it.isOtherDisabled, it.id)
-                VpnClient().reload(context)
+                if (VpnClient.state == State.CONNECTED)
+                    VpnClient().reload(context)
                 Log.i(TAG, "select other: $it")
             }
 

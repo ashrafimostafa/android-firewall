@@ -25,10 +25,14 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import java.io.IOException
 import javax.inject.Inject
+import javax.inject.Singleton
 
-
+@Singleton
 class VpnClient : VpnService() {
+
+    @Singleton
     private var vpn: ParcelFileDescriptor? = null
+
     private val mConfigureIntent: PendingIntent? = null
 
     @Inject
@@ -50,7 +54,10 @@ class VpnClient : VpnService() {
             Command.start -> {
                 updateForegroundNotification(R.string.starting)
                 state = State.CONNECTING
-                if (vpn == null) vpn = vpnStart()
+                if (vpn == null) {
+//                    vpn = vpnStart()
+                    vpnStart()
+                }
                 updateForegroundNotification(R.string.started)
                 state = State.CONNECTED
             }
@@ -58,7 +65,8 @@ class VpnClient : VpnService() {
                 updateForegroundNotification(R.string.reloading)
                 state = State.CONNECTING
                 val prev = vpn
-                vpn = vpnStart()
+//                vpn = vpnStart()
+                vpnStart()
                 updateForegroundNotification(R.string.started)
                 state = State.CONNECTED
                 prev?.let { vpnStop(it) }
@@ -78,7 +86,7 @@ class VpnClient : VpnService() {
         return START_STICKY
     }
 
-    fun vpnStart(): ParcelFileDescriptor? {
+    private fun vpnStart() {
         Log.i(TAG, "Starting")
 
         // Check if Wi-Fi
@@ -93,77 +101,69 @@ class VpnClient : VpnService() {
         builder.addRoute("0.0.0.0", 0)
         builder.addRoute("0:0:0:0:0:0:0:0", 0)
 
+//      builder.addDisallowedApplication("com.farsitel.bazaar")
+
         //adding disallow list
         if (isWifiActive(this)) {
             compositeDisposable.add(
                 databaseService.packageDao()
-                    .getAllowWifiPackages()
+                    .getDisAllowWifiPackages()
                     .subscribeOn(Schedulers.io())
                     .subscribe({
 
                         for (pkg in it) {
-                            builder.addAllowedApplication(pkg.packageName)
-                            Log.i(TAG, "wifi allow app: $pkg")
+                            builder.addDisallowedApplication(pkg.packageName)
+                            Log.i(TAG, "wifi disallow app: $pkg")
                         }
+                        establishVpn(builder)
+                        Log.i(TAG, "database time1: " + System.currentTimeMillis())
                     }, {
-                        Log.e(TAG, "adding allow wifi cause error: $it")
+                        Log.e(TAG, "adding disallow wifi cause error: $it")
                     })
+
             )
         } else {
             compositeDisposable.add(
                 databaseService.packageDao()
-                    .getAllowOtherPackages()
+                    .getDisAllowOtherPackages()
                     .subscribeOn(Schedulers.io())
                     .subscribe({
                         for (pkg in it) {
-                            builder.addAllowedApplication(pkg.packageName)
-                            Log.i(TAG, "other allow app: $pkg")
+                            builder.addDisallowedApplication(pkg.packageName)
+                            Log.i(TAG, "other disallow app: $pkg")
                         }
+
+                        val configure = Intent(this, AppListActivity::class.java)
+                        val pi = PendingIntent.getActivity(
+                            this,
+                            0,
+                            configure,
+                            PendingIntent.FLAG_UPDATE_CURRENT
+                        )
+                        builder.setConfigureIntent(pi)
+                        establishVpn(builder)
+                        Log.i(TAG, "database time2: " + System.currentTimeMillis())
                     }, {
-                        Log.e(TAG, "adding allow other cause error: $it")
+                        Log.e(TAG, "adding disallow other cause error: $it")
                     })
             )
         }
 
-        // Add list of allowed applications //todo
-//        for (applicationDm in ApplicationDm.getRules(this)) if (!(if (wifi) applicationDm.wifiBlocked else applicationDm.otherBlocked)) {
-//            Log.i(TAG, "Allowing " + applicationDm.info.packageName)
-//            try {
-//                builder.addDisallowedApplication(applicationDm.info.packageName)
-//            } catch (ex: PackageManager.NameNotFoundException) {
-//                Log.e(
-//                    TAG, """
-//     $ex
-//     ${Log.getStackTraceString(ex)}
-//     """.trimIndent()
-//                )
-//            }
-//        }
-
+        Log.i(TAG, "return time: " + System.currentTimeMillis())
         // Build configure intent
-        val configure = Intent(this, AppListActivity::class.java) //todo change it to MainActivity
-        val pi = PendingIntent.getActivity(this, 0, configure, PendingIntent.FLAG_UPDATE_CURRENT)
-        builder.setConfigureIntent(pi)
-
-        builder.setBlocking(true) //The system blocks any network traffic that doesn’t use the VPN
-
-        // Start VPN service
-        return try {
-            builder.establish()
-        } catch (ex: Throwable) {
-            Log.e(
-                TAG, """
-     $ex
-     ${Log.getStackTraceString(ex)}
-     """.trimIndent()
-            )
-
-
-            // Feedback
-            showToast(ex.toString(), this)
-            state = State.DISCONNECTED
-            null
-        }
+//        val configure = Intent(this, AppListActivity::class.java)
+//        val pi = PendingIntent.getActivity(this, 0, configure, PendingIntent.FLAG_UPDATE_CURRENT)
+//        builder.setConfigureIntent(pi)
+//
+//
+////      Start VPN service
+//        return try {
+//            builder.establish()
+//        } catch (ex: Throwable) {
+//            showToast(ex.toString(), this)
+//            state = State.DISCONNECTED
+//            null
+//        }
 
 
     }
@@ -314,6 +314,18 @@ class VpnClient : VpnService() {
     override fun onBind(intent: Intent?): IBinder? {
         return null
     }
+
+    fun establishVpn(builder: Builder): ParcelFileDescriptor? {
+        return try {
+            builder.establish()
+        } catch (ex: Throwable) {
+            showToast(ex.toString(), this)
+            state = State.DISCONNECTED
+            null
+        }
+
+    }
+
 }
 
 
