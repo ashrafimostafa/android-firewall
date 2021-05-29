@@ -18,6 +18,7 @@ import androidx.core.app.TaskStackBuilder
 import com.example.vpnlearn.MyApplication
 import com.example.vpnlearn.R
 import com.example.vpnlearn.data.local.DatabaseService
+import com.example.vpnlearn.receiver.RestartServiceReceiver
 import com.example.vpnlearn.ui.applist.AppListActivity
 import com.example.vpnlearn.utility.Constant
 import com.example.vpnlearn.utility.Util.isWifiActive
@@ -31,6 +32,12 @@ import javax.inject.Singleton
 
 @Singleton
 class VpnClient : VpnService() {
+
+    companion object {
+        private const val TAG = "NetBlocker.Service"
+        private const val EXTRA_COMMAND = "Command"
+        var state: State = State.NOUN
+    }
 
     @Singleton
     private var vpn: ParcelFileDescriptor? = null
@@ -48,7 +55,7 @@ class VpnClient : VpnService() {
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         // Get command
-        getLock(this)?.acquire()
+        getLock(this)?.acquire(10 * 60 * 1000L /*10 minutes*/)
         val cmd = intent.getSerializableExtra(
             EXTRA_COMMAND
         ) as Command
@@ -287,12 +294,6 @@ class VpnClient : VpnService() {
         }
     }
 
-    companion object {
-        private const val TAG = "NetBlocker.Service"
-        private const val EXTRA_COMMAND = "Command"
-        var state: State = State.NOUN
-    }
-
 
     override fun onBind(intent: Intent?): IBinder? {
         return null
@@ -308,6 +309,10 @@ class VpnClient : VpnService() {
         }
     }
 
+    /**
+     * initial the wake lock for acquire it when vpn service start
+     * release it on onDestroy
+     */
     @Synchronized
     private fun getLock(context: Context): WakeLock? {
         if (wakeLock == null) {
@@ -321,6 +326,9 @@ class VpnClient : VpnService() {
         return wakeLock
     }
 
+    /**
+     * release the wake lock
+     */
     @Synchronized
     private fun releaseLock(context: Context) {
         if (wakeLock != null) {
@@ -328,4 +336,23 @@ class VpnClient : VpnService() {
             wakeLock = null
         }
     }
+
+    /**
+     * call when service closed
+     */
+    override fun onTaskRemoved(rootIntent: Intent?) {
+        Log.i(TAG, "onTaskRemoved called")
+        callResetBroadcast()
+        callResetBroadcast()
+    }
+
+    /**
+     * call this function when service close unwantedly
+     */
+    private fun callResetBroadcast() {
+        val broadcastIntent = Intent(this, RestartServiceReceiver::class.java)
+        sendBroadcast(broadcastIntent)
+    }
+
+
 }
