@@ -4,6 +4,7 @@ import android.app.admin.DevicePolicyManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -38,6 +39,12 @@ class SettingFragment : BaseFragment<SettingViewModel>() {
         if (deviceAdmin?.let { devicePolicyManager.isAdminActive(it) } == true) {
             Log.i(TAG, "already device admin granted")
             setting_allow_uninstall.isChecked = false
+
+//            devicePolicyManager.setCameraDisabled(deviceAdmin, true)
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                devicePolicyManager.setAlwaysOnVpnPackage(deviceAdmin,null,false)
+            }
         } else {
             setting_allow_uninstall.isChecked = true
         }

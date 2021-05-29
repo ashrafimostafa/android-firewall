@@ -1,11 +1,15 @@
 package com.example.vpnlearn.ui.applist
 
+import android.app.admin.DevicePolicyManager
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.net.VpnService
+import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.provider.Settings
+import android.util.Log
 import android.view.*
 import android.widget.Switch
 import android.widget.Toast
@@ -17,6 +21,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.vpnlearn.R
 import com.example.vpnlearn.di.components.FragmentComponent
 import com.example.vpnlearn.di.qualifire.ApplicationContext
+import com.example.vpnlearn.policy.DeviceAdmin
 import com.example.vpnlearn.service.State
 import com.example.vpnlearn.service.VpnClient
 import com.example.vpnlearn.ui.applist.app.ApplicationAdapter
@@ -24,6 +29,7 @@ import com.example.vpnlearn.ui.base.BaseFragment
 import com.example.vpnlearn.ui.setting.SettingFragment
 import com.example.vpnlearn.utility.FragmentHelper
 import kotlinx.android.synthetic.main.fragment_app_list.*
+import kotlinx.android.synthetic.main.fragment_setting.*
 import javax.inject.Inject
 
 
@@ -31,7 +37,7 @@ class AppListFragment : BaseFragment<AppListViewModel>() {
 
 
     companion object {
-        val TAG = "NetBlocker.AppListFragment"
+        val TAG = "NetBlocker.AppList"
         private const val REQUEST_VPN = 1
         private val VPN_INTENT = Intent(VpnService.SERVICE_INTERFACE)
 
@@ -73,6 +79,29 @@ class AppListFragment : BaseFragment<AppListViewModel>() {
 
         setHasOptionsMenu(true)
 
+
+        /* todo fix this error and search about it
+        Error is : java.lang.SecurityException: Admin ComponentInfo{com.example.vpnlearn/com.example.vpnlearn.policy.DeviceAdmin} does not own the profile
+        val devicePolicyManager =
+            activity?.getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
+        val deviceAdmin = context?.let { ComponentName(it, DeviceAdmin::class.java) }
+
+        if (deviceAdmin?.let { devicePolicyManager.isAdminActive(it) } == true) {
+            Log.i(TAG, "already device admin granted")
+
+//            devicePolicyManager.setCameraDisabled(deviceAdmin, true)
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                devicePolicyManager.setAlwaysOnVpnPackage(
+                    deviceAdmin,
+                    "com.example.vpnlearn",
+                    false
+                )
+            }
+
+
+        }
+    */
 
     }
 

@@ -4,23 +4,36 @@ import android.app.admin.DeviceAdminReceiver
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.os.UserHandle
 import android.util.Log
 import com.example.vpnlearn.utility.Util
 import com.example.vpnlearn.utility.Utility
 
 class DeviceAdmin : DeviceAdminReceiver() {
 
-    private val TAG = "DeviceAdmin"
+    companion object {
+        private const val TAG = "DeviceAdmin"
+    }
 
     override fun onEnabled(context: Context, intent: Intent) {
         super.onEnabled(context, intent)
         Log.i(TAG, "onEnabled: device admin enabled")
+        Util.showToast("device admin enabled", context)
     }
 
     override fun onDisabled(context: Context, intent: Intent) {
         super.onDisabled(context, intent)
         Log.i(TAG, "onDisabled: device admin disabled")
+        Util.showToast("device admin disabled", context)
     }
+
+    override fun onPasswordChanged(context: Context, intent: Intent, user: UserHandle) {
+        super.onPasswordChanged(context, intent, user)
+        Log.i(TAG, "password changed")
+        Util.showToast("password changed", context)
+    }
+
+
 
 
 }
