@@ -54,6 +54,7 @@
                 <action android:name="android.app.action.DEVICE_OWNER_CHANGED" />
             </intent-filter>
         </receiver>
+
         <receiver
             android:name=".receiver.StartUpReceiver"
             android:enabled="true"

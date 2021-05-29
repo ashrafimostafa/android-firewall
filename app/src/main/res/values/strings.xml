@@ -9,7 +9,8 @@
     <string name="reloading">Vpn Reloading</string>
 
     <string name="menu_search">Search application</string>
-    <string name="menu_network">Open network settings</string>
+    <string name="menu_network_setting">Network settings</string>
+    <string name="menu_application_setting">Application settings</string>
     <string name="menu_refresh">Refresh applications list</string>
     <string name="menu_block_wifi">Block Wi-Fi</string>
     <string name="menu_block_other">Block other</string>

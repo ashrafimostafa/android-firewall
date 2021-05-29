@@ -21,6 +21,8 @@ import com.example.vpnlearn.service.State
 import com.example.vpnlearn.service.VpnClient
 import com.example.vpnlearn.ui.applist.app.ApplicationAdapter
 import com.example.vpnlearn.ui.base.BaseFragment
+import com.example.vpnlearn.ui.setting.SettingFragment
+import com.example.vpnlearn.utility.FragmentHelper
 import kotlinx.android.synthetic.main.fragment_app_list.*
 import javax.inject.Inject
 
@@ -65,7 +67,8 @@ class AppListFragment : BaseFragment<AppListViewModel>() {
     override fun setUpViews(view: View) {
         app_list_recycler.apply {
             adapter = applicationAdapter
-            layoutManager = linearLayoutManager
+            layoutManager =
+                LinearLayoutManager(context) //we should use linearLayoutManager here but it cause crashes
         }
 
         setHasOptionsMenu(true)
@@ -117,31 +120,11 @@ class AppListFragment : BaseFragment<AppListViewModel>() {
                 app_list_progress.visibility = View.VISIBLE
                 true
             }
-//            R.id.menu_block_wifi -> {
-//                viewModel.disableWifi()
-//                app_list_progress.visibility = View.VISIBLE
-////                VpnClient.reload("wifi", this) todo complete here
-//                true
-//            }
-//            R.id.menu_block_other -> {
-//                viewModel.disableOther()
-//                app_list_progress.visibility = View.VISIBLE
-////                fillApplicationList()
-////                VpnClient.reload("other", this) todo complete here
-//                true
-//            }
-//            R.id.menu_reset_wifi -> {
-//                viewModel.enableWifi()
-//                app_list_progress.visibility = View.VISIBLE
-////              VpnClient.reload("wifi", this) todo complete here
-//                true
-//            }
-//            R.id.menu_reset_other -> {
-//                viewModel.enableOther()
-//                app_list_progress.visibility = View.VISIBLE
-////              VpnClient.reload("other", this) todo complete here
-//                true
-//            }
+
+            R.id.menu_application_setting -> {
+                FragmentHelper.openFragment(context, R.id.all_list_main_frame, SettingFragment())
+                true
+            }
             R.id.menu_vpn_enable -> {
 
                 true

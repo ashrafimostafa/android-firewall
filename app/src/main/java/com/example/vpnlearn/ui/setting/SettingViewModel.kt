@@ -9,6 +9,6 @@ class SettingViewModel @Inject constructor(
 ) : BaseViewModel(compositeDisposable) {
 
     override fun onCreate() {
-        TODO("Not yet implemented")
+
     }
 }

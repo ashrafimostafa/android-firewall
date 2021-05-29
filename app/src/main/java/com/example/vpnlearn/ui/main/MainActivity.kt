@@ -26,7 +26,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.vpnlearn.R
 import com.example.vpnlearn.adapter.ApplicationAdapter
 import com.example.vpnlearn.model.ApplicationDm.Companion.getRules
-import com.example.vpnlearn.policy.DeviceAdmin.getComponentName
 import com.example.vpnlearn.service.State
 import com.example.vpnlearn.service.VpnClient1
 import com.example.vpnlearn.service.VpnClient1.Companion.reload
@@ -280,23 +279,23 @@ class MainActivity : AppCompatActivity(), OnSharedPreferenceChangeListener {
     }
 
     private fun setPolicy() {
-        mDpm = getSystemService(DEVICE_POLICY_SERVICE) as DevicePolicyManager
-        mWho = getComponentName(this)
-        if (mDpm!!.isAdminActive(mWho!!)) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                try {
-                    mDpm!!.setAlwaysOnVpnPackage(mWho!!, null, true, null)
-                    Log.i(TAG, "always on vpn policy set")
-                } catch (e: PackageManager.NameNotFoundException) {
-                    e.printStackTrace()
-                    Log.e(TAG, "set policy error: $e")
-                }
-            }
-        } else {
-
-            //todo search and ask about this problem
-            Toast.makeText(this, "there is no active admin", Toast.LENGTH_SHORT).show()
-        }
+//        mDpm = getSystemService(DEVICE_POLICY_SERVICE) as DevicePolicyManager
+//        mWho = getComponentName(this)
+//        if (mDpm!!.isAdminActive(mWho!!)) {
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+//                try {
+//                    mDpm!!.setAlwaysOnVpnPackage(mWho!!, null, true, null)
+//                    Log.i(TAG, "always on vpn policy set")
+//                } catch (e: PackageManager.NameNotFoundException) {
+//                    e.printStackTrace()
+//                    Log.e(TAG, "set policy error: $e")
+//                }
+//            }
+//        } else {
+//
+//            //todo search and ask about this problem
+//            Toast.makeText(this, "there is no active admin", Toast.LENGTH_SHORT).show()
+//        }
     }
 
     companion object {
