@@ -13,97 +13,86 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
 import com.example.vpnlearn.R
 import com.example.vpnlearn.di.components.FragmentComponent
 import com.example.vpnlearn.policy.DeviceAdmin
 import com.example.vpnlearn.ui.base.BaseFragment
+import com.example.vpnlearn.utility.Util
 import kotlinx.android.synthetic.main.fragment_setting.*
 
 class SettingFragment : BaseFragment<SettingViewModel>() {
 
-    override fun provideLayoutId() = R.layout.fragment_setting
+    companion object {
+        const val TAG = "NetBlocker.Setting"
+        const val DEVICE_ADMIN_REQUEST_CODE = 101;
+    }
 
-    val DEVICE_ADMIN_REQUEST_CODE = 101;
+    var isAdminPermissionGranted = false
+
+
+    override fun provideLayoutId() = R.layout.fragment_setting
 
 
     override fun injectDependencies(fragmentComponent: FragmentComponent) {
         fragmentComponent.inject(this)
     }
 
+
     override fun setUpViews(view: View) {
-
-        val devicePolicyManager =
-            activity?.getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
-        val deviceAdmin = context?.let { ComponentName(it, DeviceAdmin::class.java) }
-
-        if (deviceAdmin?.let { devicePolicyManager.isAdminActive(it) } == true) {
-            Log.i(TAG, "already device admin granted")
-            setting_allow_uninstall.isChecked = false
-
-//            devicePolicyManager.setCameraDisabled(deviceAdmin, true)
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                devicePolicyManager.setAlwaysOnVpnPackage(deviceAdmin,null,false)
-            }
-        } else {
-            setting_allow_uninstall.isChecked = true
-        }
-
         setting_allow_uninstall.setOnClickListener {
             it as CheckBox
 
-            it.isChecked = !it.isChecked
-
             if (it.isChecked) {
-                disableDeviceAdmin()
+                Util.showToast(getString(R.string.disabling_permission_unavailable), context)
+            }
 
-            } else {
+            var checked = it.isChecked
+
+            Log.i(TAG, "checked: $checked")
+
+            if (!checked) {
                 requestEnableDeviceAdminPermission()
             }
         }
+    }
 
+    override fun setUpObservers() {
+        super.setUpObservers()
+
+        viewModel.adminPermissionObserver.observe(this, {
+            setting_allow_uninstall.isChecked = !it
+            isAdminPermissionGranted = it
+        })
 
     }
 
 
     private fun requestEnableDeviceAdminPermission() {
+        if (isAdminPermissionGranted)
+            return
+
         val deviceAdmin = context?.let { ComponentName(it, DeviceAdmin::class.java) }
         val intent = Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN)
         intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, deviceAdmin)
         intent.putExtra(
             DevicePolicyManager.EXTRA_ADD_EXPLANATION,
-            "We need to be device admin:)"
+            getString(R.string.device_admin_message)
         )
         startActivityForResult(intent, DEVICE_ADMIN_REQUEST_CODE)
 
     }
 
-    private fun disableDeviceAdmin() {
-        val deviceAdmin = context?.let { ComponentName(it, DeviceAdmin::class.java) }
-        val intent = Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN)
-        intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, deviceAdmin)
-        intent.putExtra(
-            DevicePolicyManager.EXTRA_ADD_EXPLANATION,
-            "We need to be device admin:)"
-        )
-        startActivityForResult(intent, DEVICE_ADMIN_REQUEST_CODE)
-    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (requestCode == DEVICE_ADMIN_REQUEST_CODE) {
             if (resultCode == AppCompatActivity.RESULT_OK) {
-//                setting_allow_uninstall.isChecked = false
-                showToast("permission granted hora")
+                showToast(getString(R.string.permission_granted))
             } else {
-//                setting_allow_uninstall.isChecked = false
-                showToast("Permission not granted")
+                showToast(getString(R.string.permission_not_granted))
             }
         }
-    }
-
-    companion object {
-        const val TAG = "SettingFragment"
     }
 }

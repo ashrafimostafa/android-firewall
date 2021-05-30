@@ -37,7 +37,7 @@ class AppListFragment : BaseFragment<AppListViewModel>() {
 
 
     companion object {
-        val TAG = "NetBlocker.AppList"
+        const val TAG = "NetBlocker.AppList"
         private const val REQUEST_VPN = 1
         private val VPN_INTENT = Intent(VpnService.SERVICE_INTERFACE)
 
@@ -71,6 +71,7 @@ class AppListFragment : BaseFragment<AppListViewModel>() {
 
 
     override fun setUpViews(view: View) {
+        activity?.setTitle(R.string.app_name)
         app_list_recycler.apply {
             adapter = applicationAdapter
             layoutManager =
@@ -98,8 +99,6 @@ class AppListFragment : BaseFragment<AppListViewModel>() {
                     false
                 )
             }
-
-
         }
     */
 

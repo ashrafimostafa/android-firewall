@@ -40,10 +40,11 @@ class FragmentModule(private val fragment: BaseFragment<*>) {
 
     @Provides
     fun provideSettingViewModel(
-        compositeDisposable: CompositeDisposable
+        compositeDisposable: CompositeDisposable,
+        @ApplicationContext context:Context
     ): SettingViewModel = ViewModelProvider(
         fragment, ViewModelProviderFactory(SettingViewModel::class) {
-            SettingViewModel(compositeDisposable)
+            SettingViewModel(compositeDisposable, context)
         }).get(SettingViewModel::class.java)
 
 
