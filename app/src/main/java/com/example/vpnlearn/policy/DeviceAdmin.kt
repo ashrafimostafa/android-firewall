@@ -7,12 +7,19 @@ import android.content.Intent
 import android.os.UserHandle
 import android.util.Log
 import com.example.vpnlearn.utility.Util
-import com.example.vpnlearn.utility.Utility
 
 class DeviceAdmin : DeviceAdminReceiver() {
 
     companion object {
         private const val TAG = "DeviceAdmin"
+    }
+
+    /**
+     * @param context The context of the application.
+     * @return The component name of this component in the given context.
+     */
+    fun getComponentName(context: Context?): ComponentName {
+        return context?.let { ComponentName(it.applicationContext, DeviceAdminReceiver::class.java) }!!
     }
 
     override fun onEnabled(context: Context, intent: Intent) {

@@ -12,12 +12,6 @@
     <string name="menu_network_setting">Network settings</string>
     <string name="menu_application_setting">Application settings</string>
     <string name="menu_refresh">Refresh applications list</string>
-    <string name="menu_block_wifi">Block Wi-Fi</string>
-    <string name="menu_block_other">Block other</string>
-    <string name="menu_reset_wifi">Reset Wi-Fi rules</string>
-    <string name="menu_reset_other">Reset other rules</string>
-
-    <string name="sure_message">Are you sure you want to reset setting?</string>
 
     <string name="enable_disable_uninstall">Enable/Disable app uninstall</string>
     <string name="device_admin_message">We need to be device admin:)</string>
