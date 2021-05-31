@@ -23,6 +23,7 @@
     <string name="permission_not_granted">permission not granted</string>
     <string name="setting">Setting</string>
     <string name="create_profile">Create profile</string>
+    <string name="lock_phone">Lock phone</string>
     <string name="profile_not_created">Profile Not Created!</string>
 
 

@@ -6,6 +6,7 @@ import android.app.admin.DevicePolicyManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.os.AsyncTask
 import android.os.Build
 import android.util.Log
 import android.view.View
@@ -20,7 +21,6 @@ import com.example.vpnlearn.ui.applist.AppListFragment
 import com.example.vpnlearn.ui.base.BaseFragment
 import com.example.vpnlearn.utility.Constant
 import com.example.vpnlearn.utility.Util
-import com.example.vpnlearn.utility.Utility
 import kotlinx.android.synthetic.main.fragment_setting.*
 import java.lang.Exception
 
@@ -105,6 +105,29 @@ class SettingFragment : BaseFragment<SettingViewModel>() {
                 Log.e(AppListFragment.TAG, "block: ${ex.toString()}")
                 showToast(R.string.profile_not_created)
                 setting_always_on_vpn.isChecked = false
+            }
+
+        }
+
+        setting_lock_phone.setOnClickListener {
+            val devicePolicyManager =
+                activity!!.getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
+            val deviceAdmin =
+                activity.let { it?.let { it1 -> ComponentName(it1, DeviceAdmin::class.java) } }
+
+            try {
+                if (deviceAdmin?.let { it1 -> devicePolicyManager.isAdminActive(it1) } == true) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                        devicePolicyManager.setAlwaysOnVpnPackage(deviceAdmin, null, true)
+                    } else {
+                        Log.i(TAG, "setUpViews: inam android vesionee akhe!")
+                    }
+//                devicePolicyManager.lockNow()
+                } else {
+                    Log.i(TAG, "setUpViews: permission not granted")
+                }
+            } catch (ex: Exception) {
+                Log.e(AppListFragment.TAG, "block1: ${ex.toString()}")
             }
 
         }

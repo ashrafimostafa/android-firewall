@@ -31,4 +31,12 @@
         android:layout_marginTop="20dp"
         android:text="@string/create_profile" />
 
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/setting_lock_phone"
+        style="@style/normal_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="@string/lock_phone" />
+
 </LinearLayout>

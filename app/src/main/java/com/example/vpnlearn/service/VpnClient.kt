@@ -56,9 +56,19 @@ class VpnClient : VpnService() {
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         // Get command
         getLock(this)?.acquire()
-        val cmd = intent.getSerializableExtra(
-            EXTRA_COMMAND
-        ) as Command
+
+        val cmd = if (intent.getSerializableExtra(EXTRA_COMMAND) != null) {
+            intent.getSerializableExtra(
+                EXTRA_COMMAND
+            ) as Command
+        } else {
+            Command.start
+        }
+
+//        val cmd = intent.getSerializableExtra(
+//            EXTRA_COMMAND
+//        ) as Command
+
         Log.i(
             TAG,
             "Start intent=" + intent + " command=" + cmd + " vpn=" + (vpn != null)
