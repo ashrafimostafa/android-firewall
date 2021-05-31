@@ -1,31 +1,34 @@
 package com.example.vpnlearn.ui.setting
 
+import android.accounts.AccountManager
+import android.app.Activity
 import android.app.admin.DevicePolicyManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.CheckBox
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import com.example.vpnlearn.R
 import com.example.vpnlearn.di.components.FragmentComponent
 import com.example.vpnlearn.policy.DeviceAdmin
+import com.example.vpnlearn.ui.applist.AppListFragment
 import com.example.vpnlearn.ui.base.BaseFragment
 import com.example.vpnlearn.utility.Util
+import com.example.vpnlearn.utility.Utility
 import kotlinx.android.synthetic.main.fragment_setting.*
+import java.lang.Exception
 
 class SettingFragment : BaseFragment<SettingViewModel>() {
 
     companion object {
         const val TAG = "NetBlocker.Setting"
         const val DEVICE_ADMIN_REQUEST_CODE = 101;
+        const val REQUEST_PROVISION_MANAGED_PROFILE = 102;
     }
 
     var isAdminPermissionGranted = false
@@ -40,29 +43,55 @@ class SettingFragment : BaseFragment<SettingViewModel>() {
 
 
     override fun setUpViews(view: View) {
-        setting_allow_uninstall.setOnClickListener {
+        setting_admin_permission.setOnClickListener {
             it as CheckBox
 
-            if (it.isChecked) {
+            val checked = it.isChecked
+            if (!it.isChecked) {
                 Util.showToast(getString(R.string.disabling_permission_unavailable), context)
-            }
-
-            var checked = it.isChecked
-
-            Log.i(TAG, "checked: $checked")
-
-            if (!checked) {
+                it.isChecked = true
+            } else {
                 requestEnableDeviceAdminPermission()
             }
         }
+
+        setting_allow_uninstall.setOnClickListener {
+            it as CheckBox
+
+            val devicePolicyManager =
+                activity!!.getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
+            val deviceAdmin =
+                activity.let { it?.let { it1 -> ComponentName(it1, DeviceAdmin::class.java) } }
+
+            try {
+                devicePolicyManager.setUninstallBlocked(
+                    deviceAdmin,
+                    "com.example.vpnlearn", !it.isChecked
+                )
+            } catch (ex: Exception) {
+                Log.e(AppListFragment.TAG, "block: ${ex.toString()}")
+            }
+
+        }
+
+        setting_add_profile.setOnClickListener {
+            provisionManagedProfile()
+        }
+
+//        getAccountList()
+
     }
 
     override fun setUpObservers() {
         super.setUpObservers()
 
         viewModel.adminPermissionObserver.observe(this, {
-            setting_allow_uninstall.isChecked = !it
+            setting_admin_permission.isChecked = it
             isAdminPermissionGranted = it
+        })
+
+        viewModel.enableDisableUninstallObserver.observe(this, Observer {
+            setting_allow_uninstall.isChecked = it
         })
 
     }
@@ -91,8 +120,63 @@ class SettingFragment : BaseFragment<SettingViewModel>() {
             if (resultCode == AppCompatActivity.RESULT_OK) {
                 showToast(getString(R.string.permission_granted))
             } else {
+                setting_allow_uninstall.isChecked = true
                 showToast(getString(R.string.permission_not_granted))
             }
+        } else if (requestCode == REQUEST_PROVISION_MANAGED_PROFILE) {
+            if (resultCode == Activity.RESULT_OK) {
+                Util.showToast("Provisioning done.", activity)
+            } else {
+                Util.showToast("Provisioning failed.", activity)
+            }
+        }
+    }
+
+    /**
+     * Initiates the managed profile provisioning. If we already have a managed profile set up on
+     * this device, we will get an error dialog in the following provisioning phase.
+     */
+    private fun provisionManagedProfile() {
+
+        var intent = Intent(DevicePolicyManager.ACTION_PROVISION_MANAGED_PROFILE)
+
+
+        // Use a different intent extra below M to configure the admin component.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            intent.putExtra(
+                DevicePolicyManager.EXTRA_PROVISIONING_DEVICE_ADMIN_PACKAGE_NAME,
+                activity!!.applicationContext.packageName
+            )
+        } else {
+            val component = activity?.let {
+                ComponentName(
+                    it,
+                    DeviceAdmin::class.java.getName()
+                )
+            }
+            intent.putExtra(
+                DevicePolicyManager.EXTRA_PROVISIONING_DEVICE_ADMIN_COMPONENT_NAME,
+                component
+            )
+        }
+
+        if (intent.resolveActivity(activity!!.packageManager) != null) {
+            startActivityForResult(intent, REQUEST_PROVISION_MANAGED_PROFILE)
+            activity!!.finish()
+        } else {
+            Toast.makeText(
+                activity, "Device provisioning is not enabled. Stopping.",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+
+    private fun getAccountList() {
+        val accountManager = activity!!.getSystemService(Context.ACCOUNT_SERVICE) as AccountManager
+        var accounts = accountManager.accounts
+        Log.i(TAG, "getAccountList size is: ${accounts.size}")
+        for (account in accounts) {
+            Log.i(TAG, "accout: $account")
         }
     }
 }

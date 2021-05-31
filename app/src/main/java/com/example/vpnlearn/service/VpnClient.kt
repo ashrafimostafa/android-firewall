@@ -55,7 +55,7 @@ class VpnClient : VpnService() {
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         // Get command
-        getLock(this)?.acquire(10 * 60 * 1000L /*10 minutes*/)
+        getLock(this)?.acquire()
         val cmd = intent.getSerializableExtra(
             EXTRA_COMMAND
         ) as Command

@@ -3,13 +3,26 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:padding="10dp"
     tools:context=".ui.setting.SettingFragment">
 
+    <CheckBox
+        android:id="@+id/setting_admin_permission"
+        style="@style/normal_txt"
+        android:text="@string/enable_admin_permission" />
 
     <CheckBox
         android:id="@+id/setting_allow_uninstall"
         style="@style/normal_txt"
         android:text="@string/enable_disable_uninstall" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/setting_add_profile"
+        style="@style/normal_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="@string/create_profile" />
 
 </LinearLayout>

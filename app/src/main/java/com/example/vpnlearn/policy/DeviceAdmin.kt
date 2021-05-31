@@ -19,7 +19,20 @@ class DeviceAdmin : DeviceAdminReceiver() {
      * @return The component name of this component in the given context.
      */
     fun getComponentName(context: Context?): ComponentName {
-        return context?.let { ComponentName(it.applicationContext, DeviceAdminReceiver::class.java) }!!
+        return context?.let {
+            ComponentName(
+                it.applicationContext,
+                DeviceAdminReceiver::class.java
+            )
+        }!!
+    }
+
+    override fun onProfileProvisioningComplete(context: Context, intent: Intent) {
+//        val launch = Intent(context, AppListActivity::class.java)
+//        launch.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+//        context.startActivity(launch)
+
+        Log.i(TAG, "profile created: $intent")
     }
 
     override fun onEnabled(context: Context, intent: Intent) {
@@ -39,8 +52,6 @@ class DeviceAdmin : DeviceAdminReceiver() {
         Log.i(TAG, "password changed")
         Util.showToast("password changed", context)
     }
-
-
 
 
 }

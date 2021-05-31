@@ -97,11 +97,11 @@ class AppListFragment : BaseFragment<AppListViewModel>() {
 
             try {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    devicePolicyManager.setAlwaysOnVpnPackage(
-                        deviceAdmin,
-                        "com.example.vpnlearn",
-                        false
-                    )
+//                    devicePolicyManager.setAlwaysOnVpnPackage(
+//                        deviceAdmin,
+//                        "com.example.vpnlearn",
+//                        false
+//                    )
                     Log.i(TAG, "always on added")
                 }
             } catch (ex: Exception) {
@@ -111,7 +111,7 @@ class AppListFragment : BaseFragment<AppListViewModel>() {
             try {
                 devicePolicyManager.setUninstallBlocked(
                     deviceAdmin,
-                    "com.example.vpnlearn", false
+                    "com.example.vpnlearn", true
                 )
             } catch (ex: Exception) {
                 Log.e(TAG, "block: ${ex.toString()}")

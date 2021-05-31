@@ -27,5 +27,7 @@ public class Note {
 
             - Sets the global Private DNS host (setGlobalPrivateDnsModeSpecifiedHost)
 
+            - Enable/Disable application
+
      */
 }
