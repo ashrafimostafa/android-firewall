@@ -14,6 +14,7 @@
     <string name="menu_refresh">Refresh applications list</string>
 
     <string name="enable_disable_uninstall">Enable/Disable app uninstall</string>
+    <string name="enable_disable_always_on_vpn">Enable/Disable always-on VPN(it may required device restart)</string>
     <string name="enable_admin_permission">Enable admin permission</string>
     <string name="device_admin_message">We need to be device admin:)</string>
     <string name="disabling_permission_unavailable">disabling permission is not possible in android</string>
@@ -22,6 +23,8 @@
     <string name="permission_not_granted">permission not granted</string>
     <string name="setting">Setting</string>
     <string name="create_profile">Create profile</string>
+    <string name="profile_not_created">Profile Not Created!</string>
+
 
 
     <!-- TODO: Remove or change this placeholder text -->

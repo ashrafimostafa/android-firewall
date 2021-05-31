@@ -18,6 +18,7 @@ import com.example.vpnlearn.di.components.FragmentComponent
 import com.example.vpnlearn.policy.DeviceAdmin
 import com.example.vpnlearn.ui.applist.AppListFragment
 import com.example.vpnlearn.ui.base.BaseFragment
+import com.example.vpnlearn.utility.Constant
 import com.example.vpnlearn.utility.Util
 import com.example.vpnlearn.utility.Utility
 import kotlinx.android.synthetic.main.fragment_setting.*
@@ -70,12 +71,42 @@ class SettingFragment : BaseFragment<SettingViewModel>() {
                 )
             } catch (ex: Exception) {
                 Log.e(AppListFragment.TAG, "block: ${ex.toString()}")
+                showToast(R.string.profile_not_created)
+                setting_allow_uninstall.isChecked = false
             }
 
         }
 
         setting_add_profile.setOnClickListener {
             provisionManagedProfile()
+        }
+
+        setting_always_on_vpn.setOnClickListener {
+            it as CheckBox
+
+            val devicePolicyManager =
+                activity!!.getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
+            val deviceAdmin =
+                activity.let { it?.let { it1 -> ComponentName(it1, DeviceAdmin::class.java) } }
+
+
+            try {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    deviceAdmin?.let { it1 ->
+                        devicePolicyManager.setAlwaysOnVpnPackage(
+                            it1,
+                            Constant.PACKAGE_NAME,
+                            false
+                        )
+                    }
+                    Log.i(TAG, "always on added")
+                }
+            } catch (ex: Exception) {
+                Log.e(AppListFragment.TAG, "block: ${ex.toString()}")
+                showToast(R.string.profile_not_created)
+                setting_always_on_vpn.isChecked = false
+            }
+
         }
 
 //        getAccountList()
@@ -120,7 +151,7 @@ class SettingFragment : BaseFragment<SettingViewModel>() {
             if (resultCode == AppCompatActivity.RESULT_OK) {
                 showToast(getString(R.string.permission_granted))
             } else {
-                setting_allow_uninstall.isChecked = true
+                setting_admin_permission.isChecked = false
                 showToast(getString(R.string.permission_not_granted))
             }
         } else if (requestCode == REQUEST_PROVISION_MANAGED_PROFILE) {

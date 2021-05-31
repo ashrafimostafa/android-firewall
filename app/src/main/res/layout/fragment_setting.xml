@@ -17,6 +17,12 @@
         style="@style/normal_txt"
         android:text="@string/enable_disable_uninstall" />
 
+    <CheckBox
+        android:id="@+id/setting_always_on_vpn"
+        style="@style/normal_txt"
+        android:text="@string/enable_disable_always_on_vpn" />
+
+
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/setting_add_profile"
         style="@style/normal_button"
