@@ -4,7 +4,11 @@ import android.content.Context
 import android.content.Intent
 import android.net.VpnService
 import android.os.Bundle
+import android.os.Handler
+import android.os.Message
+import android.os.ParcelFileDescriptor
 import android.provider.Settings
+import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -23,6 +27,7 @@ import com.example.vpnlearn.service.VpnClient
 import com.example.vpnlearn.ui.applist.app.ApplicationAdapter
 import com.example.vpnlearn.ui.base.BaseFragment
 import com.example.vpnlearn.ui.setting.SettingFragment
+import com.example.vpnlearn.utility.Constant
 import com.example.vpnlearn.utility.FragmentHelper
 import kotlinx.android.synthetic.main.fragment_app_list.*
 import javax.inject.Inject
@@ -43,6 +48,25 @@ class AppListFragment : BaseFragment<AppListViewModel>() {
             return fragment
         }
     }
+
+    var state = State.NOUN
+
+    private val mHandler: Handler = object : Handler() {
+        override fun handleMessage(msg: Message) {
+            when (msg.what) {
+                Constant.STATE_CONNECTED -> {
+                    state = State.CONNECTED
+                    actionView.isChecked = true
+                }
+                Constant.STATE_DISCONNECTED -> {
+                    state = State.DISCONNECTED
+                    actionView.isChecked = false
+                }
+            }
+        }
+    }
+
+    val vpnClient = VpnClient()
 
     private lateinit var toggleService: MenuItem
 
@@ -83,9 +107,10 @@ class AppListFragment : BaseFragment<AppListViewModel>() {
         toggleService = menu.findItem(R.id.menu_vpn_enable)
         actionView = MenuItemCompat.getActionView(toggleService) as SwitchCompat
 
+        actionView.setOnClickListener {
+            it as SwitchCompat
 
-        actionView.setOnCheckedChangeListener { _, isChecked ->
-            if (isChecked) {
+            if (it.isChecked) {
                 val prepare = VpnService.prepare(context)
                 if (prepare == null) {
                     //user already grant permission
@@ -103,10 +128,33 @@ class AppListFragment : BaseFragment<AppListViewModel>() {
                     }
                 }
             } else {
-                VpnClient().stop(ctx)
+                vpnClient.stop(ctx)
             }
         }
-        actionView.isChecked = VpnClient.state == State.CONNECTED
+
+//        actionView.setOnCheckedChangeListener { _, isChecked ->
+//            if (isChecked) {
+//                val prepare = VpnService.prepare(context)
+//                if (prepare == null) {
+//                    //user already grant permission
+//                    onActivityResult(REQUEST_VPN, AppCompatActivity.RESULT_OK, null)
+//                } else {
+//                    try {
+//                        //system show vpn connection allow dialog
+//                        startActivityForResult(prepare, REQUEST_VPN)
+//                    } catch (ex: Throwable) {
+//                        onActivityResult(
+//                            REQUEST_VPN,
+//                            AppCompatActivity.RESULT_CANCELED, null
+//                        )
+//                        Toast.makeText(context, ex.toString(), Toast.LENGTH_LONG).show()
+//                    }
+//                }
+//            } else {
+//                VpnClient().stop(ctx)
+//            }
+//        }
+        actionView.isChecked = state == State.CONNECTED
 
     }
 
@@ -141,7 +189,7 @@ class AppListFragment : BaseFragment<AppListViewModel>() {
         viewModel.packageLiveData.observe(this, Observer {
             applicationAdapter.appendDate(it)
             app_list_progress.visibility = View.GONE
-            if (VpnClient.state == State.CONNECTED)
+            if (state == State.CONNECTED)
                 reset()
         })
     }
@@ -153,14 +201,15 @@ class AppListFragment : BaseFragment<AppListViewModel>() {
     }
 
     private fun reset() {
-        VpnClient().reload(ctx)
+        Log.i(TAG, "reset: app rule changed")
+        vpnClient.reload(ctx)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == REQUEST_VPN) {
 
             // Start service
-            if (resultCode == AppCompatActivity.RESULT_OK) VpnClient().start(ctx)
+            if (resultCode == AppCompatActivity.RESULT_OK) vpnClient.start(ctx)
         } else super.onActivityResult(requestCode, resultCode, data)
     }
 }

@@ -11,5 +11,4 @@ object Constant {
     const val STATE_CONNECTING = 1
     const val STATE_CONNECTED = 2
     const val STATE_DISCONNECTED = 3
-    const val LOST = 4
 }

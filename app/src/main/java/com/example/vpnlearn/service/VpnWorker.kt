@@ -45,10 +45,6 @@ class VpnWorker(
 
 
     @Synchronized
-    fun vpnState() = vpnState
-
-
-    @Synchronized
     fun start() {
         if (connectThread != null) {
             connectThread!!.cancelVpn()
@@ -104,22 +100,12 @@ class VpnWorker(
         var compositeDisposable: CompositeDisposable
     ) : Thread() {
 
-//        init {
-//            (ctx as MyApplication).applicationComponent.inject(this)
-//        }
-
         companion object {
             const val TAG = "NetBlocker.ConThread"
         }
 
-
         var vpn: ParcelFileDescriptor? = null
 
-//        @Inject
-//        lateinit var databaseService: DatabaseService
-//
-//        @Inject
-//        lateinit var compositeDisposable: CompositeDisposable
 
         fun startVpn() {
 
@@ -174,9 +160,6 @@ class VpnWorker(
                         })
                 )
             }
-
-            establishVpn()
-
         }
 
         private fun establishVpn(): ParcelFileDescriptor? {
@@ -191,7 +174,6 @@ class VpnWorker(
                 handler.obtainMessage(Constant.STATE_CHANGED, Constant.STATE_DISCONNECTED)
                     .sendToTarget()
                 Log.e(TAG, "establishVpn: error in establishing vpn: ${ex.toString()}")
-                Util.showToast(ex.toString(), ctx)
                 null
             }
         }

@@ -11,6 +11,7 @@ import android.net.VpnService
 import android.os.*
 import android.os.PowerManager.WakeLock
 import android.util.Log
+import androidx.annotation.StringRes
 import androidx.core.app.TaskStackBuilder
 import com.example.vpnlearn.MyApplication
 import com.example.vpnlearn.R
@@ -29,7 +30,7 @@ import javax.inject.Singleton
 
 
 @Singleton
-class VpnClient : VpnService() {
+class VpnClient() : VpnService() {
 
     companion object {
         private const val TAG = "NetBlocker.Service"
@@ -91,7 +92,7 @@ class VpnClient : VpnService() {
     }
 
 
-    lateinit var vpnWorker: VpnWorker
+    private lateinit var vpnWorker: VpnWorker
 
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
@@ -132,6 +133,9 @@ class VpnClient : VpnService() {
         return START_STICKY
     }
 
+    /**
+     * trigger when connectivity state changed
+     */
     private val connectivityChangedReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             Log.i(TAG, "Received $intent")
@@ -144,6 +148,10 @@ class VpnClient : VpnService() {
             ) reload(context)
         }
     }
+
+    /**
+     * trigger when a package install or uninstall
+     */
     private val packageAddedReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             Log.i(TAG, "Received $intent")
@@ -170,6 +178,9 @@ class VpnClient : VpnService() {
         registerReceiver(packageAddedReceiver, ifPackage)
     }
 
+    /**
+     * unregister the receivers for avoid crashing
+     */
     override fun onDestroy() {
         releaseLock(this)
         Log.i(TAG, "Destroy")
@@ -178,7 +189,12 @@ class VpnClient : VpnService() {
         super.onDestroy()
     }
 
-    private fun updateForegroundNotification(message: Int) {
+    /**
+     * show a persistent notification which show the state of notification
+     *
+     * @param message the resource id of required message with show in notification
+     */
+    private fun updateForegroundNotification(@StringRes message: Int) {
         Log.i(TAG, "state changed int: ${getString(message)} ")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val intent = Intent(this, AppListActivity::class.java)
@@ -194,11 +210,14 @@ class VpnClient : VpnService() {
                     .build()
             )
         } else {
-            //todo handle persist notification for old android version
+            //TODO handle persist notification for old android version
         }
     }
 
 
+    /**
+     * start the VpnService
+     */
     fun start(context: Context) {
         Log.i(TAG, "start called")
         val intent = Intent(context, VpnClient::class.java)
@@ -211,6 +230,9 @@ class VpnClient : VpnService() {
     }
 
 
+    /**
+     * reload the VpnService, reloading done with stop and then start the VpnService
+     */
     fun reload(context: Context) {
         Log.i(TAG, "reload called")
         val intent = Intent(context, VpnClient::class.java)
@@ -222,6 +244,9 @@ class VpnClient : VpnService() {
         }
     }
 
+    /**
+     * stop the VpnService
+     */
     fun stop(context: Context) {
         Log.i(TAG, "stop called")
         val intent = Intent(context, VpnClient::class.java)
@@ -232,12 +257,6 @@ class VpnClient : VpnService() {
             context.startService(intent)
         }
     }
-
-
-    override fun onBind(intent: Intent?): IBinder? {
-        return null
-    }
-
 
     /**
      * initial the wake lock for acquire it when vpn service start
@@ -285,4 +304,7 @@ class VpnClient : VpnService() {
     }
 
 
+    override fun onBind(intent: Intent?): IBinder? {
+        return null
+    }
 }

@@ -2,6 +2,7 @@ package com.example.vpnlearn.ui.applist.app
 
 import android.content.Context
 import android.graphics.Color
+import android.os.Handler
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
