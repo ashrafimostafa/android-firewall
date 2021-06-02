@@ -1,6 +1,5 @@
 package com.example.vpnlearn.service
 
-import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
@@ -12,9 +11,7 @@ import android.net.VpnService
 import android.os.*
 import android.os.PowerManager.WakeLock
 import android.util.Log
-import android.widget.Toast
 import androidx.core.app.TaskStackBuilder
-import androidx.fragment.app.FragmentActivity
 import com.example.vpnlearn.MyApplication
 import com.example.vpnlearn.R
 import com.example.vpnlearn.data.local.DatabaseService
@@ -40,6 +37,7 @@ class VpnClient : VpnService() {
         var state: State = State.NOUN
     }
 
+
     @Singleton
     private var vpn: ParcelFileDescriptor? = null
 
@@ -54,7 +52,47 @@ class VpnClient : VpnService() {
     @Singleton
     var wakeLock: PowerManager.WakeLock? = null
 
+
     val builder = Builder()
+
+
+    private val mHandler: Handler = object : Handler() {
+        override fun handleMessage(msg: Message) {
+            Log.i(TAG, "there is a new message: ${msg.toString()}")
+            when (msg.what) {
+                Constant.STATE_CHANGED -> {
+                    when (msg.obj as Int) {
+                        Constant.STATE_NOUN -> {
+                            state = State.NOUN
+                            updateForegroundNotification(R.string.stopped)
+                        }
+                        Constant.STATE_DISCONNECTED -> {
+                            state = State.DISCONNECTED
+                            updateForegroundNotification(R.string.stopped)
+                        }
+                        Constant.STATE_CONNECTED -> {
+                            state = State.CONNECTED
+                            updateForegroundNotification(R.string.started)
+                        }
+                        Constant.STATE_CONNECTING -> {
+                            state = State.CONNECTING
+                            updateForegroundNotification(R.string.starting)
+                        }
+
+                    }
+                    Log.i(TAG, "state chnage: ${msg.obj}")
+                }
+                Constant.MESSAGE_VPN -> {
+                    Log.i(TAG, "vpn message: ${msg.obj}")
+                    vpn = msg.obj as ParcelFileDescriptor
+                }
+            }
+        }
+    }
+
+
+    lateinit var vpnWorker: VpnWorker
+
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         // Get command
@@ -68,9 +106,6 @@ class VpnClient : VpnService() {
             Command.start
         }
 
-//        val cmd = intent.getSerializableExtra(
-//            EXTRA_COMMAND
-//        ) as Command
 
         Log.i(
             TAG,
@@ -78,40 +113,23 @@ class VpnClient : VpnService() {
         )
         when (cmd) {
             Command.start -> {
-                updateForegroundNotification(R.string.starting)
-                state = State.CONNECTING
                 if (vpn == null) {
-//                    vpn = vpnStart()
-//                    vpnStart()
-
-                    VpnWorker(mHandler, builder, this).start()
+                    vpnWorker.start()
                 }
-                updateForegroundNotification(R.string.started)
-                state = State.CONNECTED
             }
             Command.reload -> {
-                updateForegroundNotification(R.string.reloading)
-                state = State.CONNECTING
-                val prev = vpn
-//                vpn = vpnStart()
-//                vpnStart()
-                VpnWorker(mHandler, builder, this).stop()
-                VpnWorker(mHandler, builder, this).start()
-                updateForegroundNotification(R.string.started)
-                state = State.CONNECTED
-//                prev?.let { vpnStop(it) }
+                vpnWorker.stop()
+                vpnWorker.start()
             }
             Command.stop -> {
-                updateForegroundNotification(R.string.stopping)
-                state = State.STOPPING
                 if (vpn != null) {
-//                    vpnStop(vpn!!)
-                    VpnWorker(mHandler, builder, this).stop()
-                    updateForegroundNotification(R.string.stopped)
-                    state = State.DISCONNECTED
+                    vpnWorker.stop()
                     vpn = null
                 }
                 stopSelf()
+            }
+            Command.lost -> {
+
             }
         }
         return START_STICKY
@@ -220,6 +238,7 @@ class VpnClient : VpnService() {
 
     override fun onCreate() {
         (applicationContext as MyApplication).applicationComponent.inject(this) //inject dependencies
+        vpnWorker = VpnWorker(mHandler, builder, this, databaseService, compositeDisposable)
         super.onCreate()
         Log.i(TAG, "Create")
 
@@ -239,8 +258,7 @@ class VpnClient : VpnService() {
         releaseLock(this)
         Log.i(TAG, "Destroy")
         if (vpn != null) {
-//            vpnStop(vpn!!)
-            VpnWorker(mHandler, builder, this).stop()
+            vpnWorker.stop()
             vpn = null
         }
         unregisterReceiver(connectivityChangedReceiver)
@@ -251,8 +269,7 @@ class VpnClient : VpnService() {
     override fun onRevoke() {
         Log.i(TAG, "Revoke")
         if (vpn != null) {
-//            vpnStop(vpn!!)
-            VpnWorker(mHandler, builder, this).stop()
+            vpnWorker.stop()
             vpn = null
         }
 
@@ -372,15 +389,6 @@ class VpnClient : VpnService() {
     private fun callResetBroadcast() {
         val broadcastIntent = Intent(this, RestartServiceReceiver::class.java)
         sendBroadcast(broadcastIntent)
-    }
-
-
-    private val mHandler: Handler = object : Handler() {
-        override fun handleMessage(msg: Message) {
-            Log.i(TAG, "there is a new message: ${msg.toString()}")
-//            when (msg.what) {
-//            }
-        }
     }
 
 

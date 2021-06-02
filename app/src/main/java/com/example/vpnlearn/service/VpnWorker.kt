@@ -7,20 +7,26 @@ import android.net.VpnService
 import android.os.Handler
 import android.os.ParcelFileDescriptor
 import android.util.Log
-import com.example.vpnlearn.MyApplication
 import com.example.vpnlearn.data.local.DatabaseService
 import com.example.vpnlearn.ui.applist.AppListActivity
 import com.example.vpnlearn.utility.Constant
 import com.example.vpnlearn.utility.Util
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
-import java.lang.Exception
-import javax.inject.Inject
+import javax.inject.Singleton
 
 
-class VpnWorker(val handler: Handler, var builder: VpnService.Builder, var ctx: Context) {
+@Singleton
+class VpnWorker(
+    val handler: Handler,
+    var builder: VpnService.Builder,
+    var ctx: Context,
+    var databaseService: DatabaseService,
+    var compositeDisposable: CompositeDisposable
+) {
 
     companion object {
+        const val TAG = "NetBlocker.VpnWorker"
         const val ipV4 = "10.1.10.1"
         const val ipV6 = "fd00:1:fd00:1:fd00:1:fd00:1"
         const val routeV4 = "0.0.0.0"
@@ -32,6 +38,7 @@ class VpnWorker(val handler: Handler, var builder: VpnService.Builder, var ctx: 
     }
 
 
+    @Singleton
     private var connectThread: ConnectThread? = null
 
     private var vpnState = State.NOUN
@@ -47,18 +54,33 @@ class VpnWorker(val handler: Handler, var builder: VpnService.Builder, var ctx: 
             connectThread!!.cancelVpn()
             connectThread!!.startVpn()
         } else {
-            connectThread = ConnectThread(builder, ctx, handler)
+            connectThread =
+                ConnectThread(builder, ctx, handler, databaseService, compositeDisposable)
             connectThread!!.startVpn()
         }
     }
 
     @Synchronized
     fun stop() {
-
+        Log.i(TAG, "stop called")
         if (connectThread != null) {
+            Log.i(TAG, "cancel called")
             connectThread!!.cancelVpn()
         }
         vpnState = State.NOUN
+    }
+
+    @Synchronized
+    fun lost() {
+        Log.i(TAG, "lost called")
+        if (connectThread != null) {
+            connectThread!!.cancelVpn()
+            connectThread!!.startVpn()
+        } else {
+            connectThread =
+                ConnectThread(builder, ctx, handler, databaseService, compositeDisposable)
+            connectThread!!.startVpn()
+        }
     }
 
     @Synchronized
@@ -75,7 +97,11 @@ class VpnWorker(val handler: Handler, var builder: VpnService.Builder, var ctx: 
     }
 
     class ConnectThread(
-        var builder: VpnService.Builder, var ctx: Context,val handler: Handler
+        var builder: VpnService.Builder,
+        var ctx: Context,
+        val handler: Handler,
+        var databaseService: DatabaseService,
+        var compositeDisposable: CompositeDisposable
     ) : Thread() {
 
 //        init {
@@ -102,53 +128,52 @@ class VpnWorker(val handler: Handler, var builder: VpnService.Builder, var ctx: 
             builder.addAddress(ipV6, ipv6Length)
             builder.addRoute(routeV4, routeV4Length)
             builder.addRoute(routeV6, routeV6Length)
-            handler.obtainMessage(Constant.STATE_CHANGED, "starting").sendToTarget()
+            handler.obtainMessage(Constant.STATE_CHANGED, Constant.STATE_CONNECTING).sendToTarget()
 
-//            if (Util.isWifiActive(ctx)) {
-//                compositeDisposable.add(
-//                    databaseService.packageDao()
-//                        .getDisAllowWifiPackages()
-//                        .subscribeOn(Schedulers.io())
-//                        .subscribe({
-//
-//                            for (pkg in it) {
-//                                builder.addDisallowedApplication(pkg.packageName)
-//                                Log.i(TAG, "wifi disallow app: $pkg")
-//                            }
-//                            establishVpn()
-//                            Log.i(TAG, "database time1: " + System.currentTimeMillis())
-//                        }, {
-//                            Log.e(TAG, "adding disallow wifi cause error: $it")
-//                        })
-//
-//                )
-//            }
-//            else {
-//                compositeDisposable.add(
-//                    databaseService.packageDao()
-//                        .getDisAllowOtherPackages()
-//                        .subscribeOn(Schedulers.io())
-//                        .subscribe({
-//                            for (pkg in it) {
-//                                builder.addDisallowedApplication(pkg.packageName)
-//                                Log.i(TAG, "other disallow app: $pkg")
-//                            }
-//
-//                            val configure = Intent(ctx, AppListActivity::class.java)
-//                            val pi = PendingIntent.getActivity(
-//                                ctx,
-//                                0,
-//                                configure,
-//                                PendingIntent.FLAG_UPDATE_CURRENT
-//                            )
-//                            builder.setConfigureIntent(pi)
-//                            establishVpn()
-//                            Log.i(TAG, "database time2: " + System.currentTimeMillis())
-//                        }, {
-//                            Log.e(TAG, "adding disallow other cause error: $it")
-//                        })
-//                )
-//            }
+            if (Util.isWifiActive(ctx)) {
+                compositeDisposable.add(
+                    databaseService.packageDao()
+                        .getDisAllowWifiPackages()
+                        .subscribeOn(Schedulers.io())
+                        .subscribe({
+
+                            for (pkg in it) {
+                                builder.addDisallowedApplication(pkg.packageName)
+                                Log.i(TAG, "wifi disallow app: $pkg")
+                            }
+                            establishVpn()
+                            Log.i(TAG, "database time1: " + System.currentTimeMillis())
+                        }, {
+                            Log.e(TAG, "adding disallow wifi cause error: $it")
+                        })
+
+                )
+            } else {
+                compositeDisposable.add(
+                    databaseService.packageDao()
+                        .getDisAllowOtherPackages()
+                        .subscribeOn(Schedulers.io())
+                        .subscribe({
+                            for (pkg in it) {
+                                builder.addDisallowedApplication(pkg.packageName)
+                                Log.i(TAG, "other disallow app: $pkg")
+                            }
+
+                            val configure = Intent(ctx, AppListActivity::class.java)
+                            val pi = PendingIntent.getActivity(
+                                ctx,
+                                0,
+                                configure,
+                                PendingIntent.FLAG_UPDATE_CURRENT
+                            )
+                            builder.setConfigureIntent(pi)
+                            establishVpn()
+                            Log.i(TAG, "database time2: " + System.currentTimeMillis())
+                        }, {
+                            Log.e(TAG, "adding disallow other cause error: $it")
+                        })
+                )
+            }
 
             establishVpn()
 
@@ -156,10 +181,15 @@ class VpnWorker(val handler: Handler, var builder: VpnService.Builder, var ctx: 
 
         private fun establishVpn(): ParcelFileDescriptor? {
             return try {
-                handler.obtainMessage(Constant.STATE_CHANGED, "established").sendToTarget()
+                handler.obtainMessage(Constant.STATE_CHANGED, Constant.STATE_CONNECTED)
+                    .sendToTarget()
                 Log.i(TAG, "vpn connection established")
-                builder.establish()
+                vpn = builder.establish()
+                handler.obtainMessage(Constant.MESSAGE_VPN, vpn).sendToTarget()
+                return vpn
             } catch (ex: Throwable) {
+                handler.obtainMessage(Constant.STATE_CHANGED, Constant.STATE_DISCONNECTED)
+                    .sendToTarget()
                 Log.e(TAG, "establishVpn: error in establishing vpn: ${ex.toString()}")
                 Util.showToast(ex.toString(), ctx)
                 null
@@ -170,14 +200,13 @@ class VpnWorker(val handler: Handler, var builder: VpnService.Builder, var ctx: 
             try {
                 vpn!!.close()
                 Log.i(TAG, "cancelVpn: vpn closed")
-                handler.obtainMessage(Constant.STATE_CHANGED, "closed").sendToTarget()
+                handler.obtainMessage(Constant.STATE_CHANGED, Constant.STATE_DISCONNECTED)
+                    .sendToTarget()
             } catch (ex: Exception) {
                 Log.e(TAG, "cancelVpn: error in closing the von: ${ex.toString()}")
-                handler.obtainMessage(Constant.STATE_CHANGED, "error in closing").sendToTarget()
-
+                handler.obtainMessage(Constant.STATE_CHANGED, Constant.STATE_DISCONNECTED)
+                    .sendToTarget()
             }
-
-
         }
     }
 
