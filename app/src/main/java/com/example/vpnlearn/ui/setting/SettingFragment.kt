@@ -118,7 +118,7 @@ class SettingFragment : BaseFragment<SettingViewModel>() {
             try {
                 if (deviceAdmin?.let { it1 -> devicePolicyManager.isAdminActive(it1) } == true) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                        devicePolicyManager.setAlwaysOnVpnPackage(deviceAdmin, null, true)
+                        devicePolicyManager.lockNow()
                     } else {
                         Log.i(TAG, "setUpViews: inam android vesionee akhe!")
                     }
