@@ -13,6 +13,7 @@ import android.os.PowerManager.WakeLock
 import android.util.Log
 import androidx.annotation.StringRes
 import androidx.core.app.TaskStackBuilder
+import androidx.lifecycle.MutableLiveData
 import com.example.vpnlearn.MyApplication
 import com.example.vpnlearn.R
 import com.example.vpnlearn.data.local.DatabaseService
@@ -34,7 +35,6 @@ class VpnClient() : VpnService() {
         var state: State = State.NOUN
     }
 
-
     @Singleton
     private var vpn: ParcelFileDescriptor? = null
 
@@ -52,6 +52,9 @@ class VpnClient() : VpnService() {
 
     val builder = Builder()
 
+    private val VPN_STATE_CHANGE = "VPN_STATE"
+    private val MY_RECEIVER = "VPN_STATE_RECEIVER"
+
 
     private val mHandler: Handler = object : Handler() {
         override fun handleMessage(msg: Message) {
@@ -66,10 +69,18 @@ class VpnClient() : VpnService() {
                         Constant.STATE_DISCONNECTED -> {
                             state = State.DISCONNECTED
                             updateForegroundNotification(R.string.stopped)
+                            var intent = Intent()
+                            intent.setAction(MY_RECEIVER)
+                            intent.putExtra(VPN_STATE_CHANGE, Constant.STATE_DISCONNECTED)
+                            sendBroadcast(intent)
                         }
                         Constant.STATE_CONNECTED -> {
                             state = State.CONNECTED
                             updateForegroundNotification(R.string.started)
+                            var intent = Intent()
+                            intent.setAction(MY_RECEIVER)
+                            intent.putExtra(VPN_STATE_CHANGE, Constant.STATE_CONNECTED)
+                            sendBroadcast(intent)
                         }
                         Constant.STATE_CONNECTING -> {
                             state = State.CONNECTING
@@ -104,10 +115,8 @@ class VpnClient() : VpnService() {
         }
 
 
-        Log.i(
-            TAG,
-            "Start intent=" + intent + " command=" + cmd + " vpn=" + (vpn != null)
-        )
+        Log.i(TAG, "Start intent=" + intent + " command=" + cmd + " vpn=" + (vpn != null))
+
         when (cmd) {
             Command.start -> {
                 if (vpn == null) {
@@ -115,7 +124,7 @@ class VpnClient() : VpnService() {
                 }
             }
             Command.reload -> {
-                vpnWorker.stop()
+//                vpnWorker.stop()
                 vpnWorker.start()
             }
             Command.stop -> {

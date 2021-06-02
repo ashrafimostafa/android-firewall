@@ -1,12 +1,12 @@
 package com.example.vpnlearn.ui.applist
 
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
+import android.net.ConnectivityManager
 import android.net.VpnService
 import android.os.Bundle
-import android.os.Handler
-import android.os.Message
-import android.os.ParcelFileDescriptor
 import android.provider.Settings
 import android.util.Log
 import android.view.Menu
@@ -29,17 +29,20 @@ import com.example.vpnlearn.ui.base.BaseFragment
 import com.example.vpnlearn.ui.setting.SettingFragment
 import com.example.vpnlearn.utility.Constant
 import com.example.vpnlearn.utility.FragmentHelper
+import com.example.vpnlearn.utility.Util
 import kotlinx.android.synthetic.main.fragment_app_list.*
 import javax.inject.Inject
 
 
 class AppListFragment : BaseFragment<AppListViewModel>() {
 
-
     companion object {
         const val TAG = "NetBlocker.AppList"
         private const val REQUEST_VPN = 1
         private val VPN_INTENT = Intent(VpnService.SERVICE_INTERFACE)
+
+        private const val VPN_STATE_CHANGE = "VPN_STATE"
+        private const val MY_RECEIVER = "VPN_STATE_RECEIVER"
 
         fun newInstance(): AppListFragment {
             val args = Bundle()
@@ -49,27 +52,9 @@ class AppListFragment : BaseFragment<AppListViewModel>() {
         }
     }
 
-    var state = State.NOUN
 
-    private val mHandler: Handler = object : Handler() {
-        override fun handleMessage(msg: Message) {
-            when (msg.what) {
-                Constant.STATE_CONNECTED -> {
-                    state = State.CONNECTED
-                    actionView.isChecked = true
-                }
-                Constant.STATE_DISCONNECTED -> {
-                    state = State.DISCONNECTED
-                    actionView.isChecked = false
-                }
-            }
-        }
-    }
-
-    val vpnClient = VpnClient()
-
-    private lateinit var toggleService: MenuItem
-
+    //ui widget
+    lateinit var toggleService: MenuItem
     lateinit var actionView: SwitchCompat
 
     @Inject
@@ -81,6 +66,12 @@ class AppListFragment : BaseFragment<AppListViewModel>() {
     @ApplicationContext
     @Inject
     lateinit var ctx: Context
+
+    //State enum
+    var state = State.NOUN
+
+
+    val vpnClient = VpnClient()
 
     override fun provideLayoutId() = R.layout.fragment_app_list
 
@@ -132,29 +123,8 @@ class AppListFragment : BaseFragment<AppListViewModel>() {
             }
         }
 
-//        actionView.setOnCheckedChangeListener { _, isChecked ->
-//            if (isChecked) {
-//                val prepare = VpnService.prepare(context)
-//                if (prepare == null) {
-//                    //user already grant permission
-//                    onActivityResult(REQUEST_VPN, AppCompatActivity.RESULT_OK, null)
-//                } else {
-//                    try {
-//                        //system show vpn connection allow dialog
-//                        startActivityForResult(prepare, REQUEST_VPN)
-//                    } catch (ex: Throwable) {
-//                        onActivityResult(
-//                            REQUEST_VPN,
-//                            AppCompatActivity.RESULT_CANCELED, null
-//                        )
-//                        Toast.makeText(context, ex.toString(), Toast.LENGTH_LONG).show()
-//                    }
-//                }
-//            } else {
-//                VpnClient().stop(ctx)
-//            }
-//        }
         actionView.isChecked = state == State.CONNECTED
+
 
     }
 
@@ -175,7 +145,6 @@ class AppListFragment : BaseFragment<AppListViewModel>() {
                 true
             }
             R.id.menu_vpn_enable -> {
-
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -205,6 +174,13 @@ class AppListFragment : BaseFragment<AppListViewModel>() {
         vpnClient.reload(ctx)
     }
 
+    override fun onStart() {
+        super.onStart()
+        val stateChanged = IntentFilter()
+        stateChanged.addAction(MY_RECEIVER)
+        activity!!.registerReceiver(connectivityChangedReceiver, stateChanged)
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == REQUEST_VPN) {
 
@@ -212,4 +188,15 @@ class AppListFragment : BaseFragment<AppListViewModel>() {
             if (resultCode == AppCompatActivity.RESULT_OK) vpnClient.start(ctx)
         } else super.onActivityResult(requestCode, resultCode, data)
     }
+
+    private val connectivityChangedReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            Log.i(TAG, "onReceive: ${intent.getIntExtra(VPN_STATE_CHANGE, Constant.STATE_NOUN)}")
+            actionView.isChecked = intent.getIntExtra(
+                VPN_STATE_CHANGE,
+                Constant.STATE_DISCONNECTED
+            ) == Constant.STATE_CONNECTED
+        }
+    }
+
 }
