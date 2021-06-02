@@ -108,7 +108,6 @@ class VpnWorker(
 
 
         fun startVpn() {
-
             builder.setSession("")
             builder.addAddress(ipV4, ipv4Length)
             builder.addAddress(ipV6, ipv6Length)
