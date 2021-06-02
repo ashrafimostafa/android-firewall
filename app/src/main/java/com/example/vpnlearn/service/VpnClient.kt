@@ -1,5 +1,6 @@
 package com.example.vpnlearn.service
 
+import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
@@ -8,13 +9,12 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.net.ConnectivityManager
 import android.net.VpnService
-import android.os.Build
-import android.os.IBinder
-import android.os.ParcelFileDescriptor
-import android.os.PowerManager
+import android.os.*
 import android.os.PowerManager.WakeLock
 import android.util.Log
+import android.widget.Toast
 import androidx.core.app.TaskStackBuilder
+import androidx.fragment.app.FragmentActivity
 import com.example.vpnlearn.MyApplication
 import com.example.vpnlearn.R
 import com.example.vpnlearn.data.local.DatabaseService
@@ -29,6 +29,7 @@ import io.reactivex.schedulers.Schedulers
 import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
+
 
 @Singleton
 class VpnClient : VpnService() {
@@ -52,6 +53,8 @@ class VpnClient : VpnService() {
 
     @Singleton
     var wakeLock: PowerManager.WakeLock? = null
+
+    val builder = Builder()
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         // Get command
@@ -79,7 +82,9 @@ class VpnClient : VpnService() {
                 state = State.CONNECTING
                 if (vpn == null) {
 //                    vpn = vpnStart()
-                    vpnStart()
+//                    vpnStart()
+
+                    VpnWorker(mHandler, builder, this).start()
                 }
                 updateForegroundNotification(R.string.started)
                 state = State.CONNECTED
@@ -89,16 +94,19 @@ class VpnClient : VpnService() {
                 state = State.CONNECTING
                 val prev = vpn
 //                vpn = vpnStart()
-                vpnStart()
+//                vpnStart()
+                VpnWorker(mHandler, builder, this).stop()
+                VpnWorker(mHandler, builder, this).start()
                 updateForegroundNotification(R.string.started)
                 state = State.CONNECTED
-                prev?.let { vpnStop(it) }
+//                prev?.let { vpnStop(it) }
             }
             Command.stop -> {
                 updateForegroundNotification(R.string.stopping)
                 state = State.STOPPING
                 if (vpn != null) {
-                    vpnStop(vpn!!)
+//                    vpnStop(vpn!!)
+                    VpnWorker(mHandler, builder, this).stop()
                     updateForegroundNotification(R.string.stopped)
                     state = State.DISCONNECTED
                     vpn = null
@@ -117,7 +125,7 @@ class VpnClient : VpnService() {
         Log.i(TAG, "wifi=$wifi")
 
         // Build VPN service
-        val builder = Builder()
+
         builder.setSession(getString(R.string.app_name))
         builder.addAddress("10.1.10.1", 32)
         builder.addAddress("fd00:1:fd00:1:fd00:1:fd00:1", 128)
@@ -231,7 +239,8 @@ class VpnClient : VpnService() {
         releaseLock(this)
         Log.i(TAG, "Destroy")
         if (vpn != null) {
-            vpnStop(vpn!!)
+//            vpnStop(vpn!!)
+            VpnWorker(mHandler, builder, this).stop()
             vpn = null
         }
         unregisterReceiver(connectivityChangedReceiver)
@@ -242,7 +251,8 @@ class VpnClient : VpnService() {
     override fun onRevoke() {
         Log.i(TAG, "Revoke")
         if (vpn != null) {
-            vpnStop(vpn!!)
+//            vpnStop(vpn!!)
+            VpnWorker(mHandler, builder, this).stop()
             vpn = null
         }
 
@@ -362,6 +372,15 @@ class VpnClient : VpnService() {
     private fun callResetBroadcast() {
         val broadcastIntent = Intent(this, RestartServiceReceiver::class.java)
         sendBroadcast(broadcastIntent)
+    }
+
+
+    private val mHandler: Handler = object : Handler() {
+        override fun handleMessage(msg: Message) {
+            Log.i(TAG, "there is a new message: ${msg.toString()}")
+//            when (msg.what) {
+//            }
+        }
     }
 
 

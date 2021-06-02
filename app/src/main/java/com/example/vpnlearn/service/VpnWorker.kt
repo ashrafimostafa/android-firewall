@@ -1,13 +1,26 @@
 package com.example.vpnlearn.service
 
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.net.VpnService
 import android.os.Handler
+import android.os.ParcelFileDescriptor
+import android.util.Log
+import com.example.vpnlearn.MyApplication
+import com.example.vpnlearn.data.local.DatabaseService
+import com.example.vpnlearn.ui.applist.AppListActivity
+import com.example.vpnlearn.utility.Constant
+import com.example.vpnlearn.utility.Util
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
+import java.lang.Exception
+import javax.inject.Inject
 
 
-class VpnWorker(val handler: Handler, var ctx: Context) {
+class VpnWorker(val handler: Handler, var builder: VpnService.Builder, var ctx: Context) {
 
-    companion object{
+    companion object {
         const val ipV4 = "10.1.10.1"
         const val ipV6 = "fd00:1:fd00:1:fd00:1:fd00:1"
         const val routeV4 = "0.0.0.0"
@@ -19,16 +32,13 @@ class VpnWorker(val handler: Handler, var ctx: Context) {
     }
 
 
-
     private var connectThread: ConnectThread? = null
 
-    var state = State.NOUN
-
-    var newState = State.NOUN
+    private var vpnState = State.NOUN
 
 
     @Synchronized
-    fun vpnState() = state
+    fun vpnState() = vpnState
 
 
     @Synchronized
@@ -37,7 +47,7 @@ class VpnWorker(val handler: Handler, var ctx: Context) {
             connectThread!!.cancelVpn()
             connectThread!!.startVpn()
         } else {
-            connectThread = ConnectThread()
+            connectThread = ConnectThread(builder, ctx, handler)
             connectThread!!.startVpn()
         }
     }
@@ -48,37 +58,125 @@ class VpnWorker(val handler: Handler, var ctx: Context) {
         if (connectThread != null) {
             connectThread!!.cancelVpn()
         }
-        state = State.NOUN
+        vpnState = State.NOUN
     }
 
     @Synchronized
     fun connectionFailed() {
 
 
-        state = State.NOUN
+        vpnState = State.NOUN
     }
 
     @Synchronized
     fun connectionLost() {
 
-        state = State.NOUN
+        vpnState = State.NOUN
     }
 
-    class ConnectThread : Thread() {
+    class ConnectThread(
+        var builder: VpnService.Builder, var ctx: Context,val handler: Handler
+    ) : Thread() {
+
+//        init {
+//            (ctx as MyApplication).applicationComponent.inject(this)
+//        }
+
+        companion object {
+            const val TAG = "NetBlocker.ConThread"
+        }
+
+
+        var vpn: ParcelFileDescriptor? = null
+
+//        @Inject
+//        lateinit var databaseService: DatabaseService
+//
+//        @Inject
+//        lateinit var compositeDisposable: CompositeDisposable
 
         fun startVpn() {
 
-            val builder = Builder()
             builder.setSession("")
             builder.addAddress(ipV4, ipv4Length)
             builder.addAddress(ipV6, ipv6Length)
             builder.addRoute(routeV4, routeV4Length)
             builder.addRoute(routeV6, routeV6Length)
+            handler.obtainMessage(Constant.STATE_CHANGED, "starting").sendToTarget()
 
+//            if (Util.isWifiActive(ctx)) {
+//                compositeDisposable.add(
+//                    databaseService.packageDao()
+//                        .getDisAllowWifiPackages()
+//                        .subscribeOn(Schedulers.io())
+//                        .subscribe({
+//
+//                            for (pkg in it) {
+//                                builder.addDisallowedApplication(pkg.packageName)
+//                                Log.i(TAG, "wifi disallow app: $pkg")
+//                            }
+//                            establishVpn()
+//                            Log.i(TAG, "database time1: " + System.currentTimeMillis())
+//                        }, {
+//                            Log.e(TAG, "adding disallow wifi cause error: $it")
+//                        })
+//
+//                )
+//            }
+//            else {
+//                compositeDisposable.add(
+//                    databaseService.packageDao()
+//                        .getDisAllowOtherPackages()
+//                        .subscribeOn(Schedulers.io())
+//                        .subscribe({
+//                            for (pkg in it) {
+//                                builder.addDisallowedApplication(pkg.packageName)
+//                                Log.i(TAG, "other disallow app: $pkg")
+//                            }
+//
+//                            val configure = Intent(ctx, AppListActivity::class.java)
+//                            val pi = PendingIntent.getActivity(
+//                                ctx,
+//                                0,
+//                                configure,
+//                                PendingIntent.FLAG_UPDATE_CURRENT
+//                            )
+//                            builder.setConfigureIntent(pi)
+//                            establishVpn()
+//                            Log.i(TAG, "database time2: " + System.currentTimeMillis())
+//                        }, {
+//                            Log.e(TAG, "adding disallow other cause error: $it")
+//                        })
+//                )
+//            }
+
+            establishVpn()
 
         }
 
+        private fun establishVpn(): ParcelFileDescriptor? {
+            return try {
+                handler.obtainMessage(Constant.STATE_CHANGED, "established").sendToTarget()
+                Log.i(TAG, "vpn connection established")
+                builder.establish()
+            } catch (ex: Throwable) {
+                Log.e(TAG, "establishVpn: error in establishing vpn: ${ex.toString()}")
+                Util.showToast(ex.toString(), ctx)
+                null
+            }
+        }
+
         fun cancelVpn() {
+            try {
+                vpn!!.close()
+                Log.i(TAG, "cancelVpn: vpn closed")
+                handler.obtainMessage(Constant.STATE_CHANGED, "closed").sendToTarget()
+            } catch (ex: Exception) {
+                Log.e(TAG, "cancelVpn: error in closing the von: ${ex.toString()}")
+                handler.obtainMessage(Constant.STATE_CHANGED, "error in closing").sendToTarget()
+
+            }
+
 
         }
     }

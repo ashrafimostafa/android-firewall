@@ -6,6 +6,7 @@ import com.example.vpnlearn.di.modules.ApplicationModule
 import com.example.vpnlearn.di.qualifire.ApplicationContext
 import com.example.vpnlearn.MyApplication
 import com.example.vpnlearn.service.VpnClient
+import com.example.vpnlearn.service.VpnWorker
 import com.example.vpnlearn.utility.ProvideAppList
 import dagger.Component
 import io.reactivex.disposables.CompositeDisposable
@@ -18,6 +19,8 @@ interface ApplicationComponent {
     fun inject(myApplication: MyApplication)
 
     fun inject(vpnClient: VpnClient)
+
+    fun inject(connectThread: VpnWorker.ConnectThread)
 
     fun getDataBaseService(): DatabaseService
 
