@@ -128,92 +128,8 @@ class VpnClient : VpnService() {
                 }
                 stopSelf()
             }
-            Command.lost -> {
-
-            }
         }
         return START_STICKY
-    }
-
-    private fun vpnStart() {
-        Log.i(TAG, "Starting")
-
-        // Check if Wi-Fi
-        val wifi = isWifiActive(this)
-        Log.i(TAG, "wifi=$wifi")
-
-        // Build VPN service
-
-        builder.setSession(getString(R.string.app_name))
-        builder.addAddress("10.1.10.1", 32)
-        builder.addAddress("fd00:1:fd00:1:fd00:1:fd00:1", 128)
-        builder.addRoute("0.0.0.0", 0)
-        builder.addRoute("0:0:0:0:0:0:0:0", 0)
-
-//      builder.addDisallowedApplication("com.farsitel.bazaar")
-
-        //adding disallow list
-        if (isWifiActive(this)) {
-            compositeDisposable.add(
-                databaseService.packageDao()
-                    .getDisAllowWifiPackages()
-                    .subscribeOn(Schedulers.io())
-                    .subscribe({
-
-                        for (pkg in it) {
-                            builder.addDisallowedApplication(pkg.packageName)
-                            Log.i(TAG, "wifi disallow app: $pkg")
-                        }
-                        establishVpn(builder)
-                        Log.i(TAG, "database time1: " + System.currentTimeMillis())
-                    }, {
-                        Log.e(TAG, "adding disallow wifi cause error: $it")
-                    })
-
-            )
-        } else {
-            compositeDisposable.add(
-                databaseService.packageDao()
-                    .getDisAllowOtherPackages()
-                    .subscribeOn(Schedulers.io())
-                    .subscribe({
-                        for (pkg in it) {
-                            builder.addDisallowedApplication(pkg.packageName)
-                            Log.i(TAG, "other disallow app: $pkg")
-                        }
-
-                        val configure = Intent(this, AppListActivity::class.java)
-                        val pi = PendingIntent.getActivity(
-                            this,
-                            0,
-                            configure,
-                            PendingIntent.FLAG_UPDATE_CURRENT
-                        )
-                        builder.setConfigureIntent(pi)
-                        establishVpn(builder)
-                        Log.i(TAG, "database time2: " + System.currentTimeMillis())
-                    }, {
-                        Log.e(TAG, "adding disallow other cause error: $it")
-                    })
-            )
-        }
-
-
-        Log.i(TAG, "return time: " + System.currentTimeMillis())
-    }
-
-    private fun vpnStop(pfd: ParcelFileDescriptor) {
-        Log.i(TAG, "Stopping1")
-        try {
-            pfd.close()
-        } catch (ex: IOException) {
-            Log.e(
-                TAG, """
-     $ex
-     ${Log.getStackTraceString(ex)}
-     """.trimIndent()
-            )
-        }
     }
 
     private val connectivityChangedReceiver: BroadcastReceiver = object : BroadcastReceiver() {
@@ -257,23 +173,9 @@ class VpnClient : VpnService() {
     override fun onDestroy() {
         releaseLock(this)
         Log.i(TAG, "Destroy")
-        if (vpn != null) {
-            vpnWorker.stop()
-            vpn = null
-        }
         unregisterReceiver(connectivityChangedReceiver)
         unregisterReceiver(packageAddedReceiver)
         super.onDestroy()
-    }
-
-    override fun onRevoke() {
-        Log.i(TAG, "Revoke")
-        if (vpn != null) {
-            vpnWorker.stop()
-            vpn = null
-        }
-
-        super.onRevoke()
     }
 
     private fun updateForegroundNotification(message: Int) {
@@ -336,15 +238,6 @@ class VpnClient : VpnService() {
         return null
     }
 
-    private fun establishVpn(builder: Builder): ParcelFileDescriptor? {
-        return try {
-            builder.establish()
-        } catch (ex: Throwable) {
-            showToast(ex.toString(), this)
-            state = State.DISCONNECTED
-            null
-        }
-    }
 
     /**
      * initial the wake lock for acquire it when vpn service start
