@@ -1,9 +1,10 @@
-package com.example.vpnlearn.ui.applist
+package com.example.vpnlearn.ui.main
 
 import android.os.Bundle
-import android.util.Log
 import com.example.vpnlearn.R
 import com.example.vpnlearn.di.components.ActivityComponent
+import com.example.vpnlearn.ui.applist.AppListFragment
+import com.example.vpnlearn.ui.applist.AppListViewModel
 import com.example.vpnlearn.ui.base.BaseActivity
 
 class AppListActivity : BaseActivity<AppListViewModel>() {

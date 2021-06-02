@@ -8,7 +8,7 @@ import android.os.Handler
 import android.os.ParcelFileDescriptor
 import android.util.Log
 import com.example.vpnlearn.data.local.DatabaseService
-import com.example.vpnlearn.ui.applist.AppListActivity
+import com.example.vpnlearn.ui.main.AppListActivity
 import com.example.vpnlearn.utility.Constant
 import com.example.vpnlearn.utility.Util
 import io.reactivex.disposables.CompositeDisposable

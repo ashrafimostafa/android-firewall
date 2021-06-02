@@ -17,14 +17,10 @@ import com.example.vpnlearn.MyApplication
 import com.example.vpnlearn.R
 import com.example.vpnlearn.data.local.DatabaseService
 import com.example.vpnlearn.receiver.RestartServiceReceiver
-import com.example.vpnlearn.ui.applist.AppListActivity
+import com.example.vpnlearn.ui.main.AppListActivity
 import com.example.vpnlearn.utility.Constant
-import com.example.vpnlearn.utility.Util.isWifiActive
 import com.example.vpnlearn.utility.Util.logExtras
-import com.example.vpnlearn.utility.Util.showToast
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
-import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
 
