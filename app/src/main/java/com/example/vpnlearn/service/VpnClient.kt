@@ -1,5 +1,6 @@
 package com.example.vpnlearn.service
 
+import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
@@ -13,7 +14,6 @@ import android.os.PowerManager.WakeLock
 import android.util.Log
 import androidx.annotation.StringRes
 import androidx.core.app.TaskStackBuilder
-import androidx.lifecycle.MutableLiveData
 import com.example.vpnlearn.MyApplication
 import com.example.vpnlearn.R
 import com.example.vpnlearn.data.local.DatabaseService
@@ -56,7 +56,8 @@ class VpnClient() : VpnService() {
     private val MY_RECEIVER = "VPN_STATE_RECEIVER"
 
 
-    private val mHandler: Handler = object : Handler() {
+    private val mHandler: Handler = @SuppressLint("HandlerLeak")
+    object : Handler() {
         override fun handleMessage(msg: Message) {
             Log.i(TAG, "there is a new message: ${msg.toString()}")
             when (msg.what) {
@@ -124,7 +125,7 @@ class VpnClient() : VpnService() {
                 }
             }
             Command.reload -> {
-//                vpnWorker.stop()
+                stopSelf()
                 vpnWorker.start()
             }
             Command.stop -> {
@@ -215,7 +216,10 @@ class VpnClient() : VpnService() {
                     .build()
             )
         } else {
-            //TODO handle persist notification for old android version
+            /*
+                it is possible to start vpn without showing persistent notification,
+                add persistent notification if it is necessary
+             */
         }
     }
 
@@ -235,7 +239,7 @@ class VpnClient() : VpnService() {
     }
 
 
-    /**
+    /**b
      * reload the VpnService, reloading done with stop and then start the VpnService
      */
     fun reload(context: Context) {

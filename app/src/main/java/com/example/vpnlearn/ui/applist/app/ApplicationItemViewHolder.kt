@@ -27,6 +27,8 @@ class ApplicationViewHolder(parent: ViewGroup) :
     @Inject
     lateinit var context: Context
 
+    val vpnClient = VpnClient()
+
     override fun setUpViews(view: View) {
         //todo complete here
     }
@@ -58,7 +60,7 @@ class ApplicationViewHolder(parent: ViewGroup) :
                 it.isWifiDisabled = !it.isWifiDisabled
                 viewModel.onWifiCheckedClicked(it.isWifiDisabled, it.id)
                 if (VpnClient.state == State.CONNECTED)
-                    VpnClient().reload(context)
+                    vpnClient.reload(context)
                 Log.i(TAG, "select other: $it")
             }
 
@@ -66,7 +68,7 @@ class ApplicationViewHolder(parent: ViewGroup) :
                 it.isOtherDisabled = !it.isOtherDisabled
                 viewModel.onOtherCheckedClicked(it.isOtherDisabled, it.id)
                 if (VpnClient.state == State.CONNECTED)
-                    VpnClient().reload(context)
+                    vpnClient.reload(context)
                 Log.i(TAG, "select other: $it")
             }
 

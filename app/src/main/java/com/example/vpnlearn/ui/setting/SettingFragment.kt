@@ -196,23 +196,16 @@ class SettingFragment : BaseFragment<SettingViewModel>() {
 
 
         // Use a different intent extra below M to configure the admin component.
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            intent.putExtra(
-                DevicePolicyManager.EXTRA_PROVISIONING_DEVICE_ADMIN_PACKAGE_NAME,
-                activity!!.applicationContext.packageName
-            )
-        } else {
-            val component = activity?.let {
-                ComponentName(
-                    it,
-                    DeviceAdmin::class.java.getName()
-                )
-            }
-            intent.putExtra(
-                DevicePolicyManager.EXTRA_PROVISIONING_DEVICE_ADMIN_COMPONENT_NAME,
-                component
+        val component = activity?.let {
+            ComponentName(
+                it,
+                DeviceAdmin::class.java.name
             )
         }
+        intent.putExtra(
+            DevicePolicyManager.EXTRA_PROVISIONING_DEVICE_ADMIN_COMPONENT_NAME,
+            component
+        )
 
         if (intent.resolveActivity(activity!!.packageManager) != null) {
             startActivityForResult(intent, REQUEST_PROVISION_MANAGED_PROFILE)

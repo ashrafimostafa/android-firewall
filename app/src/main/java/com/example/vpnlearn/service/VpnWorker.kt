@@ -67,6 +67,19 @@ class VpnWorker(
     }
 
     @Synchronized
+    fun reload(){
+        Log.i(TAG, "reload called")
+        if (connectThread != null) {
+            connectThread!!.cancelVpn()
+            connectThread!!.startVpn()
+        } else {
+            connectThread =
+                ConnectThread(builder, ctx, handler, databaseService, compositeDisposable)
+            connectThread!!.startVpn()
+        }
+    }
+
+    @Synchronized
     fun lost() {
         Log.i(TAG, "lost called")
         if (connectThread != null) {
