@@ -2,11 +2,14 @@ package com.example.vpnlearn.ui.applist
 
 import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.Context.POWER_SERVICE
 import android.content.Intent
 import android.content.IntentFilter
-import android.net.ConnectivityManager
+import android.net.Uri
 import android.net.VpnService
+import android.os.Build
 import android.os.Bundle
+import android.os.PowerManager
 import android.provider.Settings
 import android.util.Log
 import android.view.Menu
@@ -16,6 +19,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SwitchCompat
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.view.MenuItemCompat
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -29,7 +33,6 @@ import com.example.vpnlearn.ui.base.BaseFragment
 import com.example.vpnlearn.ui.setting.SettingFragment
 import com.example.vpnlearn.utility.Constant
 import com.example.vpnlearn.utility.FragmentHelper
-import com.example.vpnlearn.utility.Util
 import kotlinx.android.synthetic.main.fragment_app_list.*
 import javax.inject.Inject
 
@@ -70,8 +73,8 @@ class AppListFragment : BaseFragment<AppListViewModel>() {
     //State enum
     var state = State.NOUN
 
-
     val vpnClient = VpnClient()
+
 
     override fun provideLayoutId() = R.layout.fragment_app_list
 
@@ -90,9 +93,12 @@ class AppListFragment : BaseFragment<AppListViewModel>() {
 
         setHasOptionsMenu(true)
 
+        checkBatteryOptimizationPermission()
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        state = vpnClient.getVpnState()
         inflater.inflate(R.menu.main_menu, menu)
 
         toggleService = menu.findItem(R.id.menu_vpn_enable)
@@ -122,10 +128,9 @@ class AppListFragment : BaseFragment<AppListViewModel>() {
                 vpnClient.stop(ctx)
             }
         }
-
         actionView.isChecked = state == State.CONNECTED
 
-
+        Log.i(TAG, "onCreateOptionsMenu: state is: $state")
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -158,8 +163,8 @@ class AppListFragment : BaseFragment<AppListViewModel>() {
         viewModel.packageLiveData.observe(this, Observer {
             applicationAdapter.appendDate(it)
             app_list_progress.visibility = View.GONE
-            if (state == State.CONNECTED)
-                reset()
+//            if (state == State.CONNECTED)
+//                reset()
         })
     }
 
@@ -196,6 +201,19 @@ class AppListFragment : BaseFragment<AppListViewModel>() {
                 VPN_STATE_CHANGE,
                 Constant.STATE_DISCONNECTED
             ) == Constant.STATE_CONNECTED
+        }
+    }
+
+    private fun checkBatteryOptimizationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val intent = Intent()
+            val packageName: String = context!!.packageName
+            val pm = context!!.getSystemService(POWER_SERVICE) as PowerManager?
+            if (!pm!!.isIgnoringBatteryOptimizations(packageName)) {
+                intent.action = Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
+                intent.data = Uri.parse("package:$packageName")
+                startActivity(intent)
+            }
         }
     }
 

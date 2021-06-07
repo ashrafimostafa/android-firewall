@@ -29,5 +29,9 @@ public class Note {
 
             - Enable/Disable application
 
+            - Enable/Disable app uninstalling
+
+            - Network log(retrieveNetworkLogs): to retrieve the most recent batch of network logging events
+
      */
 }

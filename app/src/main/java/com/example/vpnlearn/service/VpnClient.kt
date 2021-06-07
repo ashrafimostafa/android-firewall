@@ -70,7 +70,7 @@ class VpnClient() : VpnService() {
                             state = State.DISCONNECTED
                             updateForegroundNotification(R.string.stopped)
                             var intent = Intent()
-                            intent.setAction(MY_RECEIVER)
+                            intent.action = MY_RECEIVER
                             intent.putExtra(VPN_STATE_CHANGE, Constant.STATE_DISCONNECTED)
                             sendBroadcast(intent)
                         }
@@ -78,7 +78,7 @@ class VpnClient() : VpnService() {
                             state = State.CONNECTED
                             updateForegroundNotification(R.string.started)
                             var intent = Intent()
-                            intent.setAction(MY_RECEIVER)
+                            intent.action = MY_RECEIVER
                             intent.putExtra(VPN_STATE_CHANGE, Constant.STATE_CONNECTED)
                             sendBroadcast(intent)
                         }
@@ -263,6 +263,9 @@ class VpnClient() : VpnService() {
         }
     }
 
+    fun getVpnState() = state
+
+
     /**
      * initial the wake lock for acquire it when vpn service start
      * release it on onDestroy
@@ -289,15 +292,6 @@ class VpnClient() : VpnService() {
             while (wakeLock?.isHeld == true) wakeLock?.release()
             wakeLock = null
         }
-    }
-
-    /**
-     * call when service closed
-     */
-    override fun onTaskRemoved(rootIntent: Intent?) {
-        Log.i(TAG, "onTaskRemoved called")
-        callResetBroadcast()
-        callResetBroadcast()
     }
 
     /**
