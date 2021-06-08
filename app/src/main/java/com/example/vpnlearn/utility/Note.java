@@ -1,7 +1,8 @@
 package com.example.vpnlearn.utility;
 
 //this class is just for writing notes
-public class Note {
+public class
+Note {
 
     /*
         information can be find in :

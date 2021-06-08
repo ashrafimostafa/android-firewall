@@ -119,9 +119,9 @@ class SettingFragment : BaseFragment<SettingViewModel>() {
                 if (deviceAdmin?.let { it1 -> devicePolicyManager.isAdminActive(it1) } == true) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
 //                        devicePolicyManager.lockNow()
-                        devicePolicyManager.setCameraDisabled(deviceAdmin,false)
+                        devicePolicyManager.setCameraDisabled(deviceAdmin, false)
                     } else {
-                        Log.i(TAG, "setUpViews: inam android vesionee akhe!")
+                        Log.i(TAG, "setUpViews: inam android versionee akhe!")
                     }
 //                devicePolicyManager.lockNow()
                 } else {
@@ -129,6 +129,27 @@ class SettingFragment : BaseFragment<SettingViewModel>() {
                 }
             } catch (ex: Exception) {
                 Log.e(AppListFragment.TAG, "block1: ${ex.toString()}")
+            }
+
+        }
+
+        setting_mac_address.setOnClickListener {
+            val devicePolicyManager =
+                activity!!.getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
+            val deviceAdmin =
+                activity.let { it?.let { it1 -> ComponentName(it1, DeviceAdmin::class.java) } }
+
+            try {
+                var mac = deviceAdmin?.let { it1 ->
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                        devicePolicyManager.getWifiMacAddress(it1)
+                    } else {
+                        Log.i(TAG, "setUpViews: inam android versionee akhe!")
+                    }
+                }
+                Log.i(TAG, "mac address: ${mac} ")
+            } catch (ex: Exception) {
+                Log.e(AppListFragment.TAG, "mac address: ${ex.toString()}")
             }
 
         }
