@@ -1,14 +1,109 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.connection.ConnectionFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="10dp">
 
-</FrameLayout>
+        <TextView
+            style="@style/normal_txt"
+            android:text="@string/address" />
+
+        <EditText
+            android:id="@+id/connection_ip"
+            style="@style/normal_et" />
+
+        <TextView
+            style="@style/normal_txt"
+            android:layout_marginTop="15dp"
+            android:text="@string/port" />
+
+        <EditText
+            android:id="@+id/connection_port"
+            style="@style/normal_et"
+            android:inputType="number" />
+
+        <TextView
+            style="@style/normal_txt"
+            android:layout_marginTop="15dp"
+            android:text="@string/secret" />
+
+        <EditText
+            android:id="@+id/connection_secret"
+            style="@style/normal_et" />
+
+        <TextView
+            style="@style/normal_txt"
+            android:layout_marginTop="15dp"
+            android:text="@string/proxyhost" />
+
+        <EditText
+            android:id="@+id/connection_proxy_host"
+            style="@style/normal_et" />
+
+        <TextView
+            style="@style/normal_txt"
+            android:layout_marginTop="15dp"
+            android:text="@string/proxyport" />
+
+        <EditText
+            android:id="@+id/connection_proxy_port"
+            style="@style/normal_et"
+            android:inputType="number" />
+
+        <TextView
+            style="@style/normal_txt"
+            android:layout_marginTop="15dp"
+            android:text="@string/packages" />
+
+        <RadioGroup
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="3">
+
+            <RadioButton
+                android:id="@+id/connect_allowed_radio"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/allowed" />
+
+            <RadioButton
+                android:id="@+id/connect_disallowed_radio"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/disallowed" />
+
+        </RadioGroup>
+
+        <EditText
+            android:id="@+id/connect_packages"
+            style="@style/normal_et" />
+
+        <Button
+            android:id="@+id/connect_connect"
+            style="@style/normal_button"
+            android:layout_width="match_parent"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:text="@string/connect" />
+
+        <Button
+            android:id="@+id/connect_disconnect"
+            style="@style/normal_button"
+            android:layout_width="match_parent"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:text="@string/disconnect" />
+
+    </LinearLayout>
+
+</ScrollView>
