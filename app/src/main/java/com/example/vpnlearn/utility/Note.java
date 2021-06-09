@@ -25,4 +25,8 @@ Note {
            - Network log(retrieveNetworkLogs): to retrieve the most recent batch of network logging events
 
      */
+
+    /*
+        Provision devices: https://developers.google.com/android/work/play/emm-api/prov-devices
+     */
 }

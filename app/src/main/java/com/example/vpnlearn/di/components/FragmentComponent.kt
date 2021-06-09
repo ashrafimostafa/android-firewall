@@ -3,6 +3,7 @@ package com.example.vpnlearn.di.components
 import com.example.vpnlearn.di.modules.FragmentModule
 import com.example.vpnlearn.di.scope.FragmentScope
 import com.example.vpnlearn.ui.applist.AppListFragment
+import com.example.vpnlearn.ui.connection.ConnectionFragment
 import com.example.vpnlearn.ui.setting.SettingFragment
 import dagger.Component
 
@@ -13,5 +14,7 @@ interface FragmentComponent {
     fun inject(fragment: AppListFragment)
 
     fun inject(fragment: SettingFragment)
+
+    fun inject(fragment: ConnectionFragment)
 
 }
