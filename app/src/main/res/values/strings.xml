@@ -38,8 +38,11 @@
     <string name="secret">Shared Secret:</string>
     <string name="connect">Connect!</string>
     <string name="disconnect">Disconnect!</string>
-    <string name="proxyhost">HTTP proxy hostname</string>
-    <string name="proxyport">HTTP proxy port</string>
+    <string name="proxy_host">HTTP proxy hostname</string>
+    <string name="proxy_port">HTTP proxy port</string>
+    <string name="vpn_type">Vpn type</string>
+    <string name="local">local</string>
+    <string name="backend">backend</string>
 
     <string name="packages">Packages (comma separated):</string>
     <string name="allowed">Allow</string>

@@ -13,7 +13,35 @@
 
         <TextView
             style="@style/normal_txt"
-            android:text="@string/address" />
+            android:layout_marginTop="10dp"
+            android:text="@string/vpn_type" />
+
+        <RadioGroup
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="3">
+
+            <RadioButton
+                android:id="@+id/connect_vpn_local_radio"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/local" />
+
+            <RadioButton
+                android:id="@+id/connect_vpn_backend_radio"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/backend" />
+
+        </RadioGroup>
+
+        <TextView
+            style="@style/normal_txt"
+            android:text="@string/address"
+            android:layout_marginTop="15dp"/>
 
         <EditText
             android:id="@+id/connection_ip"
@@ -41,7 +69,7 @@
         <TextView
             style="@style/normal_txt"
             android:layout_marginTop="15dp"
-            android:text="@string/proxyhost" />
+            android:text="@string/proxy_host" />
 
         <EditText
             android:id="@+id/connection_proxy_host"
@@ -50,7 +78,7 @@
         <TextView
             style="@style/normal_txt"
             android:layout_marginTop="15dp"
-            android:text="@string/proxyport" />
+            android:text="@string/proxy_port" />
 
         <EditText
             android:id="@+id/connection_proxy_port"
