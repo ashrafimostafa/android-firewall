@@ -6,7 +6,7 @@ import android.app.admin.DevicePolicyManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.os.AsyncTask
+import android.content.pm.PackageManager
 import android.os.Build
 import android.util.Log
 import android.view.View
@@ -22,7 +22,6 @@ import com.example.vpnlearn.ui.base.BaseFragment
 import com.example.vpnlearn.utility.Constant
 import com.example.vpnlearn.utility.Util
 import kotlinx.android.synthetic.main.fragment_setting.*
-import java.lang.Exception
 
 class SettingFragment : BaseFragment<SettingViewModel>() {
 
@@ -212,7 +211,12 @@ class SettingFragment : BaseFragment<SettingViewModel>() {
      * Initiates the managed profile provisioning. If we already have a managed profile set up on
      * this device, we will get an error dialog in the following provisioning phase.
      */
-    private fun provisionManagedProfile() {
+    private fun provisionManagedProfile1() {
+
+        if (!context!!.packageManager.hasSystemFeature(PackageManager.FEATURE_MANAGED_USERS)) {
+            Log.e(TAG, "This device does not support work profiles!")
+            return
+        }
 
         var intent = Intent(DevicePolicyManager.ACTION_PROVISION_MANAGED_PROFILE)
 
@@ -232,6 +236,40 @@ class SettingFragment : BaseFragment<SettingViewModel>() {
         if (intent.resolveActivity(activity!!.packageManager) != null) {
             startActivityForResult(intent, REQUEST_PROVISION_MANAGED_PROFILE)
             activity!!.finish()
+        } else {
+            Toast.makeText(
+                activity, "Device provisioning is not enabled. Stopping.",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+
+    private fun provisionManagedProfile() {
+        val activity = activity ?: return
+        val intent = Intent(DevicePolicyManager.ACTION_PROVISION_MANAGED_PROFILE)
+
+        // Use a different intent extra below M to configure the admin component.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            intent.putExtra(
+                DevicePolicyManager.EXTRA_PROVISIONING_DEVICE_ADMIN_PACKAGE_NAME,
+                activity.applicationContext.packageName
+            )
+        } else {
+            val component = ComponentName(
+                activity,
+                DeviceAdmin::class.java.name
+            )
+            intent.putExtra(
+                DevicePolicyManager.EXTRA_PROVISIONING_DEVICE_ADMIN_COMPONENT_NAME,
+                component
+            )
+        }
+        if (intent.resolveActivity(activity.packageManager) != null) {
+            startActivityForResult(
+                intent,
+                REQUEST_PROVISION_MANAGED_PROFILE
+            )
+            activity.finish()
         } else {
             Toast.makeText(
                 activity, "Device provisioning is not enabled. Stopping.",

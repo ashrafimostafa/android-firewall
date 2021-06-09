@@ -26,7 +26,11 @@
     <string name="lock_phone">Lock phone</string>
     <string name="mac_address">Mac address</string>
     <string name="profile_not_created">Profile Not Created!</string>
+    <string name="profile_name">Work profile</string>
 
+    <string name="all_done">Setup all done</string>
+    <string name="all_done_explanation">To manage the configuration in your managed profile, visit the badged version of this application.</string>
+    <string name="icon">Icon</string>
 
 
     <!-- TODO: Remove or change this placeholder text -->

@@ -6,31 +6,41 @@ import android.content.Context
 import android.content.Intent
 import android.os.UserHandle
 import android.util.Log
+import com.example.vpnlearn.ui.enable.EnableProfileActivity
+import com.example.vpnlearn.ui.main.AppListActivity
 import com.example.vpnlearn.utility.Util
 
 class DeviceAdmin : DeviceAdminReceiver() {
 
     companion object {
         private const val TAG = "DeviceAdmin"
+
+        /**
+         * @param context The context of the application.
+         * @return The component name of this component in the given context.
+         */
+        fun getComponentName(context: Context?): ComponentName {
+            return context?.let {
+                ComponentName(
+                    it.applicationContext,
+                    DeviceAdminReceiver::class.java
+                )
+            }!!
+        }
     }
 
-    /**
-     * @param context The context of the application.
-     * @return The component name of this component in the given context.
-     */
-    fun getComponentName(context: Context?): ComponentName {
-        return context?.let {
-            ComponentName(
-                it.applicationContext,
-                DeviceAdminReceiver::class.java
-            )
-        }!!
-    }
 
     override fun onProfileProvisioningComplete(context: Context, intent: Intent) {
-//        val launch = Intent(context, AppListActivity::class.java)
-//        launch.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-//        context.startActivity(launch)
+        Log.i(TAG, "onProfileProvisioningComplete")
+
+        val helper = PostProvisioningHelper(context)
+        if (!helper.isDone()) {
+            Log.i(TAG, "onProfileProvisioningComplete: Done")
+            // EnableProfileActivity is launched with the newly set up profile.
+            val launch = Intent(context, EnableProfileActivity::class.java)
+            launch.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            context.startActivity(launch)
+        }
 
         Log.i(TAG, "profile created: $intent")
     }

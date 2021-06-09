@@ -16,9 +16,6 @@ class StartUpReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, p1: Intent?) {
 
         Log.i(TAG, "Boot received ${System.currentTimeMillis()}")
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-            context.startForegroundService(Intent(context, VpnClient::class.java))
-        else
-            context.startService(Intent(context, VpnClient::class.java))
+        VpnClient().start(context)
     }
 }
