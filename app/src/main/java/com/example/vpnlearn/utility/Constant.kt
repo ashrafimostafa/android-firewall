@@ -11,4 +11,18 @@ object Constant {
     const val STATE_CONNECTING = 1
     const val STATE_CONNECTED = 2
     const val STATE_DISCONNECTED = 3
+
+    interface Prefs {
+        companion object {
+            const val NAME = "connection"
+            const val SERVER_ADDRESS = "server_address"
+            const val SERVER_PORT = "server_port"
+            const val SHARED_SECRET = "shared_secret"
+            const val PROXY_HOSTNAME = "proxy_host"
+            const val PROXY_PORT = "proxy_port"
+            const val ALLOW = "allow"
+            const val PACKAGES = "packages"
+            const val LOCAL_MODE = "local_mode"
+        }
+    }
 }

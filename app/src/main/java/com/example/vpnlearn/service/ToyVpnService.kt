@@ -1,6 +1,6 @@
 package com.example.vpnlearn.service
 
-import android.R
+
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -14,14 +14,18 @@ import android.os.ParcelFileDescriptor
 import android.util.Log
 import android.util.Pair
 import android.widget.Toast
+import com.example.vpnlearn.R
 import com.example.vpnlearn.service.ToyVpnConnection.OnEstablishListener
 import com.example.vpnlearn.ui.connection.ConnectionFragment
+import com.example.vpnlearn.utility.Constant
 import java.io.IOException
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicReference
 
 
 class ToyVpnService : VpnService(), Handler.Callback {
+
+
     private var mHandler: Handler? = null
 
     private class Connection(thread: Thread?, pfd: ParcelFileDescriptor?) :
@@ -73,14 +77,14 @@ class ToyVpnService : VpnService(), Handler.Callback {
         mHandler!!.sendEmptyMessage(R.string.connecting)
 
         // Extract information from the shared preferences.
-        val prefs = getSharedPreferences(ToyVpnClient.Prefs.NAME, MODE_PRIVATE)
-        val server = prefs.getString(ToyVpnClient.Prefs.SERVER_ADDRESS, "")
-        val secret = prefs.getString(ToyVpnClient.Prefs.SHARED_SECRET, "")!!.toByteArray()
-        val allow = prefs.getBoolean(ToyVpnClient.Prefs.ALLOW, true)
-        val packages = prefs.getStringSet(ToyVpnClient.Prefs.PACKAGES, emptySet())
-        val port = prefs.getInt(ToyVpnClient.Prefs.SERVER_PORT, 0)
-        val proxyHost = prefs.getString(ToyVpnClient.Prefs.PROXY_HOSTNAME, "")
-        val proxyPort = prefs.getInt(ToyVpnClient.Prefs.PROXY_PORT, 0)
+        val prefs = getSharedPreferences(Constant.Prefs.NAME, MODE_PRIVATE)
+        val server = prefs.getString(Constant.Prefs.SERVER_ADDRESS, "")
+        val secret = prefs.getString(Constant.Prefs.SHARED_SECRET, "")!!.toByteArray()
+        val allow = prefs.getBoolean(Constant.Prefs.ALLOW, true)
+        val packages = prefs.getStringSet(Constant.Prefs.PACKAGES, emptySet())
+        val port = prefs.getInt(Constant.Prefs.SERVER_PORT, 0)
+        val proxyHost = prefs.getString(Constant.Prefs.PROXY_HOSTNAME, "")
+        val proxyPort = prefs.getInt(Constant.Prefs.PROXY_PORT, 0)
         startConnection(
             ToyVpnConnection(
                 this, mNextConnectionId.getAndIncrement(), server!!, port, secret,
@@ -96,10 +100,12 @@ class ToyVpnService : VpnService(), Handler.Callback {
 
         // Handler to mark as connected once onEstablish is called.
         connection.setConfigureIntent(mConfigureIntent)
-        connection.setOnEstablishListener(OnEstablishListener { tunInterface: ParcelFileDescriptor? ->
-            mHandler!!.sendEmptyMessage(R.string.connected)
-            mConnectingThread.compareAndSet(thread, null)
-            setConnection(Connection(thread, tunInterface))
+        connection.setOnEstablishListener(object : OnEstablishListener {
+            override fun onEstablish(tunInterface: ParcelFileDescriptor?) {
+                mHandler!!.sendEmptyMessage(R.string.connected)
+                mConnectingThread.compareAndSet(thread, null)
+                setConnection(Connection(thread, tunInterface))
+            }
         })
         thread.start()
     }
@@ -144,7 +150,7 @@ class ToyVpnService : VpnService(), Handler.Callback {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             startForeground(
                 1, Notification.Builder(this, NOTIFICATION_CHANNEL_ID)
-                    .setSmallIcon(R.drawable.ic_vpn)
+                    .setSmallIcon(R.drawable.ic_baseline_vpn_lock_24)
                     .setContentText(getString(message))
                     .setContentIntent(mConfigureIntent)
                     .build()

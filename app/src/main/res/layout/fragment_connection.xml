@@ -17,20 +17,22 @@
             android:text="@string/vpn_type" />
 
         <RadioGroup
+            android:id="@+id/connection_local_group"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:weightSum="3">
 
             <RadioButton
-                android:id="@+id/connect_vpn_local_radio"
+                android:id="@+id/connection_vpn_local_radio"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:checked="true"
                 android:text="@string/local" />
 
             <RadioButton
-                android:id="@+id/connect_vpn_backend_radio"
+                android:id="@+id/connection_vpn_backend_radio"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -40,8 +42,8 @@
 
         <TextView
             style="@style/normal_txt"
-            android:text="@string/address"
-            android:layout_marginTop="15dp"/>
+            android:layout_marginTop="15dp"
+            android:text="@string/address" />
 
         <EditText
             android:id="@+id/connection_ip"
@@ -91,20 +93,22 @@
             android:text="@string/packages" />
 
         <RadioGroup
+            android:id="@+id/connection_allow_group"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:weightSum="3">
 
             <RadioButton
-                android:id="@+id/connect_allowed_radio"
+                android:id="@+id/connection_allowed_radio"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:checked="true"
                 android:text="@string/allowed" />
 
             <RadioButton
-                android:id="@+id/connect_disallowed_radio"
+                android:id="@+id/connection_disallowed_radio"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -113,11 +117,11 @@
         </RadioGroup>
 
         <EditText
-            android:id="@+id/connect_packages"
+            android:id="@+id/connection_packages"
             style="@style/normal_et" />
 
         <Button
-            android:id="@+id/connect_connect"
+            android:id="@+id/connection_connect"
             style="@style/normal_button"
             android:layout_width="match_parent"
             android:layout_marginTop="10dp"
@@ -125,7 +129,7 @@
             android:text="@string/connect" />
 
         <Button
-            android:id="@+id/connect_disconnect"
+            android:id="@+id/connection_disconnect"
             style="@style/normal_button"
             android:layout_width="match_parent"
             android:layout_marginTop="10dp"
