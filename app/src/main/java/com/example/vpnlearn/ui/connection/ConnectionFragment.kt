@@ -3,17 +3,23 @@ package com.example.vpnlearn.ui.connection
 import android.content.Intent
 import android.net.VpnService
 import android.os.Bundle
+import android.provider.Settings
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.vpnlearn.R
 import com.example.vpnlearn.di.components.FragmentComponent
-import com.example.vpnlearn.service.ToyVpnService
-import com.example.vpnlearn.ui.applist.AppListFragment
+import com.example.vpnlearn.service.BackendVpnService
 import com.example.vpnlearn.ui.base.BaseFragment
+import com.example.vpnlearn.ui.setting.SettingFragment
+import com.example.vpnlearn.utility.FragmentHelper
+import kotlinx.android.synthetic.main.fragment_app_list.*
 import kotlinx.android.synthetic.main.fragment_connection.*
 
 class ConnectionFragment : BaseFragment<ConnectionViewModel>() {
@@ -33,6 +39,7 @@ class ConnectionFragment : BaseFragment<ConnectionViewModel>() {
     override fun provideLayoutId() = R.layout.fragment_connection
 
     override fun setUpViews(view: View) {
+        setHasOptionsMenu(true)
 
         connection_ip.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {}
@@ -138,6 +145,28 @@ class ConnectionFragment : BaseFragment<ConnectionViewModel>() {
         fragmentComponent.inject(this)
     }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.main_menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.menu_network_setting -> {
+                startActivity(Intent(Settings.ACTION_WIRELESS_SETTINGS))
+                true
+            }
+
+            R.id.menu_application_setting -> {
+                FragmentHelper.openFragment(context, R.id.all_list_main_frame, SettingFragment())
+                true
+            }
+            R.id.menu_vpn_enable -> {
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
     override fun setUpObservers() {
         super.setUpObservers()
 
@@ -187,14 +216,14 @@ class ConnectionFragment : BaseFragment<ConnectionViewModel>() {
     }
 
     private fun connectVpn() = activity!!.startService(
-        Intent(context, ToyVpnService::class.java).setAction(
-            ToyVpnService.ACTION_CONNECT
+        Intent(context, BackendVpnService::class.java).setAction(
+            BackendVpnService.ACTION_CONNECT
         )
     )
 
     private fun disconnectVpn() = activity!!.startService(
-        Intent(context, ToyVpnService::class.java).setAction(
-            ToyVpnService.ACTION_DISCONNECT
+        Intent(context, BackendVpnService::class.java).setAction(
+            BackendVpnService.ACTION_DISCONNECT
         )
     )
 

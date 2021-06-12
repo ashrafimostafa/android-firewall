@@ -20,7 +20,7 @@ import java.nio.charset.StandardCharsets.US_ASCII
 import java.util.concurrent.TimeUnit
 
 
-class ToyVpnConnection(
+class BackendVpnConnection(
     private val mService: VpnService,
     private val mConnectionId: Int,
     private val mServerName: String,
@@ -32,12 +32,13 @@ class ToyVpnConnection(
     packages: Set<String>
 ) : Runnable {
     /**
-     * Callback interface to let the [ToyVpnService] know about new connections
+     * Callback interface to let the [BackendVpnService] know about new connections
      * and update the foreground notification with connection status.
      */
     interface OnEstablishListener {
         fun onEstablish(tunInterface: ParcelFileDescriptor?)
     }
+
 
     private var mConfigureIntent: PendingIntent? = null
     private var mOnEstablishListener: OnEstablishListener? = null
@@ -63,7 +64,7 @@ class ToyVpnConnection(
 
     override fun run() {
         try {
-            Log.i(tag, "Starting")
+            Log.i(TAG, "Starting")
 
             // If anything needs to be obtained using the network, get it now.
             // This greatly reduces the complexity of seamless handover, which
@@ -87,13 +88,13 @@ class ToyVpnConnection(
                 Thread.sleep(3000)
                 ++attempt
             }
-            Log.i(tag, "Giving up")
+            Log.i(TAG, "Giving up")
         } catch (e: IOException) {
-            Log.e(tag, "Connection failed, exiting", e)
+            Log.e(TAG, "Connection failed, exiting", e)
         } catch (e: InterruptedException) {
-            Log.e(tag, "Connection failed, exiting", e)
+            Log.e(TAG, "Connection failed, exiting", e)
         } catch (e: IllegalArgumentException) {
-            Log.e(tag, "Connection failed, exiting", e)
+            Log.e(TAG, "Connection failed, exiting", e)
         }
     }
 
@@ -195,13 +196,13 @@ class ToyVpnConnection(
                 }
             }
         } catch (e: SocketException) {
-            Log.e(tag, "Cannot use socket", e)
+            Log.e(TAG, "Cannot use socket", e)
         } finally {
             if (iface != null) {
                 try {
                     iface!!.close()
                 } catch (e: IOException) {
-                    Log.e(tag, "Unable to close interface", e)
+                    Log.e(TAG, "Unable to close interface", e)
                 }
             }
         }
@@ -273,7 +274,7 @@ class ToyVpnConnection(
                     builder.addDisallowedApplication(packageName)
                 }
             } catch (e: PackageManager.NameNotFoundException) {
-                Log.w(tag, "Package not available: $packageName", e)
+                Log.w(TAG, "Package not available: $packageName", e)
             }
         }
         builder.setSession(mServerName).setConfigureIntent(mConfigureIntent)
@@ -288,12 +289,12 @@ class ToyVpnConnection(
                 mOnEstablishListener!!.onEstablish(vpnInterface)
             }
         }
-        Log.i(tag, "New interface: $vpnInterface ($parameters)")
+        Log.i(TAG, "New interface: $vpnInterface ($parameters)")
         return vpnInterface
     }
 
     private val tag: String
-        private get() = ToyVpnConnection::class.java.simpleName + "[" + mConnectionId + "]"
+        private get() = BackendVpnConnection::class.java.simpleName + "[" + mConnectionId + "]"
 
     companion object {
         /** Maximum packet size is constrained by the MTU, which is given as a signed short.  */
@@ -326,6 +327,8 @@ class ToyVpnConnection(
          * TODO: use a higher-level protocol; hand-rolling is a fun but pointless exercise.
          */
         private const val MAX_HANDSHAKE_ATTEMPTS = 50
+
+        const  val TAG = "NetBlocker.BackVC"
     }
 
     init {

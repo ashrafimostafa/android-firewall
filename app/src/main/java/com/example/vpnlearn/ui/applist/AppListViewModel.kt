@@ -1,6 +1,7 @@
 package com.example.vpnlearn.ui.applist
 
 import android.content.Intent
+import android.provider.Settings
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.example.vpnlearn.data.local.DatabaseService
@@ -124,6 +125,5 @@ class AppListViewModel @Inject constructor(
                 })
         )
     }
-
 
 }

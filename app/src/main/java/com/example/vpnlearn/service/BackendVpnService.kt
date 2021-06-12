@@ -15,7 +15,7 @@ import android.util.Log
 import android.util.Pair
 import android.widget.Toast
 import com.example.vpnlearn.R
-import com.example.vpnlearn.service.ToyVpnConnection.OnEstablishListener
+import com.example.vpnlearn.service.BackendVpnConnection.OnEstablishListener
 import com.example.vpnlearn.ui.connection.ConnectionFragment
 import com.example.vpnlearn.utility.Constant
 import java.io.IOException
@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicReference
 
 
-class ToyVpnService : VpnService(), Handler.Callback {
+class BackendVpnService : VpnService(), Handler.Callback {
 
 
     private var mHandler: Handler? = null
@@ -81,21 +81,22 @@ class ToyVpnService : VpnService(), Handler.Callback {
         val server = prefs.getString(Constant.Prefs.SERVER_ADDRESS, "")
         val secret = prefs.getString(Constant.Prefs.SHARED_SECRET, "")!!.toByteArray()
         val allow = prefs.getBoolean(Constant.Prefs.ALLOW, true)
-        val packages = prefs.getStringSet(Constant.Prefs.PACKAGES, emptySet())
+//        val packages = prefs.getStringSet(Constant.Prefs.PACKAGES, emptySet())
+        val packages = emptySet<String>()
         val port = prefs.getInt(Constant.Prefs.SERVER_PORT, 0)
         val proxyHost = prefs.getString(Constant.Prefs.PROXY_HOSTNAME, "")
         val proxyPort = prefs.getInt(Constant.Prefs.PROXY_PORT, 0)
         startConnection(
-            ToyVpnConnection(
+            BackendVpnConnection(
                 this, mNextConnectionId.getAndIncrement(), server!!, port, secret,
                 proxyHost, proxyPort, allow, packages!!
             )
         )
     }
 
-    private fun startConnection(connection: ToyVpnConnection) {
+    private fun startConnection(connection: BackendVpnConnection) {
         // Replace any existing connecting thread with the  new one.
-        val thread = Thread(connection, "ToyVpnThread")
+        val thread = Thread(connection, "NetBlockerVpnThread")
         setConnectingThread(thread)
 
         // Handler to mark as connected once onEstablish is called.
@@ -135,21 +136,9 @@ class ToyVpnService : VpnService(), Handler.Callback {
     }
 
     private fun updateForegroundNotification(message: Int) {
-        val NOTIFICATION_CHANNEL_ID = "ToyVpn"
-        val mNotificationManager = getSystemService(
-            NOTIFICATION_SERVICE
-        ) as NotificationManager
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            mNotificationManager.createNotificationChannel(
-                NotificationChannel(
-                    NOTIFICATION_CHANNEL_ID, NOTIFICATION_CHANNEL_ID,
-                    NotificationManager.IMPORTANCE_DEFAULT
-                )
-            )
-        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             startForeground(
-                1, Notification.Builder(this, NOTIFICATION_CHANNEL_ID)
+                1, Notification.Builder(this, Constant.CHANNEL_ID)
                     .setSmallIcon(R.drawable.ic_baseline_vpn_lock_24)
                     .setContentText(getString(message))
                     .setContentIntent(mConfigureIntent)
@@ -159,8 +148,8 @@ class ToyVpnService : VpnService(), Handler.Callback {
     }
 
     companion object {
-        private val TAG = ToyVpnService::class.java.simpleName
-        const val ACTION_CONNECT = "com.example.android.toyvpn.START"
-        const val ACTION_DISCONNECT = "com.example.android.toyvpn.STOP"
+        private const val TAG = "NetBlocker.BackVS"
+        const val ACTION_CONNECT = "com.example.vpnlearn.service.START"
+        const val ACTION_DISCONNECT = "com.example.vpnlearn.service.STOP"
     }
 }

@@ -21,11 +21,11 @@ class MainActivity : BaseActivity<MainViewModel>() {
         setMainFragment()
     }
 
-
     override fun setUpObservers() {
         super.setUpObservers()
     }
 
+    //todo there is lag when opening the application
     private fun setMainFragment() {
         if (supportFragmentManager.findFragmentByTag(TAG) == null) {
             supportFragmentManager
@@ -34,6 +34,5 @@ class MainActivity : BaseActivity<MainViewModel>() {
                 .commit()
         }
     }
-
 
 }
