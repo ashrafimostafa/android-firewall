@@ -10,11 +10,8 @@ import android.widget.Toast
 import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
 import com.example.vpnlearn.MyApplication
-import com.example.vpnlearn.di.components.DaggerFragmentComponent
 import com.example.vpnlearn.di.components.DaggerSheetComponent
-import com.example.vpnlearn.di.components.FragmentComponent
 import com.example.vpnlearn.di.components.SheetComponent
-import com.example.vpnlearn.di.modules.FragmentModule
 import com.example.vpnlearn.di.modules.SheetModule
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -23,14 +20,15 @@ import javax.inject.Inject
 
 abstract class BaseSheet<VM : BaseViewModel> : BottomSheetDialogFragment() {
 
-    private lateinit var dialog: BottomSheetDialog
-    private lateinit var behavior: BottomSheetBehavior<View>
-
     @Inject
     lateinit var viewModel: VM
 
+    private lateinit var dialog: BottomSheetDialog
+    private lateinit var behavior: BottomSheetBehavior<View>
+
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        injectDependencies(buildFragmentComponent())
+        injectDependencies(buildSheetComponent())
         dialog = super.onCreateDialog(savedInstanceState) as BottomSheetDialog
         dialog.setOnShowListener {
             val d = it as BottomSheetDialog
@@ -39,8 +37,8 @@ abstract class BaseSheet<VM : BaseViewModel> : BottomSheetDialogFragment() {
             behavior.isHideable = false
             behavior.state = BottomSheetBehavior.STATE_COLLAPSED
         }
-        viewModel.onCreate()
         setUpObservers()
+        viewModel.onCreate()
 
         return dialog
     }
@@ -80,7 +78,7 @@ abstract class BaseSheet<VM : BaseViewModel> : BottomSheetDialogFragment() {
 
     protected abstract fun injectDependencies(sheetComponent: SheetComponent)
 
-    private fun buildFragmentComponent() =
+    private fun buildSheetComponent() =
         DaggerSheetComponent.builder()
             .applicationComponent((context!!.applicationContext as MyApplication).applicationComponent)
             .sheetModule(SheetModule(this))
