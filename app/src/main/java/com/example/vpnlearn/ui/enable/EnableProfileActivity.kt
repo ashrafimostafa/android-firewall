@@ -1,12 +1,9 @@
 package com.example.vpnlearn.ui.enable
 
-import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.example.vpnlearn.R
 import com.example.vpnlearn.policy.PostProvisioningHelper
-import com.example.vpnlearn.ui.main.AppListActivity
 
 class EnableProfileActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

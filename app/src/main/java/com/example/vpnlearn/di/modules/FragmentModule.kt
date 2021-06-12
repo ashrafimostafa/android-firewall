@@ -10,6 +10,7 @@ import com.example.vpnlearn.di.scope.FragmentScope
 import com.example.vpnlearn.ui.applist.AppListViewModel
 import com.example.vpnlearn.ui.applist.app.ApplicationAdapter
 import com.example.vpnlearn.ui.base.BaseFragment
+import com.example.vpnlearn.ui.connection.ConnectionViewModel
 import com.example.vpnlearn.ui.setting.SettingViewModel
 import com.example.vpnlearn.utility.ProvideAppList
 import com.example.vpnlearn.utility.ViewModelProviderFactory
@@ -37,11 +38,20 @@ class FragmentModule(private val fragment: BaseFragment<*>) {
     @Provides
     fun provideSettingViewModel(
         compositeDisposable: CompositeDisposable,
-        @ApplicationContext context:Context
+        @ApplicationContext context: Context
     ): SettingViewModel = ViewModelProvider(
         fragment, ViewModelProviderFactory(SettingViewModel::class) {
             SettingViewModel(compositeDisposable, context)
         }).get(SettingViewModel::class.java)
+
+    @Provides
+    fun provideConnectionViewModel(
+        compositeDisposable: CompositeDisposable,
+        @ApplicationContext context: Context
+    ): ConnectionViewModel = ViewModelProvider(
+        fragment, ViewModelProviderFactory(ConnectionViewModel::class) {
+            ConnectionViewModel(compositeDisposable, context)
+        }).get(ConnectionViewModel::class.java)
 
 
     @Provides

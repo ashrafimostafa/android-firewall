@@ -8,7 +8,7 @@ import android.os.Handler
 import android.os.ParcelFileDescriptor
 import android.util.Log
 import com.example.vpnlearn.data.local.DatabaseService
-import com.example.vpnlearn.ui.main.AppListActivity
+import com.example.vpnlearn.ui.main.MainActivity
 import com.example.vpnlearn.utility.Constant
 import com.example.vpnlearn.utility.Util
 import io.reactivex.disposables.CompositeDisposable
@@ -157,7 +157,7 @@ class VpnWorker(
                                 Log.i(TAG, "other disallow app: $pkg")
                             }
 
-                            val configure = Intent(ctx, AppListActivity::class.java)
+                            val configure = Intent(ctx, MainActivity::class.java)
                             val pi = PendingIntent.getActivity(
                                 ctx,
                                 0,

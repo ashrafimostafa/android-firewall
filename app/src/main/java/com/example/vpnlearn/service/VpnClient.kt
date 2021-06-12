@@ -18,7 +18,7 @@ import com.example.vpnlearn.MyApplication
 import com.example.vpnlearn.R
 import com.example.vpnlearn.data.local.DatabaseService
 import com.example.vpnlearn.receiver.RestartServiceReceiver
-import com.example.vpnlearn.ui.main.AppListActivity
+import com.example.vpnlearn.ui.main.MainActivity
 import com.example.vpnlearn.utility.Constant
 import com.example.vpnlearn.utility.Util.logExtras
 import io.reactivex.disposables.CompositeDisposable
@@ -203,7 +203,7 @@ class VpnClient() : VpnService() {
     private fun updateForegroundNotification(@StringRes message: Int) {
         Log.i(TAG, "state changed int: ${getString(message)} ")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val intent = Intent(this, AppListActivity::class.java)
+            val intent = Intent(this, MainActivity::class.java)
             val stackBuilder = TaskStackBuilder.create(this)
             stackBuilder.addNextIntentWithParentStack(intent)
             val pendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT)

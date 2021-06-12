@@ -1,30 +1,29 @@
 package com.example.vpnlearn.ui.connection
 
-import android.content.Context.MODE_PRIVATE
-import android.os.Build
+import android.content.Intent
+import android.net.VpnService
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.View
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.example.vpnlearn.R
 import com.example.vpnlearn.di.components.FragmentComponent
+import com.example.vpnlearn.service.ToyVpnService
 import com.example.vpnlearn.ui.applist.AppListFragment
 import com.example.vpnlearn.ui.base.BaseFragment
-import com.example.vpnlearn.utility.Constant
-import com.example.vpnlearn.utility.Constant.Prefs
 import kotlinx.android.synthetic.main.fragment_connection.*
-import java.util.*
-import java.util.stream.Collectors
-
 
 class ConnectionFragment : BaseFragment<ConnectionViewModel>() {
 
     companion object {
         const val TAG = "NetBlocker.ConFrag"
-        fun newInstance(): AppListFragment {
+        private const val REQUEST_VPN = 1
+        fun newInstance(): ConnectionFragment {
             val args = Bundle()
-            val fragment = AppListFragment()
+            val fragment = ConnectionFragment()
             fragment.arguments = args
             return fragment
         }
@@ -47,7 +46,13 @@ class ConnectionFragment : BaseFragment<ConnectionViewModel>() {
             override fun afterTextChanged(p0: Editable?) {}
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                viewModel.onPortChanged(Integer.parseInt(p0.toString()))
+                viewModel.onPortChanged(
+                    try {
+                        Integer.parseInt(p0.toString())
+                    } catch (ex: Exception) {
+                        Log.e(TAG, "integer parse error: ${ex.toString()}")
+                    }
+                )
             }
         })
 
@@ -63,7 +68,13 @@ class ConnectionFragment : BaseFragment<ConnectionViewModel>() {
             override fun afterTextChanged(p0: Editable?) {}
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                viewModel.onProxyPortChanged(Integer.parseInt(p0.toString()))
+                viewModel.onProxyPortChanged(
+                    try {
+                        Integer.parseInt(p0.toString())
+                    } catch (ex: Exception) {
+                        Log.e(TAG, "integer parse error: ${ex.toString()}")
+                    }
+                )
             }
         })
 
@@ -98,11 +109,28 @@ class ConnectionFragment : BaseFragment<ConnectionViewModel>() {
         }
 
         connection_connect.setOnClickListener {
+            val prepare = VpnService.prepare(context)
+            if (prepare == null) {
+                //user already grant permission
+                onActivityResult(REQUEST_VPN, AppCompatActivity.RESULT_OK, null)
+            } else {
+                try {
+                    //system show vpn connection allow dialog
+                    startActivityForResult(prepare, REQUEST_VPN)
+                } catch (ex: Throwable) {
+                    onActivityResult(
+                        REQUEST_VPN,
+                        AppCompatActivity.RESULT_CANCELED, null
+                    )
+                    Toast.makeText(context, ex.toString(), Toast.LENGTH_LONG).show()
+                }
+            }
+
 
         }
 
         connection_disconnect.setOnClickListener {
-
+            disconnectVpn()
         }
     }
 
@@ -151,5 +179,23 @@ class ConnectionFragment : BaseFragment<ConnectionViewModel>() {
                 connection_vpn_backend_radio.isChecked = true
         })
     }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == REQUEST_VPN) {
+            if (resultCode == AppCompatActivity.RESULT_OK) connectVpn()
+        } else super.onActivityResult(requestCode, resultCode, data)
+    }
+
+    private fun connectVpn() = activity!!.startService(
+        Intent(context, ToyVpnService::class.java).setAction(
+            ToyVpnService.ACTION_CONNECT
+        )
+    )
+
+    private fun disconnectVpn() = activity!!.startService(
+        Intent(context, ToyVpnService::class.java).setAction(
+            ToyVpnService.ACTION_DISCONNECT
+        )
+    )
 
 }

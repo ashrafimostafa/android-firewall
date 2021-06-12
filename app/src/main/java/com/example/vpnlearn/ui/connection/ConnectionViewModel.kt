@@ -68,58 +68,41 @@ class ConnectionViewModel @Inject constructor(
     fun onIpChanged(ip: String) {
         val pref = ctx.getSharedPreferences(Constant.Prefs.NAME, Context.MODE_PRIVATE)
         pref.edit().putString(Constant.Prefs.SERVER_ADDRESS, ip).apply()
-        ipObserver.postValue(ip)
     }
 
     fun onPortChanged(port: Int) {
         val pref = ctx.getSharedPreferences(Constant.Prefs.NAME, Context.MODE_PRIVATE)
         pref.edit().putInt(Constant.Prefs.SERVER_PORT, port).apply()
-        portObserver.postValue(port)
     }
 
     fun onSecretChanged(secret: String) {
         val pref = ctx.getSharedPreferences(Constant.Prefs.NAME, Context.MODE_PRIVATE)
         pref.edit().putString(Constant.Prefs.SHARED_SECRET, secret).apply()
-        secretObserver.postValue(secret)
     }
 
     fun onProxyIpChanged(ip: String) {
         val pref = ctx.getSharedPreferences(Constant.Prefs.NAME, Context.MODE_PRIVATE)
         pref.edit().putString(Constant.Prefs.PROXY_HOSTNAME, ip).apply()
-        proxyIpObserver.postValue(ip)
     }
 
     fun onProxyPortChanged(port: Int) {
         val pref = ctx.getSharedPreferences(Constant.Prefs.NAME, Context.MODE_PRIVATE)
         pref.edit().putInt(Constant.Prefs.PROXY_PORT, port).apply()
-        proxyPortObserver.postValue(port)
     }
 
     fun onPackageChanged(packages: String) {
         val pref = ctx.getSharedPreferences(Constant.Prefs.NAME, Context.MODE_PRIVATE)
         pref.edit().putString(Constant.Prefs.PACKAGES, packages).apply()
-        packagesObserver.postValue(packages)
     }
 
     fun onAllowChanged(allow: Boolean) {
         val pref = ctx.getSharedPreferences(Constant.Prefs.NAME, Context.MODE_PRIVATE)
         pref.edit().putBoolean(Constant.Prefs.ALLOW, allow).apply()
-        allowObserver.postValue(allow)
     }
 
     fun onLocalChanged(local: Boolean) {
         val pref = ctx.getSharedPreferences(Constant.Prefs.NAME, Context.MODE_PRIVATE)
         pref.edit().putBoolean(Constant.Prefs.LOCAL_MODE, local).apply()
-        localObserver.postValue(local)
     }
-
-    fun onConnectClicked() {
-
-    }
-
-    fun onDisConnectClicked() {
-
-    }
-
 
 }

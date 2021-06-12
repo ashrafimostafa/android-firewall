@@ -7,7 +7,6 @@ import android.content.Intent
 import android.os.UserHandle
 import android.util.Log
 import com.example.vpnlearn.ui.enable.EnableProfileActivity
-import com.example.vpnlearn.ui.main.AppListActivity
 import com.example.vpnlearn.utility.Util
 
 class DeviceAdmin : DeviceAdminReceiver() {
