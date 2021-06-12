@@ -1,46 +1,61 @@
 package com.example.vpnlearn.ui.base
 
-import android.content.Intent
+import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
-import androidx.fragment.app.Fragment
 import com.example.vpnlearn.MyApplication
-import com.example.vpnlearn.di.components.ActivityComponent
-import com.example.vpnlearn.di.components.DaggerActivityComponent
 import com.example.vpnlearn.di.components.DaggerFragmentComponent
+import com.example.vpnlearn.di.components.DaggerSheetComponent
 import com.example.vpnlearn.di.components.FragmentComponent
-import com.example.vpnlearn.di.modules.ActivityModule
+import com.example.vpnlearn.di.components.SheetComponent
 import com.example.vpnlearn.di.modules.FragmentModule
+import com.example.vpnlearn.di.modules.SheetModule
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import javax.inject.Inject
 
-abstract class BaseFragment<VM : BaseViewModel> : Fragment() {
+abstract class BaseSheet<VM : BaseViewModel> : BottomSheetDialogFragment() {
+
+    private lateinit var dialog: BottomSheetDialog
+    private lateinit var behavior: BottomSheetBehavior<View>
 
     @Inject
     lateinit var viewModel: VM
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         injectDependencies(buildFragmentComponent())
-        super.onCreate(savedInstanceState)
-        setUpObservers()
+        dialog = super.onCreateDialog(savedInstanceState) as BottomSheetDialog
+        dialog.setOnShowListener {
+            val d = it as BottomSheetDialog
+            val sheet = d.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
+            behavior = BottomSheetBehavior.from(sheet as FrameLayout)
+            behavior.isHideable = false
+            behavior.state = BottomSheetBehavior.STATE_COLLAPSED
+        }
         viewModel.onCreate()
+        setUpObservers()
+
+        return dialog
     }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ) = inflater.inflate(provideLayoutId(), container, false)
+    ): View =  inflater.inflate(provideLayoutId(), container, false)
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setUpViews(view)
     }
-
 
     protected open fun setUpObservers() {
         viewModel.messageId.observe(this, {
@@ -63,11 +78,12 @@ abstract class BaseFragment<VM : BaseViewModel> : Fragment() {
 
     protected abstract fun setUpViews(view: View)
 
-    protected abstract fun injectDependencies(fragmentComponent: FragmentComponent)
+    protected abstract fun injectDependencies(sheetComponent: SheetComponent)
 
     private fun buildFragmentComponent() =
-        DaggerFragmentComponent.builder()
+        DaggerSheetComponent.builder()
             .applicationComponent((context!!.applicationContext as MyApplication).applicationComponent)
-            .fragmentModule(FragmentModule(this))
+            .sheetModule(SheetModule(this))
             .build()
+
 }

@@ -12,4 +12,9 @@ annotation class FragmentScope
 
 @Scope
 @Retention(AnnotationRetention.SOURCE)
+annotation class SheetScope
+
+
+@Scope
+@Retention(AnnotationRetention.SOURCE)
 annotation class ViewHolderScope

@@ -44,6 +44,8 @@
     <string name="local">local</string>
     <string name="backend">backend</string>
 
+    <string name="app_list_header_msg">select preferred application to block/unblock network connection</string>
+
     <string name="packages">Packages (comma separated):</string>
     <string name="allowed">Allow</string>
     <string name="disallowed">Disallow</string>

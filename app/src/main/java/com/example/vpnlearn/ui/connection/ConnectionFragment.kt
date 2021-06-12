@@ -16,10 +16,11 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.vpnlearn.R
 import com.example.vpnlearn.di.components.FragmentComponent
 import com.example.vpnlearn.service.BackendVpnService
+import com.example.vpnlearn.ui.applist.AppListFragment
+import com.example.vpnlearn.ui.appsheet.AppListSheet
 import com.example.vpnlearn.ui.base.BaseFragment
 import com.example.vpnlearn.ui.setting.SettingFragment
 import com.example.vpnlearn.utility.FragmentHelper
-import kotlinx.android.synthetic.main.fragment_app_list.*
 import kotlinx.android.synthetic.main.fragment_connection.*
 
 class ConnectionFragment : BaseFragment<ConnectionViewModel>() {
@@ -35,6 +36,7 @@ class ConnectionFragment : BaseFragment<ConnectionViewModel>() {
         }
     }
 
+    private var appListBottomSheet: AppListSheet? = null
 
     override fun provideLayoutId() = R.layout.fragment_connection
 
@@ -137,7 +139,11 @@ class ConnectionFragment : BaseFragment<ConnectionViewModel>() {
         }
 
         connection_disconnect.setOnClickListener {
-            disconnectVpn()
+//            disconnectVpn()
+            if (appListBottomSheet == null) {
+                appListBottomSheet = AppListSheet.newInstance()
+            }
+            appListBottomSheet?.show(activity!!.supportFragmentManager, appListBottomSheet?.tag)
         }
     }
 

@@ -9,6 +9,7 @@ import com.example.vpnlearn.di.qualifire.ApplicationContext
 import com.example.vpnlearn.di.scope.FragmentScope
 import com.example.vpnlearn.ui.applist.AppListViewModel
 import com.example.vpnlearn.ui.applist.app.ApplicationAdapter
+import com.example.vpnlearn.ui.appsheet.AppSheetViewModel
 import com.example.vpnlearn.ui.base.BaseFragment
 import com.example.vpnlearn.ui.connection.ConnectionViewModel
 import com.example.vpnlearn.ui.setting.SettingViewModel
