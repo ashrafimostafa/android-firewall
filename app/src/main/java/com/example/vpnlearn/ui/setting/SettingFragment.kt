@@ -7,7 +7,10 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
+import android.os.PowerManager
+import android.provider.Settings
 import android.util.Log
 import android.view.View
 import android.widget.CheckBox
@@ -29,6 +32,7 @@ class SettingFragment : BaseFragment<SettingViewModel>() {
         const val TAG = "NetBlocker.Setting"
         const val DEVICE_ADMIN_REQUEST_CODE = 101;
         const val REQUEST_PROVISION_MANAGED_PROFILE = 102;
+        const val REQUEST_BATTERY_OPTIMIZATION = 103;
     }
 
     var isAdminPermissionGranted = false
@@ -43,10 +47,20 @@ class SettingFragment : BaseFragment<SettingViewModel>() {
 
 
     override fun setUpViews(view: View) {
+        checkBatteryOptimizationPermission()
+        setting_battery_optimization.setOnClickListener {
+            it as CheckBox
+
+            if (it.isChecked) requestBatteryOptimizationPermission()
+            else {
+                it.isChecked = true
+                Util.showToast(getString(R.string.disabling_permission_unavailable), context)
+            }
+        }
+
         setting_admin_permission.setOnClickListener {
             it as CheckBox
 
-            val checked = it.isChecked
             if (!it.isChecked) {
                 Util.showToast(getString(R.string.disabling_permission_unavailable), context)
                 it.isChecked = true
@@ -204,6 +218,8 @@ class SettingFragment : BaseFragment<SettingViewModel>() {
             } else {
                 Util.showToast("Provisioning failed.", activity)
             }
+        } else if (requestCode == REQUEST_BATTERY_OPTIMIZATION) {
+            setting_battery_optimization.isChecked = resultCode == Activity.RESULT_OK
         }
     }
 
@@ -286,4 +302,24 @@ class SettingFragment : BaseFragment<SettingViewModel>() {
             Log.i(TAG, "accout: $account")
         }
     }
+
+    private fun checkBatteryOptimizationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val packageName: String = context!!.packageName
+            val pm = context!!.getSystemService(Context.POWER_SERVICE) as PowerManager?
+            setting_battery_optimization.isChecked =
+                pm!!.isIgnoringBatteryOptimizations(packageName)
+        }
+    }
+
+    private fun requestBatteryOptimizationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val intent = Intent()
+            val packageName: String = context!!.packageName
+            intent.action = Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
+            intent.data = Uri.parse("package:$packageName")
+            startActivityForResult(intent, REQUEST_BATTERY_OPTIMIZATION)
+        }
+    }
+
 }

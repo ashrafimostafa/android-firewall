@@ -8,6 +8,11 @@
     tools:context=".ui.setting.SettingFragment">
 
     <CheckBox
+        android:id="@+id/setting_battery_optimization"
+        style="@style/normal_txt"
+        android:text="@string/disable_battery_optimization" />
+
+    <CheckBox
         android:id="@+id/setting_admin_permission"
         style="@style/normal_txt"
         android:text="@string/enable_admin_permission" />

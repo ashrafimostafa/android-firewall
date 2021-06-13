@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
 import com.example.vpnlearn.MyApplication
+import com.example.vpnlearn.R
 import com.example.vpnlearn.di.components.DaggerSheetComponent
 import com.example.vpnlearn.di.components.SheetComponent
 import com.example.vpnlearn.di.modules.SheetModule
@@ -47,7 +48,7 @@ abstract class BaseSheet<VM : BaseViewModel> : BottomSheetDialogFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View =  inflater.inflate(provideLayoutId(), container, false)
+    ): View = inflater.inflate(provideLayoutId(), container, false)
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -70,6 +71,10 @@ abstract class BaseSheet<VM : BaseViewModel> : BottomSheetDialogFragment() {
 
     fun showToast(@StringRes msg: Int) =
         Toast.makeText(context, getString(msg), Toast.LENGTH_LONG).show()
+
+    override fun getTheme(): Int {
+        return R.style.AppBottomSheetDialogTheme
+    }
 
     @LayoutRes
     protected abstract fun provideLayoutId(): Int

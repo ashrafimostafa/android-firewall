@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    style="@style/page_layer"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.connection.ConnectionFragment">
@@ -14,95 +16,127 @@
         <TextView
             style="@style/normal_txt"
             android:layout_marginTop="5dp"
-            android:text="@string/vpn_type" />
+            android:text="@string/vpn_type"
+            android:textStyle="bold" />
 
-        <RadioGroup
-            android:id="@+id/connection_local_group"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:weightSum="3">
+        <androidx.cardview.widget.CardView
+            style="@style/card_layer"
+            android:layout_marginTop="5dp">
 
-            <RadioButton
-                android:id="@+id/connection_vpn_local_radio"
-                android:layout_width="0dp"
+            <RadioGroup
+                android:id="@+id/connection_local_group"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/local" />
+                android:layout_margin="5dp"
+                android:orientation="horizontal"
+                android:weightSum="3">
 
-            <RadioButton
-                android:id="@+id/connection_vpn_backend_radio"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/backend" />
+                <RadioButton
+                    android:id="@+id/connection_vpn_local_radio"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/local" />
 
-        </RadioGroup>
+                <RadioButton
+                    android:id="@+id/connection_vpn_backend_radio"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/backend" />
 
-        <TextView
-            style="@style/normal_txt"
-            android:layout_marginTop="15dp"
-            android:text="@string/address" />
+            </RadioGroup>
 
-        <EditText
-            android:id="@+id/connection_ip"
-            style="@style/normal_et"
-            android:autofillHints="@string/ip_hint"
-            android:hint="@string/ip_hint"
-            android:inputType="text"
-            android:maxLines="1" />
+        </androidx.cardview.widget.CardView>
+
 
         <TextView
             style="@style/normal_txt"
             android:layout_marginTop="15dp"
-            android:text="@string/port" />
+            android:text="@string/vpn_info"
+            android:textStyle="bold" />
 
-        <EditText
-            android:id="@+id/connection_port"
-            style="@style/normal_et"
-            android:autofillHints="@string/port_hint"
-            android:hint="@string/port_hint"
-            android:inputType="number" />
+        <androidx.cardview.widget.CardView
+            style="@style/card_layer"
+            android:layout_marginTop="5dp">
 
-        <TextView
-            style="@style/normal_txt"
-            android:layout_marginTop="15dp"
-            android:text="@string/secret" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="5dp"
+                android:orientation="vertical">
 
-        <EditText
-            android:id="@+id/connection_secret"
-            style="@style/normal_et"
-            android:autofillHints="@string/secret_hint"
-            android:hint="@string/secret_hint"
-            android:inputType="text"
-            android:maxLines="1" />
+                <TextView
+                    style="@style/normal_txt"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/address" />
 
-        <TextView
-            style="@style/normal_txt"
-            android:layout_marginTop="15dp"
-            android:text="@string/proxy_host" />
+                <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/connection_ip"
+                    style="@style/normal_et"
+                    android:autofillHints="@string/ip_hint"
+                    android:hint="@string/ip_hint"
+                    android:inputType="text"
+                    android:maxLines="1" />
 
-        <EditText
-            android:id="@+id/connection_proxy_host"
-            style="@style/normal_et"
-            android:autofillHints="@string/ip_hint"
-            android:hint="@string/ip_hint"
-            android:inputType="text"
-            android:maxLines="1" />
+                <TextView
+                    style="@style/normal_txt"
+                    android:layout_marginTop="15dp"
+                    android:text="@string/port" />
 
-        <TextView
-            style="@style/normal_txt"
-            android:layout_marginTop="15dp"
-            android:text="@string/proxy_port" />
+                <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/connection_port"
+                    style="@style/normal_et"
+                    android:autofillHints="@string/port_hint"
+                    android:hint="@string/port_hint"
+                    android:inputType="number" />
 
-        <EditText
-            android:id="@+id/connection_proxy_port"
-            style="@style/normal_et"
-            android:autofillHints="@string/port_hint"
-            android:hint="@string/port_hint"
-            android:inputType="number" />
+                <TextView
+                    style="@style/normal_txt"
+                    android:layout_marginTop="15dp"
+                    android:text="@string/secret" />
 
-        <Button
+                <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/connection_secret"
+                    style="@style/normal_et"
+                    android:autofillHints="@string/secret_hint"
+                    android:hint="@string/secret_hint"
+                    android:inputType="text"
+                    android:maxLines="1" />
+
+                <TextView
+                    style="@style/normal_txt"
+                    android:layout_marginTop="15dp"
+                    android:text="@string/proxy_host" />
+
+                <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/connection_proxy_host"
+                    style="@style/normal_et"
+                    android:autofillHints="@string/ip_hint"
+                    android:hint="@string/ip_hint"
+                    android:inputType="text"
+                    android:maxLines="1" />
+
+                <TextView
+                    style="@style/normal_txt"
+                    android:layout_marginTop="15dp"
+                    android:text="@string/proxy_port" />
+
+                <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/connection_proxy_port"
+                    style="@style/normal_et"
+                    android:layout_marginBottom="10dp"
+                    android:autofillHints="@string/port_hint"
+                    android:hint="@string/port_hint"
+                    android:inputType="number" />
+
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/connection_select_allow"
             style="@style/normal_button"
             android:layout_width="match_parent"
@@ -111,7 +145,7 @@
             android:text="@string/select_app" />
 
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/connection_connect"
             style="@style/normal_button"
             android:layout_width="match_parent"
@@ -119,7 +153,7 @@
             android:layout_marginBottom="10dp"
             android:text="@string/connect" />
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/connection_disconnect"
             style="@style/normal_button"
             android:layout_width="match_parent"

@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.vpnlearn.R
 import com.example.vpnlearn.di.components.FragmentComponent
 import com.example.vpnlearn.service.BackendVpnService
+import com.example.vpnlearn.service.State
 import com.example.vpnlearn.service.VpnClient
 import com.example.vpnlearn.ui.appsheet.AppListSheet
 import com.example.vpnlearn.ui.base.BaseFragment
@@ -214,7 +215,13 @@ class ConnectionFragment : BaseFragment<ConnectionViewModel>() {
 
     private fun disconnectVpn() {
         if (connection_vpn_local_radio.isChecked) {
-            context?.let { vpnClient.stop(it) }
+            context?.let {
+                if (vpnClient.getVpnState() == State.CONNECTED ||
+                    vpnClient.getVpnState() == State.CONNECTING
+                ) {
+                    vpnClient.stop(it)
+                }
+            }
         } else {
             activity!!.startService(
                 Intent(

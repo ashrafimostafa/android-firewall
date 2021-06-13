@@ -12,4 +12,6 @@
     <color name="textColor">#151515</color>
     <color name="buttonTextColor">#FFFFFF</color>
     <color name="buttonColor">#039BE5</color>
+    <color name="pageBack">#EAEAEA</color>
+    <color name="cardBack">#fff</color>
 </resources>

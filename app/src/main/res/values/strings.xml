@@ -15,6 +15,7 @@
 
     <string name="enable_disable_uninstall">Enable/Disable app uninstall</string>
     <string name="enable_disable_always_on_vpn">Enable/Disable always-on VPN(it may required device restart)</string>
+    <string name="disable_battery_optimization">Disable Battery optimization for NetBlocker</string>
     <string name="enable_admin_permission">Enable admin permission</string>
     <string name="device_admin_message">We need to be device admin:)</string>
     <string name="disabling_permission_unavailable">disabling permission is not possible in android</string>
@@ -41,7 +42,8 @@
     <string name="disconnect">Disconnect!</string>
     <string name="proxy_host">HTTP proxy hostname</string>
     <string name="proxy_port">HTTP proxy port</string>
-    <string name="vpn_type">Vpn type</string>
+    <string name="vpn_type">Vpn Type</string>
+    <string name="vpn_info">Vpn Info</string>
     <string name="local">local</string>
     <string name="backend">backend</string>
     <string name="ip_hint">127.0.0.1</string>
