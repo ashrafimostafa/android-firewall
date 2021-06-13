@@ -23,6 +23,8 @@ object Constant {
             const val ALLOW = "allow"
             const val PACKAGES = "packages"
             const val LOCAL_MODE = "local_mode"
+            const val ALLOW_WIFI = "allow_wifi"
+            const val ALLOW_OTHER = "allow_other"
         }
     }
 }

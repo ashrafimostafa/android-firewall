@@ -37,12 +37,16 @@
     <string name="port">Server Port:</string>
     <string name="secret">Shared Secret:</string>
     <string name="connect">Connect!</string>
+    <string name="select_app">Select app</string>
     <string name="disconnect">Disconnect!</string>
     <string name="proxy_host">HTTP proxy hostname</string>
     <string name="proxy_port">HTTP proxy port</string>
     <string name="vpn_type">Vpn type</string>
     <string name="local">local</string>
     <string name="backend">backend</string>
+    <string name="ip_hint">127.0.0.1</string>
+    <string name="port_hint">8080</string>
+    <string name="secret_hint">asdasd</string>
 
     <string name="app_list_header_msg">Select preferred application to block/unblock network connection</string>
 

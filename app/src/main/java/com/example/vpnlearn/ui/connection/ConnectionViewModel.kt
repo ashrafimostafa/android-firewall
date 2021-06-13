@@ -21,8 +21,6 @@ class ConnectionViewModel @Inject constructor(
     val secretObserver = MutableLiveData<String>()
     val proxyIpObserver = MutableLiveData<String>()
     val proxyPortObserver = MutableLiveData<Int>()
-    val packagesObserver = MutableLiveData<String>()
-    val allowObserver = MutableLiveData<Boolean>()
     val localObserver = MutableLiveData<Boolean>()
 
 
@@ -51,14 +49,6 @@ class ConnectionViewModel @Inject constructor(
 
         proxyPortObserver.postValue(
             pref.getInt(Constant.Prefs.PROXY_PORT, 0)
-        )
-
-        packagesObserver.postValue(
-            pref.getString(Constant.Prefs.PACKAGES, "")
-        )
-
-        allowObserver.postValue(
-            pref.getBoolean(Constant.Prefs.ALLOW, false)
         )
 
         localObserver.postValue(
@@ -90,16 +80,6 @@ class ConnectionViewModel @Inject constructor(
     fun onProxyPortChanged(port: Int) {
         val pref = ctx.getSharedPreferences(Constant.Prefs.NAME, Context.MODE_PRIVATE)
         pref.edit().putInt(Constant.Prefs.PROXY_PORT, port).apply()
-    }
-
-    fun onPackageChanged(packages: String) {
-        val pref = ctx.getSharedPreferences(Constant.Prefs.NAME, Context.MODE_PRIVATE)
-        pref.edit().putString(Constant.Prefs.PACKAGES, packages).apply()
-    }
-
-    fun onAllowChanged(allow: Boolean) {
-        val pref = ctx.getSharedPreferences(Constant.Prefs.NAME, Context.MODE_PRIVATE)
-        pref.edit().putBoolean(Constant.Prefs.ALLOW, allow).apply()
     }
 
     fun onLocalChanged(local: Boolean) {

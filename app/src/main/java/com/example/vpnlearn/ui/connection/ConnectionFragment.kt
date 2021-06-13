@@ -95,26 +95,18 @@ class ConnectionFragment : BaseFragment<ConnectionViewModel>() {
             }
         })
 
-        connection_packages.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(p0: Editable?) {}
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                viewModel.onPackageChanged(p0.toString())
-            }
-        })
-
-        connection_allow_group.setOnCheckedChangeListener { _, i ->
-            if (i == R.id.connection_allowed_radio)
-                viewModel.onAllowChanged(true)
-            else
-                viewModel.onAllowChanged(false)
-        }
-
         connection_local_group.setOnCheckedChangeListener { _, i ->
             if (i == R.id.connection_vpn_local_radio)
                 viewModel.onLocalChanged(true)
             else
                 viewModel.onLocalChanged(false)
+        }
+
+        connection_select_allow.setOnClickListener {
+            if (appListBottomSheet == null) {
+                appListBottomSheet = AppListSheet.newInstance()
+            }
+            appListBottomSheet?.show(activity!!.supportFragmentManager, appListBottomSheet?.tag)
         }
 
         connection_connect.setOnClickListener {
@@ -139,11 +131,7 @@ class ConnectionFragment : BaseFragment<ConnectionViewModel>() {
         }
 
         connection_disconnect.setOnClickListener {
-//            disconnectVpn()
-            if (appListBottomSheet == null) {
-                appListBottomSheet = AppListSheet.newInstance()
-            }
-            appListBottomSheet?.show(activity!!.supportFragmentManager, appListBottomSheet?.tag)
+            disconnectVpn()
         }
     }
 
@@ -194,17 +182,6 @@ class ConnectionFragment : BaseFragment<ConnectionViewModel>() {
 
         viewModel.proxyPortObserver.observe(this, {
             connection_proxy_port.setText("$it")
-        })
-
-        viewModel.packagesObserver.observe(this, {
-            connection_packages.setText(it)
-        })
-
-        viewModel.allowObserver.observe(this, {
-            if (it)
-                connection_allowed_radio.isChecked = true
-            else
-                connection_disallowed_radio.isChecked = true
         })
 
         viewModel.localObserver.observe(this, {

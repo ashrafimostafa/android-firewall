@@ -7,8 +7,9 @@ import com.example.vpnlearn.data.local.DatabaseService
 import com.example.vpnlearn.di.qualifire.ActivityContext
 import com.example.vpnlearn.di.scope.FragmentScope
 import com.example.vpnlearn.di.scope.SheetScope
-import com.example.vpnlearn.ui.applist.app.ApplicationAdapter
+
 import com.example.vpnlearn.ui.appsheet.AppSheetViewModel
+import com.example.vpnlearn.ui.appsheet.app.ApplicationAdapter
 import com.example.vpnlearn.ui.base.BaseSheet
 import com.example.vpnlearn.utility.ProvideAppList
 import com.example.vpnlearn.utility.ViewModelProviderFactory

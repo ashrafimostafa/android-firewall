@@ -13,7 +13,7 @@
 
         <TextView
             style="@style/normal_txt"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="5dp"
             android:text="@string/vpn_type" />
 
         <RadioGroup
@@ -46,7 +46,11 @@
 
         <EditText
             android:id="@+id/connection_ip"
-            style="@style/normal_et" />
+            style="@style/normal_et"
+            android:autofillHints="@string/ip_hint"
+            android:hint="@string/ip_hint"
+            android:inputType="text"
+            android:maxLines="1" />
 
         <TextView
             style="@style/normal_txt"
@@ -56,6 +60,8 @@
         <EditText
             android:id="@+id/connection_port"
             style="@style/normal_et"
+            android:autofillHints="@string/port_hint"
+            android:hint="@string/port_hint"
             android:inputType="number" />
 
         <TextView
@@ -65,7 +71,11 @@
 
         <EditText
             android:id="@+id/connection_secret"
-            style="@style/normal_et" />
+            style="@style/normal_et"
+            android:autofillHints="@string/secret_hint"
+            android:hint="@string/secret_hint"
+            android:inputType="text"
+            android:maxLines="1" />
 
         <TextView
             style="@style/normal_txt"
@@ -74,7 +84,11 @@
 
         <EditText
             android:id="@+id/connection_proxy_host"
-            style="@style/normal_et" />
+            style="@style/normal_et"
+            android:autofillHints="@string/ip_hint"
+            android:hint="@string/ip_hint"
+            android:inputType="text"
+            android:maxLines="1" />
 
         <TextView
             style="@style/normal_txt"
@@ -84,39 +98,18 @@
         <EditText
             android:id="@+id/connection_proxy_port"
             style="@style/normal_et"
+            android:autofillHints="@string/port_hint"
+            android:hint="@string/port_hint"
             android:inputType="number" />
 
-        <TextView
-            style="@style/normal_txt"
-            android:layout_marginTop="15dp"
-            android:text="@string/packages" />
-
-        <RadioGroup
-            android:id="@+id/connection_allow_group"
+        <Button
+            android:id="@+id/connection_select_allow"
+            style="@style/normal_button"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:weightSum="3">
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="10dp"
+            android:text="@string/select_app" />
 
-            <RadioButton
-                android:id="@+id/connection_allowed_radio"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/allowed" />
-
-            <RadioButton
-                android:id="@+id/connection_disallowed_radio"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/disallowed" />
-
-        </RadioGroup>
-
-        <EditText
-            android:id="@+id/connection_packages"
-            style="@style/normal_et" />
 
         <Button
             android:id="@+id/connection_connect"

@@ -1,16 +1,12 @@
 package com.example.vpnlearn.ui.applist
 
-import android.content.Intent
-import android.provider.Settings
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.example.vpnlearn.data.local.DatabaseService
 import com.example.vpnlearn.data.local.entity.PackageDM
-import com.example.vpnlearn.di.qualifire.ApplicationContext
 import com.example.vpnlearn.ui.applist.app.Application
 import com.example.vpnlearn.ui.base.BaseViewModel
 import com.example.vpnlearn.utility.ProvideAppList
-import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject

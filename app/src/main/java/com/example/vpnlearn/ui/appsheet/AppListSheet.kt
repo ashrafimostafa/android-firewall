@@ -5,7 +5,8 @@ import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.vpnlearn.R
 import com.example.vpnlearn.di.components.SheetComponent
-import com.example.vpnlearn.ui.applist.app.ApplicationAdapter
+import com.example.vpnlearn.ui.appsheet.app.ApplicationAdapter
+
 import com.example.vpnlearn.ui.base.BaseSheet
 import kotlinx.android.synthetic.main.sheet_app_list.*
 import javax.inject.Inject

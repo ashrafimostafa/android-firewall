@@ -28,4 +28,7 @@ data class PackageDM(
     @ColumnInfo(name = "is_other_disabled")
     var isOtherDisabled: Boolean,
 
+    @ColumnInfo(name = "is_selected")
+    var isSelected: Boolean,
+
     )

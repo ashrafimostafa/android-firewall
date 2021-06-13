@@ -1,6 +1,7 @@
-package com.example.vpnlearn.ui.applist.app
+package com.example.vpnlearn.ui.appsheet.app
 
 import com.example.vpnlearn.data.local.DatabaseService
+import com.example.vpnlearn.ui.applist.app.Application
 import com.example.vpnlearn.ui.base.BaseItemViewModel
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -16,26 +17,14 @@ class ApplicationViewModel @Inject constructor(
         //todo we can make api call here
     }
 
-    fun onWifiCheckedClicked(isChecked: Boolean, id: Long) {
+    fun onSelectPackageClicked(isChecked: Boolean, id: Long) {
         compositeDisposable.add(
             databaseService
                 .packageDao()
-                .updateWifi(isChecked, id)
+                .updatePackageSelected(isChecked, id)
                 .subscribeOn(Schedulers.io())
                 .subscribe()
         )
     }
-
-    fun onOtherCheckedClicked(isChecked: Boolean, id: Long) {
-        compositeDisposable.add(
-            databaseService
-                .packageDao()
-                .updateOther(isChecked, id)
-                .subscribeOn(Schedulers.io())
-                .subscribe()
-        )
-
-    }
-
 
 }

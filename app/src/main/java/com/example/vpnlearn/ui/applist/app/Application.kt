@@ -9,5 +9,6 @@ data class Application(
     var icon: Drawable,
     var isSystemApp: Boolean,
     var isOtherDisabled: Boolean,
-    var isWifiDisabled: Boolean
+    var isWifiDisabled: Boolean,
+    var isSelected: Boolean
 )

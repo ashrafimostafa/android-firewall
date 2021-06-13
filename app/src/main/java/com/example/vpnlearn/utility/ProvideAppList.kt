@@ -36,7 +36,8 @@ class ProvideAppList @Inject constructor(
                 icon = "icon",
                 isSystemApp = info.applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM != 0,
                 isOtherDisabled = true,
-                isWifiDisabled = true
+                isWifiDisabled = true,
+                isSelected = false
             )
             if (!packageList.contains(pkg))
                 packageList.add(pkg)
@@ -58,7 +59,8 @@ class ProvideAppList @Inject constructor(
                         icon = context.packageManager.getApplicationIcon(pkg.packageName),
                         isSystemApp = pkg.isSystemApp,
                         isOtherDisabled = pkg.isOtherDisabled,
-                        isWifiDisabled = pkg.isWifiDisabled
+                        isWifiDisabled = pkg.isWifiDisabled,
+                        isSelected = pkg.isSelected
                     )
                 )
             } catch (ex: Exception) {

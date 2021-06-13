@@ -58,4 +58,11 @@ interface PackageDao {
     @Query("SELECT * FROM package WHERE is_other_disabled = 0")
     fun getDisAllowOtherPackages(): Single<List<PackageDM>>
 
+    @Query("SELECT * FROM package WHERE is_selected = 1")
+    fun getSelectedPackages(): Single<List<PackageDM>>
+
+    @Query("UPDATE package SET is_selected = :isChecked WHERE id = :id")
+    fun updatePackageSelected(isChecked: Boolean, id: Long): Single<Int>
+
+
 }
