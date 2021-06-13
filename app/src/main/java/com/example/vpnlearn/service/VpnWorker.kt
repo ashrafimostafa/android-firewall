@@ -67,7 +67,7 @@ class VpnWorker(
     }
 
     @Synchronized
-    fun reload(){
+    fun reload() {
         Log.i(TAG, "reload called")
         if (connectThread != null) {
             connectThread!!.cancelVpn()
@@ -128,50 +128,63 @@ class VpnWorker(
             builder.addRoute(routeV6, routeV6Length)
             handler.obtainMessage(Constant.STATE_CHANGED, Constant.STATE_CONNECTING).sendToTarget()
 
-            if (Util.isWifiActive(ctx)) {
-                compositeDisposable.add(
-                    databaseService.packageDao()
-                        .getDisAllowWifiPackages()
-                        .subscribeOn(Schedulers.io())
-                        .subscribe({
+            val prefs = ctx.getSharedPreferences(Constant.Prefs.NAME, VpnService.MODE_PRIVATE)
 
-                            for (pkg in it) {
-                                builder.addDisallowedApplication(pkg.packageName)
-                                Log.i(TAG, "wifi disallow app: $pkg")
-                            }
-                            establishVpn()
-                            Log.i(TAG, "database time1: " + System.currentTimeMillis())
-                        }, {
-                            Log.e(TAG, "adding disallow wifi cause error: $it")
-                        })
-
-                )
-            } else {
-                compositeDisposable.add(
-                    databaseService.packageDao()
-                        .getDisAllowOtherPackages()
-                        .subscribeOn(Schedulers.io())
-                        .subscribe({
-                            for (pkg in it) {
-                                builder.addDisallowedApplication(pkg.packageName)
-                                Log.i(TAG, "other disallow app: $pkg")
-                            }
-
-                            val configure = Intent(ctx, MainActivity::class.java)
-                            val pi = PendingIntent.getActivity(
-                                ctx,
-                                0,
-                                configure,
-                                PendingIntent.FLAG_UPDATE_CURRENT
-                            )
-                            builder.setConfigureIntent(pi)
-                            establishVpn()
-                            Log.i(TAG, "database time2: " + System.currentTimeMillis())
-                        }, {
-                            Log.e(TAG, "adding disallow other cause error: $it")
-                        })
-                )
+            try {
+                for (pkg in prefs.getStringSet(Constant.Prefs.PACKAGES, emptySet())!!) {
+                    builder.addDisallowedApplication(pkg)
+                    Log.i(TAG, "wifi disallow app: $pkg")
+                }
+            } catch (ex: Exception) {
+                Log.e(TAG, "error on adding disallow application: ${ex.toString()} ")
             }
+
+            establishVpn()
+//            if (Util.isWifiActive(ctx)) {
+//                compositeDisposable.add(
+//                    databaseService.packageDao()
+//                        .getDisAllowWifiPackages()
+//                        .subscribeOn(Schedulers.io())
+//                        .subscribe({
+//
+//                            for (pkg in it) {
+//                                builder.addDisallowedApplication(pkg.packageName)
+//                                Log.i(TAG, "wifi disallow app: $pkg")
+//                            }
+//                            establishVpn()
+//                            Log.i(TAG, "database time1: " + System.currentTimeMillis())
+//                        }, {
+//                            Log.e(TAG, "adding disallow wifi cause error: $it")
+//                        })
+//
+//                )
+//            }
+//            else {
+//                compositeDisposable.add(
+//                    databaseService.packageDao()
+//                        .getDisAllowOtherPackages()
+//                        .subscribeOn(Schedulers.io())
+//                        .subscribe({
+//                            for (pkg in it) {
+//                                builder.addDisallowedApplication(pkg.packageName)
+//                                Log.i(TAG, "other disallow app: $pkg")
+//                            }
+//
+//                            val configure = Intent(ctx, MainActivity::class.java)
+//                            val pi = PendingIntent.getActivity(
+//                                ctx,
+//                                0,
+//                                configure,
+//                                PendingIntent.FLAG_UPDATE_CURRENT
+//                            )
+//                            builder.setConfigureIntent(pi)
+//                            establishVpn()
+//                            Log.i(TAG, "database time2: " + System.currentTimeMillis())
+//                        }, {
+//                            Log.e(TAG, "adding disallow other cause error: $it")
+//                        })
+//                )
+//            }
         }
 
         private fun establishVpn(): ParcelFileDescriptor? {

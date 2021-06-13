@@ -17,7 +17,6 @@ import com.example.vpnlearn.R
 import com.example.vpnlearn.di.components.FragmentComponent
 import com.example.vpnlearn.service.BackendVpnService
 import com.example.vpnlearn.service.VpnClient
-import com.example.vpnlearn.ui.applist.AppListFragment
 import com.example.vpnlearn.ui.appsheet.AppListSheet
 import com.example.vpnlearn.ui.base.BaseFragment
 import com.example.vpnlearn.ui.setting.SettingFragment
@@ -144,7 +143,7 @@ class ConnectionFragment : BaseFragment<ConnectionViewModel>() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.main_menu, menu)
+        inflater.inflate(R.menu.main_menu_no_toggle, menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -156,9 +155,6 @@ class ConnectionFragment : BaseFragment<ConnectionViewModel>() {
 
             R.id.menu_application_setting -> {
                 FragmentHelper.openFragment(context, R.id.all_list_main_frame, SettingFragment())
-                true
-            }
-            R.id.menu_vpn_enable -> {
                 true
             }
             else -> super.onOptionsItemSelected(item)
