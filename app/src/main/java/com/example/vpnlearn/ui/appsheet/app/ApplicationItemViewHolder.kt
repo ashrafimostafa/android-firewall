@@ -2,11 +2,10 @@ package com.example.vpnlearn.ui.appsheet.app
 
 import android.content.Context
 import android.graphics.Color
-import android.os.Handler
+import android.net.VpnService
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CompoundButton
 import androidx.lifecycle.Observer
 import com.example.vpnlearn.R
 import com.example.vpnlearn.di.components.ViewHolderComponent
@@ -15,7 +14,7 @@ import com.example.vpnlearn.service.State
 import com.example.vpnlearn.service.VpnClient
 import com.example.vpnlearn.ui.applist.app.Application
 import com.example.vpnlearn.ui.base.BaseItemViewHolder
-import kotlinx.android.synthetic.main.item_application.view.*
+import com.example.vpnlearn.utility.Constant
 import kotlinx.android.synthetic.main.item_application.view.app_icon
 import kotlinx.android.synthetic.main.item_application.view.app_name
 import kotlinx.android.synthetic.main.item_application.view.app_package
@@ -62,6 +61,29 @@ class ApplicationViewHolder(parent: ViewGroup) :
 
             itemView.app_select.setOnClickListener { _ ->
                 it.isSelected = !it.isSelected
+                val prefs =
+                    context.getSharedPreferences(Constant.Prefs.NAME, VpnService.MODE_PRIVATE)
+
+                val oldSet = prefs.getStringSet(Constant.Prefs.PACKAGES, HashSet<String>())
+                val newStrSet = HashSet<String>()
+                oldSet?.let { it1 -> newStrSet.addAll(it1) }
+                prefs.edit().remove(Constant.Prefs.PACKAGES).apply()
+                if (it.isSelected) {
+                    newStrSet.add(it.packageName)
+                } else {
+                    newStrSet.remove(it.packageName)
+                }
+                prefs.edit().putStringSet(Constant.Prefs.PACKAGES, newStrSet).apply()
+
+
+                Log.i(TAG, "setUpObservers: array size is: ${newStrSet.size}")
+
+                Log.i(
+                    TAG, "setUpObservers: ${
+                        prefs.getStringSet(Constant.Prefs.PACKAGES, emptySet()).toString()
+                    }"
+                )
+
                 viewModel.onSelectPackageClicked(it.isSelected, it.id)
                 if (VpnClient.state == State.CONNECTED)
                     vpnClient.reload(context)

@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.vpnlearn.R
 import com.example.vpnlearn.di.components.FragmentComponent
 import com.example.vpnlearn.service.BackendVpnService
+import com.example.vpnlearn.service.VpnClient
 import com.example.vpnlearn.ui.applist.AppListFragment
 import com.example.vpnlearn.ui.appsheet.AppListSheet
 import com.example.vpnlearn.ui.base.BaseFragment
@@ -35,6 +36,9 @@ class ConnectionFragment : BaseFragment<ConnectionViewModel>() {
             return fragment
         }
     }
+
+    val vpnClient = VpnClient()
+
 
     private var appListBottomSheet: AppListSheet? = null
 
@@ -184,6 +188,8 @@ class ConnectionFragment : BaseFragment<ConnectionViewModel>() {
             connection_proxy_port.setText("$it")
         })
 
+
+
         viewModel.localObserver.observe(this, {
             if (it)
                 connection_vpn_local_radio.isChecked = true
@@ -198,16 +204,32 @@ class ConnectionFragment : BaseFragment<ConnectionViewModel>() {
         } else super.onActivityResult(requestCode, resultCode, data)
     }
 
-    private fun connectVpn() = activity!!.startService(
-        Intent(context, BackendVpnService::class.java).setAction(
-            BackendVpnService.ACTION_CONNECT
-        )
-    )
+    private fun connectVpn() {
+        if (connection_vpn_local_radio.isChecked) {
+            context?.let { vpnClient.start(it) }
+        } else {
+            activity!!.startService(
+                Intent(context, BackendVpnService::class.java).setAction(
+                    BackendVpnService.ACTION_CONNECT
+                )
+            )
+        }
+    }
 
-    private fun disconnectVpn() = activity!!.startService(
-        Intent(context, BackendVpnService::class.java).setAction(
-            BackendVpnService.ACTION_DISCONNECT
-        )
-    )
+    private fun disconnectVpn() {
+        if (connection_vpn_local_radio.isChecked) {
+            context?.let { vpnClient.stop(it) }
+        } else {
+            activity!!.startService(
+                Intent(
+                    context, BackendVpnService::
+                    class.java
+                ).setAction(
+                    BackendVpnService.ACTION_DISCONNECT
+                )
+            )
+        }
+
+    }
 
 }
