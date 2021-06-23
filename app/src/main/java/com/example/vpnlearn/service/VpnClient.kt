@@ -151,7 +151,10 @@ class VpnClient() : VpnService() {
                     ConnectivityManager.EXTRA_NETWORK_TYPE,
                     ConnectivityManager.TYPE_DUMMY
                 ) == ConnectivityManager.TYPE_WIFI
-            ) reload(context)
+            ) {
+//                reload(context)
+                Log.i(TAG, "onReceive: Connectivity state changed to ${intent.toString()}")
+            }
         }
     }
 
