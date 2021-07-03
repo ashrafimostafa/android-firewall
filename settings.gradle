@@ -1,2 +1,3 @@
 rootProject.name = "Vpn Learn"
 include ':app'
+include ':vpnLib'

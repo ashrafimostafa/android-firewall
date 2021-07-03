@@ -72,6 +72,10 @@ dependencies {
     implementation "androidx.room:room-rxjava2:$room_version"
     kapt("androidx.room:room-compiler:$room_version")
 
+    //openvpn client
+    implementation project(path: ':vpnLib')
+
+
 
 
 }

@@ -29,7 +29,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
                 android:orientation="horizontal"
-                android:weightSum="3">
+                android:weightSum="4">
 
                 <RadioButton
                     android:id="@+id/connection_vpn_local_radio"
@@ -44,6 +44,21 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/backend" />
+
+                <RadioButton
+                    android:id="@+id/connection_vpn_pptp_radio"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/pptp" />
+
+                <RadioButton
+                    android:id="@+id/connection_vpn_pptp_open_vpn_radio"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/open_vpn" />
+
 
             </RadioGroup>
 
@@ -143,6 +158,15 @@
             android:layout_marginTop="20dp"
             android:layout_marginBottom="10dp"
             android:text="@string/select_app" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/connection_configure_pptp"
+            style="@style/normal_button"
+            android:layout_width="match_parent"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="10dp"
+            android:text="@string/configure_pptp" />
+
 
 
         <androidx.appcompat.widget.AppCompatButton

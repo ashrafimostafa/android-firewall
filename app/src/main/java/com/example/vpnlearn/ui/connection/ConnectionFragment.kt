@@ -1,8 +1,10 @@
 package com.example.vpnlearn.ui.connection
 
-import android.content.Intent
+import android.content.*
+import android.net.ConnectivityManager
 import android.net.VpnService
 import android.os.Bundle
+import android.os.RemoteException
 import android.provider.Settings
 import android.text.Editable
 import android.text.TextWatcher
@@ -12,7 +14,9 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.example.vpnlearn.R
 import com.example.vpnlearn.di.components.FragmentComponent
 import com.example.vpnlearn.service.BackendVpnService
@@ -22,13 +26,23 @@ import com.example.vpnlearn.ui.appsheet.AppListSheet
 import com.example.vpnlearn.ui.base.BaseFragment
 import com.example.vpnlearn.ui.setting.SettingFragment
 import com.example.vpnlearn.utility.FragmentHelper
+import de.blinkt.openvpn.OpenVpnApi
+import de.blinkt.openvpn.core.OpenVPNService
+import de.blinkt.openvpn.core.OpenVPNThread
+import de.blinkt.openvpn.core.VpnStatus
 import kotlinx.android.synthetic.main.fragment_connection.*
+import java.io.BufferedReader
+import java.io.IOException
+import java.io.InputStream
+import java.io.InputStreamReader
 
 class ConnectionFragment : BaseFragment<ConnectionViewModel>() {
 
     companion object {
         const val TAG = "NetBlocker.ConFrag"
         private const val REQUEST_VPN = 1
+        private val vpnThread = OpenVPNThread()
+        private val vpnService = OpenVPNService()
         fun newInstance(): ConnectionFragment {
             val args = Bundle()
             val fragment = ConnectionFragment()
@@ -36,6 +50,9 @@ class ConnectionFragment : BaseFragment<ConnectionViewModel>() {
             return fragment
         }
     }
+
+    var vpnStart = false //used for openvpn protocol
+
 
     val vpnClient = VpnClient()
 
@@ -137,6 +154,13 @@ class ConnectionFragment : BaseFragment<ConnectionViewModel>() {
         connection_disconnect.setOnClickListener {
             disconnectVpn()
         }
+
+        connection_configure_pptp.setOnClickListener {
+            configurePptp()
+        }
+
+        isServiceRunning()
+        VpnStatus.initLogCache(context!!.cacheDir)
     }
 
     override fun injectDependencies(fragmentComponent: FragmentComponent) {
@@ -203,8 +227,16 @@ class ConnectionFragment : BaseFragment<ConnectionViewModel>() {
 
     private fun connectVpn() {
         if (connection_vpn_local_radio.isChecked) {
+            //local
             context?.let { vpnClient.start(it) }
+        } else if (connection_vpn_pptp_radio.isChecked) {
+            //pptp protocol
+
+        } else if (connection_vpn_pptp_open_vpn_radio.isChecked) {
+            //openvpn protocol
+            connectOpenVpn()
         } else {
+            //toy vpn
             activity!!.startService(
                 Intent(context, BackendVpnService::class.java).setAction(
                     BackendVpnService.ACTION_CONNECT
@@ -222,6 +254,8 @@ class ConnectionFragment : BaseFragment<ConnectionViewModel>() {
                     vpnClient.stop(it)
                 }
             }
+        } else if (connection_vpn_pptp_open_vpn_radio.isChecked) {
+            confirmDisconnect()
         } else {
             activity!!.startService(
                 Intent(
@@ -233,6 +267,204 @@ class ConnectionFragment : BaseFragment<ConnectionViewModel>() {
             )
         }
 
+    }
+
+    private fun configurePptp() {
+
+    }
+
+
+    // open vpn protocol function
+
+    /**
+     * Show show disconnect confirm dialog
+     */
+    fun confirmDisconnect() {
+        val builder = AlertDialog.Builder(context!!)
+        builder.setMessage(this.getString(R.string.connection_close_confirm))
+        builder.setPositiveButton(this.getString(R.string.yes),
+            DialogInterface.OnClickListener { dialog, id -> stopVpn() })
+        builder.setNegativeButton(this.getString(R.string.no),
+            DialogInterface.OnClickListener { dialog, id ->
+                // User cancelled the dialog
+            })
+
+        // Create the AlertDialog
+        val dialog = builder.create()
+        dialog.show()
+    }
+
+    /**
+     * Stop vpn
+     * @return boolean: VPN status
+     */
+    fun stopVpn(): Boolean {
+        try {
+            vpnThread.stop()
+            status("connect")
+            vpnStart = false
+            return true
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }
+        return false
+    }
+
+    /**
+     * Internet connection status.
+     */
+    fun getInternetStatus(): Boolean {
+        val cm =
+            context!!.getSystemService(AppCompatActivity.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val nInfo = cm.activeNetworkInfo
+
+        return nInfo != null && nInfo.isConnectedOrConnecting
+    }
+
+    /**
+     * Get service status
+     */
+    fun isServiceRunning() {
+        setStatus(OpenVPNService.getStatus())
+    }
+
+    private fun connectOpenVpn() {
+        try {
+            // .ovpn file
+            val conf: InputStream = context!!.assets.open("client.ovpn")
+            val isr = InputStreamReader(conf)
+            val br = BufferedReader(isr)
+            var config = ""
+            var line: String?
+            while (true) {
+                line = br.readLine()
+                if (line == null) break
+                config += """
+                $line
+                
+                """.trimIndent()
+            }
+            br.readLine()
+            OpenVpnApi.startVpn(
+                context!!,
+                config,
+                "Pashmakestan",
+                "User",
+                "Pass"
+            )
+
+            // Update log
+            Log.i(TAG, "Connecting...")
+            vpnStart = true
+        } catch (e: IOException) {
+            e.printStackTrace()
+        } catch (e: RemoteException) {
+            e.printStackTrace()
+        }
+
+
+    }
+
+    /**
+     * Status change with corresponding vpn connection status
+     * @param connectionState
+     */
+    fun setStatus(connectionState: String?) {
+        if (connectionState != null) when (connectionState) {
+            "DISCONNECTED" -> {
+                status("connect")
+                vpnStart = false
+                vpnService.setDefaultStatus()
+            }
+            "CONNECTED" -> {
+                vpnStart = true // it will use after restart this activity
+                status("connected")
+            }
+            "WAIT" -> Log.i(TAG, "waiting for server connection!!")
+            "AUTH" -> Log.i(TAG, "server authenticating!!")
+            "RECONNECTING" -> {
+                status("connecting")
+                Log.i(TAG, "Reconnecting...")
+            }
+            "NONETWORK" -> Log.i(TAG, "No network connection")
+        }
+    }
+
+    /**
+     * Change button background color and text
+     * @param status: VPN current status
+     */
+    fun status(status: String) {
+        if (status == "connect") {
+            Log.i(TAG, "connect")
+        } else if (status == "connecting") {
+            Log.i(TAG, "connecting")
+        } else if (status == "connected") {
+            Log.i(TAG, "disconnect")
+        } else if (status == "tryDifferentServer") {
+            Log.i(TAG, "trying")
+        } else if (status == "loading") {
+            Log.i(TAG, "loading")
+        } else if (status == "invalidDevice") {
+            Log.i(TAG, "invalid")
+        } else if (status == "authenticationCheck") {
+            Log.i(TAG, "auth checking")
+        }
+    }
+
+    /**
+     * Receive broadcast message
+     */
+    var broadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            try {
+                setStatus(intent.getStringExtra("state"))
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+            try {
+                var duration = intent.getStringExtra("duration")
+                var lastPacketReceive = intent.getStringExtra("lastPacketReceive")
+                var byteIn = intent.getStringExtra("byteIn")
+                var byteOut = intent.getStringExtra("byteOut")
+                if (duration == null) duration = "00:00:00"
+                if (lastPacketReceive == null) lastPacketReceive = "0"
+                if (byteIn == null) byteIn = " "
+                if (byteOut == null) byteOut = " "
+                updateConnectionStatus(duration, lastPacketReceive, byteIn, byteOut)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    /**
+     * Update status UI
+     * @param duration: running time
+     * @param lastPacketReceive: last packet receive time
+     * @param byteIn: incoming data
+     * @param byteOut: outgoing data
+     */
+    fun updateConnectionStatus(
+        duration: String,
+        lastPacketReceive: String,
+        byteIn: String,
+        byteOut: String
+    ) {
+
+    }
+
+
+    override fun onResume() {
+        LocalBroadcastManager.getInstance(context!!)
+            .registerReceiver(broadcastReceiver, IntentFilter("connectionState"))
+
+        super.onResume()
+    }
+
+    override fun onPause() {
+        LocalBroadcastManager.getInstance(context!!).unregisterReceiver(broadcastReceiver)
+        super.onPause()
     }
 
 }

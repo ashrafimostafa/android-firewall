@@ -39,13 +39,16 @@
     <string name="secret">Shared Secret:</string>
     <string name="connect">Connect!</string>
     <string name="select_app">Select app</string>
+    <string name="configure_pptp">Configure PPTP</string>
     <string name="disconnect">Disconnect!</string>
     <string name="proxy_host">HTTP proxy hostname</string>
     <string name="proxy_port">HTTP proxy port</string>
     <string name="vpn_type">Vpn Type</string>
     <string name="vpn_info">Vpn Info</string>
     <string name="local">local</string>
-    <string name="backend">backend</string>
+    <string name="backend">back</string>
+    <string name="pptp">pptp</string>
+    <string name="open_vpn">open</string>
     <string name="ip_hint">127.0.0.1</string>
     <string name="port_hint">8080</string>
     <string name="secret_hint">asdasd</string>
@@ -66,6 +69,9 @@
         Some of the specified package names do not correspond to any installed packages.
     </string>
 
+    <string name="connection_close_confirm">Are you sure?</string>
+    <string name="yes">yes</string>
+    <string name="no">no</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
