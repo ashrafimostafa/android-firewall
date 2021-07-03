@@ -36,6 +36,7 @@ import java.io.IOException
 import java.io.InputStream
 import java.io.InputStreamReader
 
+
 class ConnectionFragment : BaseFragment<ConnectionViewModel>() {
 
     companion object {
@@ -270,16 +271,22 @@ class ConnectionFragment : BaseFragment<ConnectionViewModel>() {
     }
 
     private fun configurePptp() {
-
+        try {
+            val intent = Intent("android.net.vpn.SETTINGS")
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            startActivity(intent)
+        } catch (ex: Exception) {
+            Log.e(TAG, ex.toString())
+        }
     }
 
 
-    // open vpn protocol function
 
+    // open vpn protocol function
     /**
      * Show show disconnect confirm dialog
      */
-    fun confirmDisconnect() {
+    private fun confirmDisconnect() {
         val builder = AlertDialog.Builder(context!!)
         builder.setMessage(this.getString(R.string.connection_close_confirm))
         builder.setPositiveButton(this.getString(R.string.yes),
@@ -298,7 +305,7 @@ class ConnectionFragment : BaseFragment<ConnectionViewModel>() {
      * Stop vpn
      * @return boolean: VPN status
      */
-    fun stopVpn(): Boolean {
+    private fun stopVpn(): Boolean {
         try {
             vpnThread.stop()
             status("connect")
@@ -324,7 +331,7 @@ class ConnectionFragment : BaseFragment<ConnectionViewModel>() {
     /**
      * Get service status
      */
-    fun isServiceRunning() {
+    private fun isServiceRunning() {
         setStatus(OpenVPNService.getStatus())
     }
 
@@ -394,7 +401,7 @@ class ConnectionFragment : BaseFragment<ConnectionViewModel>() {
      * Change button background color and text
      * @param status: VPN current status
      */
-    fun status(status: String) {
+    private fun status(status: String) {
         if (status == "connect") {
             Log.i(TAG, "connect")
         } else if (status == "connecting") {
@@ -415,7 +422,7 @@ class ConnectionFragment : BaseFragment<ConnectionViewModel>() {
     /**
      * Receive broadcast message
      */
-    var broadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+    private var broadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             try {
                 setStatus(intent.getStringExtra("state"))
