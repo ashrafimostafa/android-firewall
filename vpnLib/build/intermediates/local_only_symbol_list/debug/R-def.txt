@@ -48,6 +48,7 @@ dimen round_button_diameter
 dimen stdpadding
 dimen switchbar_pad
 dimen vpn_setting_padding
+drawable badge
 drawable ic_menu_archive
 drawable ic_menu_close_clear_cancel
 drawable ic_menu_copy_holo_light

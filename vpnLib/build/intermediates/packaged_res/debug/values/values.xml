@@ -410,7 +410,7 @@
     <string name="no_vpn_support_image">Your image does not support the VPNService API, sorry :(</string>
     <string name="nobind_summary">Do not bind to local address and port</string>
     <string name="notenoughdata">Not enough data</string>
-    <string name="notifcation_title">CakeVPN - %s</string>
+    <string name="notifcation_title">Vpn Learn - %s</string>
     <string name="notifcation_title_notconnect">Not connected</string>
     <string name="nought_alwayson_warning"><![CDATA[If you did not get a VPN confirmation dialog, you have \"Always on VPN\" enabled for another app. In that case only that app is allowed to connect to a VPN. Check under Settings-> Networks more .. -> VPNS]]></string>
     <string name="novpn_selected">No VPN selected.</string>
@@ -632,7 +632,7 @@
     <declare-styleable name="FileSelectLayout">
        <attr format="string|reference" name="fileTitle"/>
       <attr format="boolean" name="certificate"/>
-<!--     <attr name="taskid" format="integer" /> -->
+
        <attr format="boolean" name="showClear"/>
    </declare-styleable>
     <declare-styleable name="PagerSlidingTabStrip">
