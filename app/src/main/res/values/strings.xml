@@ -73,6 +73,12 @@
     <string name="yes">yes</string>
     <string name="no">no</string>
 
+
+    <string name="home_vpn_title">Vpn Option</string>
+    <string name="home_app_usage_title">App Usage</string>
+    <string name="home_vpn_description">determine which app can access to internet and which can not</string>
+    <string name="home_app_usage_description">view application lunch time and network usage</string>
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

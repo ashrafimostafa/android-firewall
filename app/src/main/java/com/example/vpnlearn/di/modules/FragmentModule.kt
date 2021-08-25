@@ -10,8 +10,10 @@ import com.example.vpnlearn.di.scope.FragmentScope
 import com.example.vpnlearn.ui.applist.AppListViewModel
 import com.example.vpnlearn.ui.applist.app.ApplicationAdapter
 import com.example.vpnlearn.ui.appsheet.AppSheetViewModel
+import com.example.vpnlearn.ui.appusage.AppListUsageViewModel
 import com.example.vpnlearn.ui.base.BaseFragment
 import com.example.vpnlearn.ui.connection.ConnectionViewModel
+import com.example.vpnlearn.ui.home.HomeViewModel
 import com.example.vpnlearn.ui.setting.SettingViewModel
 import com.example.vpnlearn.utility.ProvideAppList
 import com.example.vpnlearn.utility.ViewModelProviderFactory
@@ -54,6 +56,24 @@ class FragmentModule(private val fragment: BaseFragment<*>) {
             ConnectionViewModel(compositeDisposable, context)
         }).get(ConnectionViewModel::class.java)
 
+    @Provides
+    fun provideHomeViewModel(
+        compositeDisposable: CompositeDisposable,
+        @ApplicationContext context: Context
+    ): HomeViewModel = ViewModelProvider(
+        fragment, ViewModelProviderFactory(HomeViewModel::class) {
+            HomeViewModel(compositeDisposable, context)
+        }).get(HomeViewModel::class.java)
+
+    @Provides
+    fun provideAppListUsageViewModel(
+        compositeDisposable: CompositeDisposable,
+        databaseService: DatabaseService,
+        provideAppList: ProvideAppList,
+    ): AppListUsageViewModel = ViewModelProvider(
+        fragment, ViewModelProviderFactory(AppListUsageViewModel::class) {
+            AppListUsageViewModel(compositeDisposable, databaseService, provideAppList)
+        }).get(AppListUsageViewModel::class.java)
 
     @Provides
     fun provideLinearlayoutManager() = LinearLayoutManager(fragment.context)

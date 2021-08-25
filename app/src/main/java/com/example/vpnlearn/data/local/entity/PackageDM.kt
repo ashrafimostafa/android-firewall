@@ -31,4 +31,10 @@ data class PackageDM(
     @ColumnInfo(name = "is_selected")
     var isSelected: Boolean,
 
+    @ColumnInfo(name = "usage_time")
+    var usageTime: Int = 0,
+
+    @ColumnInfo(name = "internet_usage")
+    var internetUsage: Int = 0,
+
     )

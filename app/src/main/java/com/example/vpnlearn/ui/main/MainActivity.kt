@@ -5,6 +5,7 @@ import com.example.vpnlearn.R
 import com.example.vpnlearn.di.components.ActivityComponent
 import com.example.vpnlearn.ui.base.BaseActivity
 import com.example.vpnlearn.ui.connection.ConnectionFragment
+import com.example.vpnlearn.ui.home.HomeFragment
 
 class MainActivity : BaseActivity<MainViewModel>() {
 
@@ -30,7 +31,7 @@ class MainActivity : BaseActivity<MainViewModel>() {
         if (supportFragmentManager.findFragmentByTag(TAG) == null) {
             supportFragmentManager
                 .beginTransaction()
-                .add(R.id.all_list_main_frame, ConnectionFragment.newInstance(), TAG)
+                .add(R.id.all_list_main_frame, HomeFragment.newInstance(), TAG)
                 .commit()
         }
     }

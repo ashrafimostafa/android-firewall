@@ -10,6 +10,7 @@
     <color name="blue">#039BE5</color>
 
     <color name="textColor">#151515</color>
+    <color name="descriptionColor">#3C3C3C</color>
     <color name="buttonTextColor">#FFFFFF</color>
     <color name="buttonColor">#039BE5</color>
     <color name="pageBack">#EAEAEA</color>
