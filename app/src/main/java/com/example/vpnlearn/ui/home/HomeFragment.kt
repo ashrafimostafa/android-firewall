@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import com.example.vpnlearn.R
 import com.example.vpnlearn.di.components.FragmentComponent
 import com.example.vpnlearn.ui.applist.AppListFragment
+import com.example.vpnlearn.ui.appusage.AppListUsageFragment
 import com.example.vpnlearn.ui.base.BaseFragment
 import com.example.vpnlearn.ui.connection.ConnectionFragment
 import com.example.vpnlearn.utility.FragmentHelper
@@ -41,7 +42,7 @@ class HomeFragment : BaseFragment<HomeViewModel>() {
             FragmentHelper.openFragment(
                 context,
                 R.id.all_list_main_frame,
-                AppListFragment()
+                AppListUsageFragment()
             )
         }
     }

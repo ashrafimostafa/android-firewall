@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="10dp"
+    android:layout_marginTop="5dp"
+    android:layout_marginEnd="10dp"
+    android:layout_marginBottom="5dp"
+    app:cardCornerRadius="10dp"
+    app:cardElevation="2dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="7">
+
+        <ImageView
+            android:id="@+id/app_icon"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center_vertical"
+            android:layout_margin="7dp" />
+
+        <TextView
+            android:id="@+id/app_name"
+            style="@style/header_txt"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="3"
+            android:singleLine="true"
+            android:textStyle="bold"
+            android:textDirection="ltr"/>
+
+        <TextView
+            android:id="@+id/app_usage_time"
+            style="@style/header_txt"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="2"
+            android:singleLine="true"
+            android:textStyle="bold"
+            android:drawableStart="@drawable/ic_app_usage_time"/>
+
+        <TextView
+            android:id="@+id/app_network_usage"
+            style="@style/header_txt"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="7dp"
+            android:layout_weight="2"
+            android:singleLine="true"
+            android:textStyle="bold"
+            android:drawableStart="@drawable/ic_network_usage"/>
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

@@ -81,4 +81,8 @@ class FragmentModule(private val fragment: BaseFragment<*>) {
     @Provides
     @FragmentScope
     fun provideApplicationAdapter() = ApplicationAdapter(fragment.lifecycle, ArrayList())
+
+    @Provides
+    @FragmentScope
+    fun provideApplicationUsageAdapter() = com.example.vpnlearn.ui.appusage.app.ApplicationAdapter(fragment.lifecycle, ArrayList())
 }

@@ -15,11 +15,14 @@ import com.example.vpnlearn.service.State
 import com.example.vpnlearn.service.VpnClient
 import com.example.vpnlearn.ui.base.BaseItemViewHolder
 import kotlinx.android.synthetic.main.item_application.view.*
+import kotlinx.android.synthetic.main.item_application.view.app_icon
+import kotlinx.android.synthetic.main.item_application.view.app_name
+import kotlinx.android.synthetic.main.item_application_usage.view.*
 import javax.inject.Inject
 
 class ApplicationViewHolder(parent: ViewGroup) :
     BaseItemViewHolder<Application, ApplicationViewModel>(
-        R.layout.item_application, parent
+        R.layout.item_application_usage, parent
     ) {
 
 
@@ -41,42 +44,14 @@ class ApplicationViewHolder(parent: ViewGroup) :
         super.setUpObservers()
         viewModel.date.observe(this, Observer {
             itemView.app_name.text = it.appName
-            itemView.app_package.text = it.packageName
-            itemView.app_wifi.isChecked = it.isWifiDisabled
-            itemView.app_other.isChecked = it.isOtherDisabled
-            if (it.isSystemApp) {
-                itemView.app_name.setTextColor(Color.parseColor("#FFBB86FC"))
-                itemView.app_package.setTextColor(Color.parseColor("#FFBB86FC"))
-            } else {
-                itemView.app_name.setTextColor(Color.parseColor("#000000"))
-                itemView.app_package.setTextColor(Color.parseColor("#000000"))
-            }
-
             itemView.app_icon.setImageDrawable(it.icon)
-
-
-
-            itemView.app_wifi.setOnClickListener { _ ->
-                it.isWifiDisabled = !it.isWifiDisabled
-                viewModel.onWifiCheckedClicked(it.isWifiDisabled, it.id)
-                if (VpnClient.state == State.CONNECTED)
-                    vpnClient.reload(context)
-                Log.i(TAG, "select other: $it")
-            }
-
-            itemView.app_other.setOnClickListener { _ ->
-                it.isOtherDisabled = !it.isOtherDisabled
-                viewModel.onOtherCheckedClicked(it.isOtherDisabled, it.id)
-                if (VpnClient.state == State.CONNECTED)
-                    vpnClient.reload(context)
-                Log.i(TAG, "select other: $it")
-            }
-
+            itemView.app_usage_time.text = it.appUsageTime.toString()
+            itemView.app_network_usage.text = it.appNetworkUsage.toString()
         })
     }
 
     companion object {
-        private val TAG = "NetBlocker.AppViewHolder"
+        private val TAG = "NetBlocker.AppUsageVH"
     }
 
 }

@@ -15,27 +15,4 @@ class ApplicationViewModel @Inject constructor(
     override fun onCreate() {
         //todo we can make api call here
     }
-
-    fun onWifiCheckedClicked(isChecked: Boolean, id: Long) {
-        compositeDisposable.add(
-            databaseService
-                .packageDao()
-                .updateWifi(isChecked, id)
-                .subscribeOn(Schedulers.io())
-                .subscribe()
-        )
-    }
-
-    fun onOtherCheckedClicked(isChecked: Boolean, id: Long) {
-        compositeDisposable.add(
-            databaseService
-                .packageDao()
-                .updateOther(isChecked, id)
-                .subscribeOn(Schedulers.io())
-                .subscribe()
-        )
-
-    }
-
-
 }

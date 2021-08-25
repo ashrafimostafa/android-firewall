@@ -13,4 +13,6 @@ interface ViewHolderComponent {
 
     fun inject(viewHolder: com.example.vpnlearn.ui.appsheet.app.ApplicationViewHolder)
 
+    fun inject(viewHolder: com.example.vpnlearn.ui.appusage.app.ApplicationViewHolder)
+
 }

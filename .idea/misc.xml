@@ -3,6 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="../../../../layout/custom_preview.xml" value="0.30833333333333335" />
         <entry key="app/src/main/res/drawable/ic_vpn_menu.xml" value="0.30833333333333335" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.35885416666666664" />
         <entry key="app/src/main/res/layout/fragment_app_list.xml" value="0.33" />
@@ -10,6 +11,8 @@
         <entry key="app/src/main/res/layout/fragment_connection.xml" value="0.33" />
         <entry key="app/src/main/res/layout/fragment_home.xml" value="0.5" />
         <entry key="app/src/main/res/layout/item_application.xml" value="0.35885416666666664" />
+        <entry key="app/src/main/res/layout/item_application_selectable.xml" value="0.35885416666666664" />
+        <entry key="app/src/main/res/layout/item_application_usage.xml" value="0.33" />
       </map>
     </option>
   </component>

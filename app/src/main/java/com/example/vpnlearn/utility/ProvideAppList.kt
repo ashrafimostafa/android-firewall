@@ -70,4 +70,28 @@ class ProvideAppList @Inject constructor(
         return appList
     }
 
+    fun convertDbTpModelUsage(packageList: List<PackageDM>): MutableList<com.example.vpnlearn.ui.appusage.app.Application> {
+        val appList: MutableList<com.example.vpnlearn.ui.appusage.app.Application> = arrayListOf()
+        for (pkg in packageList) {
+            try {
+                appList.add(
+                    com.example.vpnlearn.ui.appusage.app.Application(
+                        id = pkg.id,
+                        appName = pkg.appName,
+                        packageName = pkg.packageName,
+                        icon = context.packageManager.getApplicationIcon(pkg.packageName),
+                        isSystemApp = pkg.isSystemApp,
+                        appNetworkUsage = pkg.internetUsage,
+                        appUsageTime = pkg.usageTime,
+                        isSelected = pkg.isSelected
+
+                    )
+                )
+            } catch (ex: Exception) {
+                Log.e(TAG, ex.toString())
+            }
+        }
+        return appList
+    }
+
 }
