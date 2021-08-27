@@ -66,7 +66,7 @@ class AppListUsageViewModel @Inject constructor(
                 compositeDisposable.add(
                     databaseService
                         .packageDao()
-                        .updateAppUsageTime(app.key, app.value.totalTimeInForeground.toInt())
+                        .updateAppUsageTime(app.key, (app.value.totalTimeInForeground/1000).toInt())
                         .subscribeOn(Schedulers.io())
                         .subscribe()
                 )

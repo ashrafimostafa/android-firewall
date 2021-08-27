@@ -41,7 +41,7 @@ class AppUsageTimeAndroidApi @Inject constructor(
 
 
         val cal = Calendar.getInstance()
-        cal.add(Calendar.YEAR, -1)
+        cal.add(Calendar.DAY_OF_MONTH, -1)
 
 
         val queryUsageStats = mUsageStatsManager.queryAndAggregateUsageStats(
