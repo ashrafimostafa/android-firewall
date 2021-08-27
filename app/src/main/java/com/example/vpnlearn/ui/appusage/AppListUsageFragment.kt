@@ -3,10 +3,9 @@ package com.example.vpnlearn.ui.appusage
 import android.content.Intent
 import android.net.VpnService
 import android.os.Bundle
+import android.util.Log
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.vpnlearn.R
 import com.example.vpnlearn.di.components.FragmentComponent
@@ -41,6 +40,7 @@ class AppListUsageFragment : BaseFragment<AppListUsageViewModel>() {
     override fun provideLayoutId() = R.layout.fragment_app_list_usage
 
     override fun setUpViews(view: View) {
+        setHasOptionsMenu(true)
         app_list_usage_recycler.apply {
             adapter = applicationAdapter
             layoutManager = LinearLayoutManager(context)
@@ -49,14 +49,30 @@ class AppListUsageFragment : BaseFragment<AppListUsageViewModel>() {
 
     override fun setUpObservers() {
         super.setUpObservers()
-        viewModel.packageLiveData.observe(this,  {
+        viewModel.packageLiveData.observe(this, {
             applicationAdapter.appendDate(it)
             app_list_usage_progress.visibility = View.GONE
 
         })
     }
+
     override fun injectDependencies(fragmentComponent: FragmentComponent) =
         fragmentComponent.inject(this)
 
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.app_usage_menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.menu_app_usage_refresh -> {
+                true
+            }
+            R.id.menu_app_usage_permission -> {
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
 }
