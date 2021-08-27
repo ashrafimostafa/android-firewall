@@ -40,7 +40,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:layout_weight="2"
+            android:layout_weight="4"
             android:singleLine="true"
             android:textStyle="bold"
             android:drawableStart="@drawable/ic_app_usage_time"/>
@@ -55,7 +55,8 @@
             android:layout_weight="2"
             android:singleLine="true"
             android:textStyle="bold"
-            android:drawableStart="@drawable/ic_network_usage"/>
+            android:drawableStart="@drawable/ic_network_usage"
+            android:visibility="invisible"/>
 
     </LinearLayout>
 

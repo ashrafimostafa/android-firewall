@@ -64,5 +64,8 @@ interface PackageDao {
     @Query("UPDATE package SET is_selected = :isChecked WHERE id = :id")
     fun updatePackageSelected(isChecked: Boolean, id: Long): Single<Int>
 
+    @Query("UPDATE package SET usage_time = :usageTime WHERE package_name = :packageName")
+    fun updateAppUsageTime(packageName: String, usageTime: Int): Single<Int>
+
 
 }

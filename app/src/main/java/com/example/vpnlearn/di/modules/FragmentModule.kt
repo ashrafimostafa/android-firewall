@@ -7,6 +7,7 @@ import com.example.vpnlearn.data.local.DatabaseService
 import com.example.vpnlearn.di.qualifire.ActivityContext
 import com.example.vpnlearn.di.qualifire.ApplicationContext
 import com.example.vpnlearn.di.scope.FragmentScope
+import com.example.vpnlearn.logic.usagetime.AppUsageTimeAndroidApi
 import com.example.vpnlearn.ui.applist.AppListViewModel
 import com.example.vpnlearn.ui.applist.app.ApplicationAdapter
 import com.example.vpnlearn.ui.appsheet.AppSheetViewModel
@@ -70,9 +71,10 @@ class FragmentModule(private val fragment: BaseFragment<*>) {
         compositeDisposable: CompositeDisposable,
         databaseService: DatabaseService,
         provideAppList: ProvideAppList,
+        appUsageTimeAndroidApi: AppUsageTimeAndroidApi
     ): AppListUsageViewModel = ViewModelProvider(
         fragment, ViewModelProviderFactory(AppListUsageViewModel::class) {
-            AppListUsageViewModel(compositeDisposable, databaseService, provideAppList)
+            AppListUsageViewModel(compositeDisposable, databaseService, provideAppList,appUsageTimeAndroidApi)
         }).get(AppListUsageViewModel::class.java)
 
     @Provides

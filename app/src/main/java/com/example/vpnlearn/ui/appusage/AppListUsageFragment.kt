@@ -71,6 +71,7 @@ class AppListUsageFragment : BaseFragment<AppListUsageViewModel>() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_app_usage_refresh -> {
+                viewModel.updateAppUsageTime()
                 true
             }
             R.id.menu_app_usage_permission -> {

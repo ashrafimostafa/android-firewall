@@ -6,6 +6,7 @@ import androidx.room.Room
 import com.example.vpnlearn.data.local.DatabaseService
 import com.example.vpnlearn.di.qualifire.ApplicationContext
 import com.example.vpnlearn.MyApplication
+import com.example.vpnlearn.logic.usagetime.AppUsageTimeAndroidApi
 import com.example.vpnlearn.service.VpnClient
 import com.example.vpnlearn.utility.ProvideAppList
 import dagger.Module
@@ -38,4 +39,8 @@ class ApplicationModule(private val application: MyApplication) {
 
     @Provides
     fun provideCompositeDisposable() = CompositeDisposable()
+
+    @Singleton
+    @Provides
+    fun provideAppUsageTime() = AppUsageTimeAndroidApi(application)
 }
