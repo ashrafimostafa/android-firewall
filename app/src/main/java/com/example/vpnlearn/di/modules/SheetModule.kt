@@ -10,6 +10,7 @@ import com.example.vpnlearn.di.scope.SheetScope
 
 import com.example.vpnlearn.ui.appsheet.AppSheetViewModel
 import com.example.vpnlearn.ui.appsheet.app.ApplicationAdapter
+import com.example.vpnlearn.ui.appusage.permissionsheet.PermissionSheetViewModel
 import com.example.vpnlearn.ui.base.BaseSheet
 import com.example.vpnlearn.utility.ProvideAppList
 import com.example.vpnlearn.utility.ViewModelProviderFactory
@@ -34,6 +35,14 @@ class SheetModule(private val sheet: BaseSheet<*>) {
             AppSheetViewModel(compositeDisposable, databaseService, provideAppList)
         }).get(AppSheetViewModel::class.java)
 
+    @Provides
+    fun provideAppUsagePermissionSheetViewModel(
+        compositeDisposable: CompositeDisposable,
+        @ActivityContext context: Context,
+    ): PermissionSheetViewModel = ViewModelProvider(
+        sheet, ViewModelProviderFactory(PermissionSheetViewModel::class) {
+            PermissionSheetViewModel(compositeDisposable, context)
+        }).get(PermissionSheetViewModel::class.java)
 
     @Provides
     fun provideLinearlayoutManager() = LinearLayoutManager(sheet.context)

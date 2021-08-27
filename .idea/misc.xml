@@ -14,6 +14,7 @@
         <entry key="app/src/main/res/layout/item_application_selectable.xml" value="0.35885416666666664" />
         <entry key="app/src/main/res/layout/item_application_usage.xml" value="0.33" />
         <entry key="app/src/main/res/layout/sheet_app_list.xml" value="0.35885416666666664" />
+        <entry key="app/src/main/res/layout/sheet_app_usage_permission.xml" value="0.35885416666666664" />
         <entry key="app/src/main/res/menu/app_usage_menu.xml" value="0.35885416666666664" />
         <entry key="app/src/main/res/menu/main_menu.xml" value="0.35885416666666664" />
         <entry key="app/src/main/res/menu/main_menu_no_toggle.xml" value="0.35885416666666664" />

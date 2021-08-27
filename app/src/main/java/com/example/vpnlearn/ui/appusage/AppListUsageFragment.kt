@@ -11,6 +11,7 @@ import com.example.vpnlearn.R
 import com.example.vpnlearn.di.components.FragmentComponent
 import com.example.vpnlearn.ui.applist.AppListFragment
 import com.example.vpnlearn.ui.applist.app.ApplicationAdapter
+import com.example.vpnlearn.ui.appusage.permissionsheet.AppUsagePermissionSheet
 import com.example.vpnlearn.ui.base.BaseFragment
 import kotlinx.android.synthetic.main.fragment_app_list.*
 import kotlinx.android.synthetic.main.fragment_app_list_usage.*
@@ -30,6 +31,8 @@ class AppListUsageFragment : BaseFragment<AppListUsageViewModel>() {
             return fragment
         }
     }
+
+    private var appUsagePermissionSheet: AppUsagePermissionSheet? = null
 
     @Inject
     lateinit var linearLayoutManager: LinearLayoutManager
@@ -70,6 +73,9 @@ class AppListUsageFragment : BaseFragment<AppListUsageViewModel>() {
                 true
             }
             R.id.menu_app_usage_permission -> {
+                if (appUsagePermissionSheet == null)
+                    appUsagePermissionSheet = AppUsagePermissionSheet.newInstance()
+                appUsagePermissionSheet?.show(activity!!.supportFragmentManager, appUsagePermissionSheet?.tag)
                 true
             }
             else -> super.onOptionsItemSelected(item)
