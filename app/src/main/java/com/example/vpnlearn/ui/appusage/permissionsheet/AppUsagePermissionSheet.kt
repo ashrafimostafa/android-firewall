@@ -1,6 +1,8 @@
 package com.example.vpnlearn.ui.appusage.permissionsheet
 
+import android.content.Intent
 import android.os.Bundle
+import android.provider.Settings
 import android.view.View
 import com.example.vpnlearn.R
 import com.example.vpnlearn.di.components.SheetComponent
@@ -20,10 +22,17 @@ class AppUsagePermissionSheet : BaseSheet<PermissionSheetViewModel>() {
         }
     }
 
+    var appUsagePermissionStatus = false
+
     override fun provideLayoutId() = R.layout.sheet_app_usage_permission
 
     override fun setUpViews(view: View) {
-
+        app_usage_permission_status.setOnClickListener{
+            if(!appUsagePermissionStatus){
+                startActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))
+                dismiss()
+            }
+        }
     }
 
     override fun injectDependencies(sheetComponent: SheetComponent) {
@@ -33,6 +42,7 @@ class AppUsagePermissionSheet : BaseSheet<PermissionSheetViewModel>() {
     override fun setUpObservers() {
         super.setUpObservers()
         viewModel.appUsagePermission.observe(this, {
+            appUsagePermissionStatus = it
             app_usage_permission_progress.visibility = View.GONE
             if (it) {
                 app_usage_permission_status.text = getString(R.string.permission_granted)

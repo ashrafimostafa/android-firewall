@@ -34,6 +34,7 @@ class AppListUsageFragment : BaseFragment<AppListUsageViewModel>() {
 
     private var appUsagePermissionSheet: AppUsagePermissionSheet? = null
 
+
     @Inject
     lateinit var linearLayoutManager: LinearLayoutManager
 
