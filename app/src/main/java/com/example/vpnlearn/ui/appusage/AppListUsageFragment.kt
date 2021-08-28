@@ -53,6 +53,7 @@ class AppListUsageFragment : BaseFragment<AppListUsageViewModel>() {
 
     override fun setUpObservers() {
         super.setUpObservers()
+        viewModel.updateAppUsageTime()
         viewModel.packageLiveData.observe(this, {
             applicationAdapter.appendDate(it)
             app_list_usage_progress.visibility = View.GONE

@@ -45,6 +45,10 @@ class HomeFragment : BaseFragment<HomeViewModel>() {
                 AppListUsageFragment()
             )
         }
+
+        home_app_usage_network_item.setOnClickListener{
+
+        }
     }
 
     override fun injectDependencies(fragmentComponent: FragmentComponent) {

@@ -5,6 +5,7 @@ import com.example.vpnlearn.data.local.DatabaseService
 import com.example.vpnlearn.di.modules.ApplicationModule
 import com.example.vpnlearn.di.qualifire.ApplicationContext
 import com.example.vpnlearn.MyApplication
+import com.example.vpnlearn.logic.usagenetwork.AppUsageNetworkAndroidApi
 import com.example.vpnlearn.logic.usagetime.AppUsageTimeAndroidApi
 import com.example.vpnlearn.service.VpnClient
 import com.example.vpnlearn.service.VpnWorker
@@ -32,6 +33,8 @@ interface ApplicationComponent {
     fun getProvideAppList(): ProvideAppList
 
     fun getProvideAppUsageTime(): AppUsageTimeAndroidApi
+
+    fun getProvideAppUsageNetwork(): AppUsageNetworkAndroidApi
 
     @ApplicationContext
     fun getContext(): Context

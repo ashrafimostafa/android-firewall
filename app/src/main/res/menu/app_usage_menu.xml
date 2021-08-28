@@ -3,7 +3,8 @@
 
     <item
         android:id="@+id/menu_app_usage_refresh"
-        android:title="@string/refresh" />
+        android:title="@string/refresh"
+        android:visible="false"/>
 
     <item
         android:id="@+id/menu_app_usage_permission"

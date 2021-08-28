@@ -1,9 +1,12 @@
 package com.example.vpnlearn.ui.appusage
 
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.MutableLiveData
 import com.example.vpnlearn.data.local.DatabaseService
 import com.example.vpnlearn.data.local.entity.PackageDM
+import com.example.vpnlearn.logic.usagenetwork.AppUsageNetworkAndroidApi
 import com.example.vpnlearn.logic.usagetime.AppUsageTimeAndroidApi
 import com.example.vpnlearn.ui.applist.AppListViewModel
 import com.example.vpnlearn.ui.applist.app.Application
@@ -17,7 +20,8 @@ class AppListUsageViewModel @Inject constructor(
     compositeDisposable: CompositeDisposable,
     private var databaseService: DatabaseService,
     private var provideAppList: ProvideAppList,
-    private var appUsageTimeAndroidApi: AppUsageTimeAndroidApi
+    private var appUsageTimeAndroidApi: AppUsageTimeAndroidApi,
+    private var appUsageNetworkAndroidApi: AppUsageNetworkAndroidApi,
 ) : BaseViewModel(compositeDisposable) {
 
     val packageLiveData = MutableLiveData<List<com.example.vpnlearn.ui.appusage.app.Application>>()
@@ -26,8 +30,10 @@ class AppListUsageViewModel @Inject constructor(
         var TAG = "NetBlocker.AppListUsageVM"
     }
 
+    @RequiresApi(Build.VERSION_CODES.P)  //remove this
     override fun onCreate() {
         queryPackageList()
+        appUsageNetworkAndroidApi.getNetworkUsageStatistics()
     }
 
     private fun queryPackageList() {

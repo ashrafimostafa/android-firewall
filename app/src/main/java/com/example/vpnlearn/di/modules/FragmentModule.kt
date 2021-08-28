@@ -7,6 +7,7 @@ import com.example.vpnlearn.data.local.DatabaseService
 import com.example.vpnlearn.di.qualifire.ActivityContext
 import com.example.vpnlearn.di.qualifire.ApplicationContext
 import com.example.vpnlearn.di.scope.FragmentScope
+import com.example.vpnlearn.logic.usagenetwork.AppUsageNetworkAndroidApi
 import com.example.vpnlearn.logic.usagetime.AppUsageTimeAndroidApi
 import com.example.vpnlearn.ui.applist.AppListViewModel
 import com.example.vpnlearn.ui.applist.app.ApplicationAdapter
@@ -71,10 +72,17 @@ class FragmentModule(private val fragment: BaseFragment<*>) {
         compositeDisposable: CompositeDisposable,
         databaseService: DatabaseService,
         provideAppList: ProvideAppList,
-        appUsageTimeAndroidApi: AppUsageTimeAndroidApi
+        appUsageTimeAndroidApi: AppUsageTimeAndroidApi,
+        appUsageNetworkAndroidApi: AppUsageNetworkAndroidApi
     ): AppListUsageViewModel = ViewModelProvider(
         fragment, ViewModelProviderFactory(AppListUsageViewModel::class) {
-            AppListUsageViewModel(compositeDisposable, databaseService, provideAppList,appUsageTimeAndroidApi)
+            AppListUsageViewModel(
+                compositeDisposable,
+                databaseService,
+                provideAppList,
+                appUsageTimeAndroidApi,
+                appUsageNetworkAndroidApi
+            )
         }).get(AppListUsageViewModel::class.java)
 
     @Provides
@@ -86,5 +94,6 @@ class FragmentModule(private val fragment: BaseFragment<*>) {
 
     @Provides
     @FragmentScope
-    fun provideApplicationUsageAdapter() = com.example.vpnlearn.ui.appusage.app.ApplicationAdapter(fragment.lifecycle, ArrayList())
+    fun provideApplicationUsageAdapter() =
+        com.example.vpnlearn.ui.appusage.app.ApplicationAdapter(fragment.lifecycle, ArrayList())
 }
