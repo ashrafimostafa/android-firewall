@@ -227,45 +227,54 @@ class ConnectionFragment : BaseFragment<ConnectionViewModel>() {
     }
 
     private fun connectVpn() {
-        if (connection_vpn_local_radio.isChecked) {
-            //local
-            context?.let { vpnClient.start(it) }
-        } else if (connection_vpn_pptp_radio.isChecked) {
-            //pptp protocol
+        when {
+            connection_vpn_local_radio.isChecked -> {
+                //local
+                context?.let { vpnClient.start(it) }
+            }
+            connection_vpn_pptp_radio.isChecked -> {
+                //pptp protocol
 
-        } else if (connection_vpn_pptp_open_vpn_radio.isChecked) {
-            //openvpn protocol
-            connectOpenVpn()
-        } else {
-            //toy vpn
-            activity!!.startService(
-                Intent(context, BackendVpnService::class.java).setAction(
-                    BackendVpnService.ACTION_CONNECT
+            }
+            connection_vpn_pptp_open_vpn_radio.isChecked -> {
+                //openvpn protocol
+                connectOpenVpn()
+            }
+            else -> {
+                //toy vpn
+                activity!!.startService(
+                    Intent(context, BackendVpnService::class.java).setAction(
+                        BackendVpnService.ACTION_CONNECT
+                    )
                 )
-            )
+            }
         }
     }
 
     private fun disconnectVpn() {
-        if (connection_vpn_local_radio.isChecked) {
-            context?.let {
-                if (vpnClient.getVpnState() == State.CONNECTED ||
-                    vpnClient.getVpnState() == State.CONNECTING
-                ) {
-                    vpnClient.stop(it)
+        when {
+            connection_vpn_local_radio.isChecked -> {
+                context?.let {
+                    if (vpnClient.getVpnState() == State.CONNECTED ||
+                        vpnClient.getVpnState() == State.CONNECTING
+                    ) {
+                        vpnClient.stop(it)
+                    }
                 }
             }
-        } else if (connection_vpn_pptp_open_vpn_radio.isChecked) {
-            confirmDisconnect()
-        } else {
-            activity!!.startService(
-                Intent(
-                    context, BackendVpnService::
-                    class.java
-                ).setAction(
-                    BackendVpnService.ACTION_DISCONNECT
+            connection_vpn_pptp_open_vpn_radio.isChecked -> {
+                confirmDisconnect()
+            }
+            else -> {
+                activity!!.startService(
+                    Intent(
+                        context, BackendVpnService::
+                        class.java
+                    ).setAction(
+                        BackendVpnService.ACTION_DISCONNECT
+                    )
                 )
-            )
+            }
         }
 
     }
