@@ -18,6 +18,7 @@ import com.example.vpnlearn.MyApplication
 import com.example.vpnlearn.R
 import com.example.vpnlearn.data.local.DatabaseService
 import com.example.vpnlearn.receiver.RestartServiceReceiver
+import com.example.vpnlearn.receiver.VpnClientRestarter
 import com.example.vpnlearn.ui.main.MainActivity
 import com.example.vpnlearn.utility.Constant
 import com.example.vpnlearn.utility.Util.logExtras
@@ -196,6 +197,14 @@ class VpnClient() : VpnService() {
         unregisterReceiver(connectivityChangedReceiver)
         unregisterReceiver(packageAddedReceiver)
         super.onDestroy()
+
+        /////
+        //restart service for infinite connection
+        val broadcastIntent = Intent()
+        broadcastIntent.action = "restartservice"
+        broadcastIntent.setClass(this, VpnClientRestarter::class.java)
+        this.sendBroadcast(broadcastIntent)
+        /////
     }
 
     /**

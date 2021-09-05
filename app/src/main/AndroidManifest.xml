@@ -108,6 +108,15 @@
             </intent-filter>
         </service>
 
+        <receiver
+            android:name=".receiver.VpnClientRestarter"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="restartservice" />
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>

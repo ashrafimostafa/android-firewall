@@ -1,10 +1,11 @@
 package com.example.vpnlearn.ui.main
 
+import android.content.Intent
 import android.os.Bundle
 import com.example.vpnlearn.R
 import com.example.vpnlearn.di.components.ActivityComponent
+import com.example.vpnlearn.receiver.VpnClientRestarter
 import com.example.vpnlearn.ui.base.BaseActivity
-import com.example.vpnlearn.ui.connection.ConnectionFragment
 import com.example.vpnlearn.ui.home.HomeFragment
 
 class MainActivity : BaseActivity<MainViewModel>() {
@@ -34,6 +35,14 @@ class MainActivity : BaseActivity<MainViewModel>() {
                 .add(R.id.all_list_main_frame, HomeFragment.newInstance(), TAG)
                 .commit()
         }
+    }
+
+    override fun onDestroy() {
+        val broadcastIntent = Intent()
+        broadcastIntent.action = "restartservice"
+        broadcastIntent.setClass(this, VpnClientRestarter::class.java)
+        this.sendBroadcast(broadcastIntent)
+        super.onDestroy()
     }
 
 }

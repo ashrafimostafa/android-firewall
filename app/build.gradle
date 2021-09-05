@@ -75,6 +75,8 @@ dependencies {
     //openvpn client
     implementation project(path: ':vpnLib')
 
+    //https://github.com/ricvalerio/foregroundappchecker
+    implementation 'com.rvalerio:fgchecker:1.1.0'
 
 
 
