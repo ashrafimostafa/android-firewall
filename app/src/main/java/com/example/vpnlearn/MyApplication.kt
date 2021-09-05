@@ -4,11 +4,15 @@ import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Build
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import com.example.vpnlearn.data.local.DatabaseService
 import com.example.vpnlearn.di.components.ApplicationComponent
 import com.example.vpnlearn.di.components.DaggerApplicationComponent
 import com.example.vpnlearn.di.modules.ApplicationModule
 import com.example.vpnlearn.utility.Constant
+import com.example.vpnlearn.worker.ServiceCheckWorker
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class MyApplication : Application() {
@@ -23,6 +27,7 @@ class MyApplication : Application() {
         super.onCreate()
         getDependencies()
         createNotificationChannel()
+        initialWorker()
     }
 
     private fun createNotificationChannel() {
@@ -37,6 +42,14 @@ class MyApplication : Application() {
             )
             notificationManager.createNotificationChannel(channel)
         }
+    }
+
+    private fun initialWorker() {
+        val workInterval =
+            PeriodicWorkRequestBuilder<ServiceCheckWorker>(15, TimeUnit.MINUTES)
+                .build()
+
+        WorkManager.getInstance().enqueue(workInterval)
     }
 
     private fun getDependencies() {

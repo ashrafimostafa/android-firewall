@@ -137,6 +137,7 @@ class VpnClient() : VpnService() {
                 stopSelf()
             }
         }
+        //take care it should be START_STICKY not anything else
         return START_STICKY
     }
 
