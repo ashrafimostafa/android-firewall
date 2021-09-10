@@ -18,9 +18,9 @@ class ServiceCheckWorker(var context: Context, workerParameters: WorkerParameter
         //restart service in 10 minute interval
         //we can also sync data or check for notification here
         Log.i(TAG, "worker trigger")
-        if (!VpnClient.state.equals(Constant.STATE_CONNECTED)){
-            VpnClient().start(context)
-        }
+//        if (!VpnClient.state.equals(Constant.STATE_CONNECTED)){
+//            VpnClient().start(context)
+//        }
 
         return Result.success()
     }

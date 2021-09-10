@@ -146,7 +146,7 @@ class VpnClient() : VpnService() {
      */
     private val connectivityChangedReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            Log.i(TAG, "Received $intent")
+            Log.i(TAG, "Received1 $intent")
             logExtras(TAG, intent)
             if (intent.hasExtra(ConnectivityManager.EXTRA_NETWORK_TYPE) &&
                 intent.getIntExtra(
